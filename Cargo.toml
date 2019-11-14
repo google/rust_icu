@@ -1,0 +1,13 @@
+[workspace]
+members = [
+  "rust_icu_common",
+  "rust_icu_sys",
+  "rust_icu_ucal",
+  "rust_icu_udat",
+  "rust_icu_udata",
+  "rust_icu_uenum",
+  "rust_icu_uloc",
+  "rust_icu_ustring",
+  "rust_icu_utext",
+]
+

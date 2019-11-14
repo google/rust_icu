@@ -1,0 +1,25 @@
+[package]
+name = "rust_icu_sys"
+version = "0.0.0"
+authors = ["Google Inc."]
+license = "Apache-2.0"
+readme = "README.md"
+build = "build.rs"
+repository = "https://github.com/google/rust_icu/rust_icu_sys"
+
+links = "icuuc"
+
+description = """
+Native bindings to the ICU4C library from Unicode.
+"""
+
+keywords = ["icu", "unicode", "i18n", "l10n"]
+
+[dependencies]
+libc = "0.2.14"
+paste = "0.1.5"
+
+[lib]
+# Indented documentation text in the generated library is prose, not rust code.
+# See https://github.com/rust-lang/rust-bindgen/issues/378
+doctest = false
