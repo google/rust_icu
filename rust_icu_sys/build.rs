@@ -280,7 +280,7 @@ fn main() {
     // them.  The list should be topologicaly sorted based on the inclusion
     // relationship between the respective headers.
     // Any of these will fail if the required binaries are not present in $PATH.
-    let bindgen_source_modules: Vec<&str> = vec!["ucal", "udat", "udata", "uenum", "ustring", "utext"];
+    let bindgen_source_modules: Vec<&str> = vec!["ucal", "udat", "udata", "uenum", "ustring", "utext", "uclean"];
     let header_file = generate_wrapper_header(
         &out_dir_path, &bindgen_source_modules, &include_dir_path);
     run_bindgen(&header_file, out_dir_path);
