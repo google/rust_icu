@@ -44,7 +44,7 @@ impl TryFrom<&[&str]> for Enumeration {
     fn try_from(v: &[&str]) -> Result<Enumeration, common::Error> {
         let raw = common::CStringVec::new(v)?;
         let mut status = common::Error::OK_CODE;
-        let rep = unsafe {
+        let rep: *mut sys::UEnumeration = unsafe {
             versioned_function!(uenum_openCharStringsEnumeration)(
                 raw.as_c_array(),
                 raw.len() as i32,
@@ -52,6 +52,9 @@ impl TryFrom<&[&str]> for Enumeration {
             )
         };
         common::Error::ok_or_warning(status)?;
+        // rep should not be null without an error set, but:
+        // https://unicode-org.atlassian.net/browse/ICU-20918
+        assert!(!rep.is_null());
         Ok(Enumeration {
             rep: rep,
             raw: Some(raw),
@@ -78,6 +81,7 @@ impl Iterator for Enumeration {
         let mut len: i32 = 0;
         let mut status = common::Error::OK_CODE;
         // Requires that self.rep is a valid pointer to a sys::UEnumeration.
+        assert!(!self.rep.is_null());
         let raw = unsafe { versioned_function!(uenum_next)(self.rep, &mut len, &mut status) };
         if raw.is_null() {
             // No more elements to iterate over.
