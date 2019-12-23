@@ -135,7 +135,7 @@ These worked for my system.  You may be able to adapt them to work on yours.
 mkdir -p $HOME/local
 mkdir -p $HOME/tmp
 cd $HOME/tmp
-git clone export https://github.com/unicode-org/icu.git
+git clone https://github.com/unicode-org/icu.git
 mkdir icu4c-build
 cd icu4c-build
 ../icu/icu4c/source/runConfigureICU Linux \
