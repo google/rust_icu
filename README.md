@@ -97,6 +97,7 @@ See also:
 
 * https://github.com/rust-lang/rfcs/issues/797
 * https://unicode-rs.github.io
+* https://github.com/i18n-concept/rust-discuss
 
 # Assumptions
 
