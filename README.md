@@ -22,6 +22,30 @@ The goal is to correct this situation and have a comprehensive coverage matrix.
 
 # Prerequisites
 
+* `rust_icu` source code
+
+  Clone with `git`:
+  
+  ```
+  git clone https://github.com/google/rust_icu.git
+  ```
+
+* rustup
+
+  Install from https://rustup.rs.  Used to set toolchain defaults.
+  
+* rust nightly
+
+  Two options exist here:
+  
+  1. Set the global default: `rustup toolchain set nightly`
+  
+  2. Set the default toolchain just for `rust_icu`.  Go to the directory you cloned `rust_icu` into, then issue:
+  
+  ```
+  rustup override set nightly
+  ```
+
 * ICU
 
   The ICU library for which the bindings are generated is version 64.2.
