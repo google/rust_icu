@@ -22,7 +22,11 @@ use {std::env, std::fs::File, std::io::Write, std::path::Path, std::process::Com
 
 // Captures the stdout of the command or panics.
 fn stdout(c: &mut Command) -> String {
-    let result = c.output().expect("could not execute");
+    let result = c
+        .output()
+        .unwrap_or_else(|e| {
+            panic!("Error while executing command [{:?}]:\n{:?}", c, e);
+        });
     let result = String::from_utf8(result.stdout).expect("could not parse as utf8");
     result.trim().to_string()
 }
@@ -260,6 +264,7 @@ macro_rules! versioned_function {
 }
 
 fn main() {
+    std::env::set_var("RUST_BACKTRACE", "full");
     println!("rustfmt: {}", rustfmt_version());
     println!("icu-config: {}", icu_config_version());
     println!("icu-config-cpp-flags: {}", icu_cpp_flags());
