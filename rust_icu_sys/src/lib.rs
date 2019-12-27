@@ -22,10 +22,18 @@
     unused_imports
 )]
 
+#[cfg(features="bindgen")]
 include!(concat!(env!("OUT_DIR"), "/macros.rs"));
+#[cfg(features="bindgen")]
 include!(concat!(env!("OUT_DIR"), "/lib.rs"));
 // Linker trickery to ensure that we link against correct libraries.
+#[cfg(features="bindgen")]
 include!(concat!(env!("OUT_DIR"), "/link.rs"));
+
+#[cfg(not(features="bindgen"))]
+include!(concat!("../bindgen", "/macros.rs"));
+#[cfg(not(features="bindgen"))]
+include!(concat!("../bindgen", "/lib.rs"));
 
 // Add the ability to print the error code, so that it can be reported in
 // aggregated errors.
