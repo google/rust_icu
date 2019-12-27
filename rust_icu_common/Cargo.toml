@@ -16,5 +16,5 @@ Commonly used types.
 keywords = ["icu", "unicode", "i18n", "l10n"]
 
 [dependencies]
-failure = "0.1.5"
+thiserror = "1.0.9"
 rust_icu_sys = { path = "../rust_icu_sys" }
