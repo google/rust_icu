@@ -1,3 +1,4 @@
+#![feature(try_trait)]
 // Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,17 +19,23 @@
 // Please refer to README.md for instructions on how to build the library for
 // your use.
 
-use {std::env, std::fs::File, std::io::Write, std::path::Path, std::process::Command};
+use {
+    anyhow::{Context, Result},
+    std::env,
+    std::fs::File,
+    std::io::Write,
+    std::path::Path,
+    std::process::Command,
+};
 
 // Captures the stdout of the command or panics.
-fn stdout(c: &mut Command) -> String {
-    let result = c
+fn stdout(c: &mut Command) -> Result<String> {
+    let output = c
         .output()
-        .unwrap_or_else(|e| {
-            panic!("Error while executing command [{:?}]:\n{:?}", c, e);
-        });
-    let result = String::from_utf8(result.stdout).expect("could not parse as utf8");
-    result.trim().to_string()
+        .with_context(|| format!("could not execute command: {}", 1))?;
+    let result = String::from_utf8(output.stdout)
+        .with_context(|| format!("could not convert output to UTF8"))?;
+    Ok(result.trim().to_string())
 }
 
 fn icu_config_cmd() -> Command {
@@ -36,70 +43,80 @@ fn icu_config_cmd() -> Command {
     Command::new("icu-config")
 }
 
-fn run(cmd: &mut Command, args: &[&str]) -> String {
-    String::from(&stdout(cmd.args(args))).trim().to_string()
+fn run(cmd: &mut Command, args: &[&str]) -> Result<String> {
+    Ok(String::from(&stdout(cmd.args(args))?).trim().to_string())
 }
 
-fn icu_config_prefix() -> String {
+fn icu_config_prefix() -> Result<String> {
     run(&mut icu_config_cmd(), &["--prefix"])
+        .with_context(|| format!("could not get config prefix"))
 }
 
-fn lib_dir() -> String {
+fn lib_dir() -> Result<String> {
     run(&mut icu_config_cmd(), &["--libdir"])
+        .with_context(|| format!("could not get library directory"))
 }
 
-fn ld_flags() -> String {
+fn ld_flags() -> Result<String> {
     // Replacements needed because of https://github.com/rust-lang/cargo/issues/7217
-    run(&mut icu_config_cmd(), &["--ldflags"])
-        .replace("-L", "-L ")
-        .replace("-l", "-l ")
+    let result = run(&mut icu_config_cmd(), &["--ldflags"])
+        .with_context(|| format!("could not get the ld flags"))?;
+    Ok(result.replace("-L", "-L ").replace("-l", "-l "))
 }
 
 /// Returns the C preprocessor flags used to build ICU
-fn icu_cpp_flags() -> String {
+fn icu_cpp_flags() -> Result<String> {
     run(&mut icu_config_cmd(), &["--cppflags"])
+        .with_context(|| format!("while getting the cpp flags"))
 }
 
 /// Returns true if the ICU library was compiled with renaming enabled.
-fn has_renaming() -> bool {
-    let cpp_flags = icu_cpp_flags();
+fn has_renaming() -> Result<bool> {
+    let cpp_flags = icu_cpp_flags()?;
     let found = cpp_flags.find("-DU_DISABLE_RENAMING=1");
     println!("flags: {}", cpp_flags);
-    found.is_none()
+    Ok(found.is_none())
 }
 
-fn icu_config_version() -> String {
+fn icu_config_version() -> Result<String> {
     run(&mut icu_config_cmd(), &["--version"])
+        .with_context(|| format!("while getting ICU version; is icu-config in $PATH?"))
 }
 
-fn install_dir() -> String {
+fn install_dir() -> Result<String> {
     run(&mut icu_config_cmd(), &["--prefix"])
+        .with_context(|| format!("while getting directory prefix"))
 }
 
 fn rustfmt_cmd() -> Command {
     Command::new("rustfmt")
 }
 
-fn rustfmt_version() -> String {
+fn rustfmt_version() -> Result<String> {
     run(&mut rustfmt_cmd(), &["--version"])
+        .with_context(|| format!("while getting rustfmt version; is rustfmt in $PATH?"))
 }
 
 fn bindgen_cmd() -> Command {
     Command::new("bindgen")
 }
 
-fn bindgen_version() -> String {
+fn bindgen_version() -> Result<String> {
     run(&mut bindgen_cmd(), &["--version"])
+        .with_context(|| format!("while getting bindgen version; is bindgen in $PATH?"))
 }
 
 // Returns the config major number.  For example, will return "64" for
 // version "64.2"
-fn icu_config_major_number() -> String {
-    let version = icu_config_version();
+fn icu_config_major_number() -> Result<String> {
+    let version = icu_config_version()?;
     let components = version.split(".");
-    components.take(1).last().unwrap_or("").to_string()
+    let last = components
+        .take(1)
+        .last()
+        .with_context(|| format!("could not parse version number: {}", version))?;
+    Ok(last.to_string())
 }
-
 
 /// Generates an additional include file which contains the linker directives.
 /// This is done because cargo does not allow the rustc link directives to be
@@ -109,12 +126,12 @@ fn generate_linker_file(out_dir_path: &Path, lib_dir: &str, lib_names: &Vec<&str
     let mut linker_file = File::create(&file_path).unwrap();
     let mut content: Vec<String> = vec![];
     for lib in lib_names {
-        let linkopt: String = format!(
-            r#"#[link_args="-Wl,-rpath={}/lib{}.so"]"#, lib_dir, lib);
+        let linkopt: String = format!(r#"#[link_args="-Wl,-rpath={}/lib{}.so"]"#, lib_dir, lib);
         content.push(linkopt);
     }
     content.push(String::from(r#"extern "C" {}"#));
-    linker_file.write_all(&content.join("\n").into_bytes())
+    linker_file
+        .write_all(&content.join("\n").into_bytes())
         .expect("successful write into linker file");
 }
 
@@ -123,8 +140,10 @@ fn generate_linker_file(out_dir_path: &Path, lib_dir: &str, lib_names: &Vec<&str
 /// This is the recommended way to bind complex libraries at the moment.  Returns
 /// the full path of the generated wrapper header file.
 fn generate_wrapper_header(
-    out_dir_path: &Path, bindgen_source_modules: &Vec<&str>, include_path: &Path) -> String {
-
+    out_dir_path: &Path,
+    bindgen_source_modules: &Vec<&str>,
+    include_path: &Path,
+) -> String {
     let wrapper_path = out_dir_path.join("wrapper.h");
     let mut wrapper_file = File::create(&wrapper_path).unwrap();
     wrapper_file
@@ -147,7 +166,7 @@ fn commaify(s: &Vec<&str>) -> String {
     format!("{}", s.join("|"))
 }
 
-fn run_bindgen(header_file: &str, out_dir_path: &Path) {
+fn run_bindgen(header_file: &str, out_dir_path: &Path) -> Result<()> {
     let whitelist_types_regexes = commaify(&vec![
         "UBool",
         "UCalendar.*",
@@ -184,8 +203,8 @@ fn run_bindgen(header_file: &str, out_dir_path: &Path) {
 
     let output_file_path = out_dir_path.join("lib.rs");
     let output_file = output_file_path.to_str().unwrap();
-    let ld_flags = ld_flags();
-    let cpp_flags = icu_cpp_flags();
+    let ld_flags = ld_flags()?;
+    let cpp_flags = icu_cpp_flags()?;
     let mut file_args = vec![
         "-o",
         &output_file,
@@ -194,7 +213,7 @@ fn run_bindgen(header_file: &str, out_dir_path: &Path) {
         &ld_flags,
         &cpp_flags,
     ];
-    if !has_renaming() {
+    if !has_renaming()? {
         file_args.push("-DU_DISABLE_RENAMING=1");
     }
     let all_args = [&bindgen_generate_args[..], &file_args[..]].concat();
@@ -202,19 +221,21 @@ fn run_bindgen(header_file: &str, out_dir_path: &Path) {
     Command::new("bindgen")
         .args(&all_args)
         .spawn()
-        .expect("bindgen finished with success");
+        .with_context(|| format!("while running bindgen"))?;
+    Ok(())
 }
 
 // Generates the library renaming macro: this allows us to use renamed function
 // names in the resulting low-level bindings library.
-fn run_renamegen(out_dir_path: &Path) {
+fn run_renamegen(out_dir_path: &Path) -> Result<()> {
     let output_file_path = out_dir_path.join("macros.rs");
-    let mut macro_file = File::create(&output_file_path).expect("file opened");
-    if has_renaming() {
+    let mut macro_file = File::create(&output_file_path)
+        .with_context(|| format!("while opening {:?}", output_file_path))?;
+    if has_renaming()? {
         println!("renaming: true");
         // The library names have been renamed, need to generate a macro that
         // converts the call of `foo()` into `foo_64()`.
-        let icu_major_version = icu_config_major_number();
+        let icu_major_version = icu_config_major_number()?;
         let to_write = format!(
             r#"
 // Macros for changing function names.
@@ -249,7 +270,7 @@ macro_rules! versioned_function {{
         );
         macro_file
             .write_all(&to_write.into_bytes())
-            .expect("successful write");
+            .with_context(|| format!("while writing macros.rs with renaming"))
     } else {
         // The library names have not been renamed, generating an empty macro
         println!("renaming: false");
@@ -269,40 +290,47 @@ macro_rules! versioned_function {{
                 .to_string()
                 .into_bytes(),
             )
-            .expect("wrote macro file without version");
+            .with_context(|| format!("while writing macros.rs without renaming"))
     }
 }
 
-fn main() {
+fn main() -> Result<()> {
     std::env::set_var("RUST_BACKTRACE", "full");
-    println!("rustfmt: {}", rustfmt_version());
-    println!("icu-config: {}", icu_config_version());
-    println!("icu-config-cpp-flags: {}", icu_cpp_flags());
-    println!("icu-config-has-renaming: {}", has_renaming());
-    println!("bindgen: {}", bindgen_version());
+    println!("rustfmt: {}", rustfmt_version()?);
+    println!("icu-config: {}", icu_config_version()?);
+    println!("icu-config-cpp-flags: {}", icu_cpp_flags()?);
+    println!("icu-config-has-renaming: {}", has_renaming()?);
+    println!("bindgen: {}", bindgen_version()?);
 
     // The path to the directory where cargo will add the output artifacts.
     let out_dir = env::var("OUT_DIR").unwrap();
     let out_dir_path = Path::new(&out_dir);
 
     // The path where all unicode headers can be found.
-    let include_dir_path = Path::new(&icu_config_prefix())
+    let include_dir_path = Path::new(&icu_config_prefix()?)
         .join("include")
         .join("unicode");
 
-    generate_linker_file(out_dir_path, &lib_dir(), &vec!["icui18n", "icuuc", "icudata"]);
+    generate_linker_file(
+        out_dir_path,
+        &lib_dir()?,
+        &vec!["icui18n", "icuuc", "icudata"],
+    );
     // The modules for which bindings will be generated.  Add more if you need
     // them.  The list should be topologicaly sorted based on the inclusion
     // relationship between the respective headers.
     // Any of these will fail if the required binaries are not present in $PATH.
-    let bindgen_source_modules: Vec<&str> = vec!["ucal", "udat", "udata", "uenum", "ustring", "utext", "uclean"];
-    let header_file = generate_wrapper_header(
-        &out_dir_path, &bindgen_source_modules, &include_dir_path);
-    run_bindgen(&header_file, out_dir_path);
-    run_renamegen(out_dir_path);
+    let bindgen_source_modules: Vec<&str> = vec![
+        "ucal", "udat", "udata", "uenum", "ustring", "utext", "uclean",
+    ];
+    let header_file =
+        generate_wrapper_header(&out_dir_path, &bindgen_source_modules, &include_dir_path);
+    run_bindgen(&header_file, out_dir_path).with_context(|| format!("while running bindgen"))?;
+    run_renamegen(out_dir_path).with_context(|| format!("while running renamegen"))?;
 
-    println!("cargo:install-dir={}", install_dir());
-    println!("cargo:rustc-link-search=native={}", lib_dir());
-    println!("cargo:rustc-flags={}", ld_flags());
+    println!("cargo:install-dir={}", install_dir()?);
+    println!("cargo:rustc-link-search=native={}", lib_dir()?);
+    println!("cargo:rustc-flags={}", ld_flags()?);
     println!("done:true");
+    Ok(())
 }
