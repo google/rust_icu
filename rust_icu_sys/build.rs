@@ -205,6 +205,7 @@ fn commaify(s: &Vec<&str>) -> String {
 
 fn run_bindgen(header_file: &str, out_dir_path: &Path) -> Result<()> {
     let whitelist_types_regexes = commaify(&vec![
+        "UAcceptResult",
         "UBool",
         "UCalendar.*",
         "UChar.*",

@@ -12,7 +12,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 #![doc(test(ignore))]
 #![allow(
     dead_code,
@@ -22,18 +21,18 @@
     unused_imports
 )]
 
-#[cfg(features="bindgen")]
+#[cfg(features = "bindgen")]
 include!(concat!(env!("OUT_DIR"), "/macros.rs"));
-#[cfg(all(features="bindgen",features="icu_config",not(features="icu_version_in_env")))]
+#[cfg(all(features = "bindgen",features="icu_config",not(features="icu_version_in_env")))]
 include!(concat!(env!("OUT_DIR"), "/lib.rs"));
 // Linker trickery to ensure that we link against correct libraries.
-#[cfg(all(features="bindgen",features="icu_config",not(features="icu_version_in_env")))]
+#[cfg(all(features = "bindgen",features="icu_config",not(features="icu_version_in_env")))]
 include!(concat!(env!("OUT_DIR"), "/link.rs"));
 
-#[cfg(not(features="bindgen"))]
+#[cfg(not(features = "bindgen"))]
 include!("../bindgen/macros.rs");
 
-#[cfg(all(not(features="bindgen"),not(features="icu_version_in_env"),not(features="icu_config")))]
+#[cfg(all(not(features = "bindgen"),not(features="icu_version_in_env"),not(features="icu_config")))]
 include!("../bindgen/lib.rs");
 
 #[cfg(all(not(features="bindgen"),features="icu_version_in_env",not(features="icu_config")))]

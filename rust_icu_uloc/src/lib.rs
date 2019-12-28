@@ -13,14 +13,25 @@
 // limitations under the License.
 
 use {
-    rust_icu_common as common, rust_icu_sys::versioned_function, rust_icu_sys::*,
-    std::convert::From, std::convert::TryFrom, std::ffi, std::os::raw,
+    rust_icu_common as common,
+    rust_icu_sys::versioned_function,
+    rust_icu_sys::*,
+    rust_icu_uenum::Enumeration,
+    std::{
+        convert::{From, TryFrom, TryInto},
+        ffi,
+        os::raw,
+    },
 };
+
+/// Maximum length of locale supported by uloc.h.
+/// See `ULOC_FULLNAME_CAPACITY`.
+const LOCALE_CAPACITY: usize = 158;
 
 /// A representation of a Unicode locale.
 ///
 /// For the time being, only basic conversion and methods are in fact implemented.
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct ULoc {
     // A locale's representation in C is really just a string.
     repr: String,
@@ -48,7 +59,7 @@ impl TryFrom<&ffi::CStr> for ULoc {
         ULoc {
             repr: String::from(repr),
         }
-            .canonicalize()
+        .canonicalize()
     }
 }
 
@@ -101,6 +112,83 @@ impl ULoc {
         ffi::CString::new(self.repr.clone()).expect("ULoc contained interior NUL bytes")
     }
 
+    pub fn accept_language(
+        accept_list: impl IntoIterator<Item = impl Into<ULoc>>,
+        available_locales: impl IntoIterator<Item = impl Into<ULoc>>,
+    ) -> Result<(Option<ULoc>, UAcceptResult), common::Error> {
+        let mut buf: Vec<u8> = vec![0; LOCALE_CAPACITY];
+        let mut accept_result: UAcceptResult = UAcceptResult::ULOC_ACCEPT_FAILED;
+        let mut status = common::Error::OK_CODE;
+
+        let mut accept_list_cstrings: Vec<ffi::CString> = vec![];
+        // This is mutable only to satisfy the missing `const`s in the ICU4C API.
+        let mut accept_list: Vec<*const raw::c_char> = accept_list
+            .into_iter()
+            .map(|item| {
+                let uloc: ULoc = item.into();
+                accept_list_cstrings.push(uloc.as_c_str());
+                accept_list_cstrings
+                    .last()
+                    .expect("non-empty list")
+                    .as_ptr()
+            })
+            .collect();
+
+        let available_locales: Vec<ULoc> = available_locales
+            .into_iter()
+            .map(|item| item.into())
+            .collect();
+        let available_locales: Vec<&str> =
+            available_locales.iter().map(|uloc| uloc.label()).collect();
+        let mut available_locales = Enumeration::try_from(&available_locales[..])?;
+
+        let full_len = unsafe {
+            versioned_function!(uloc_acceptLanguage)(
+                buf.as_mut_ptr() as *mut raw::c_char,
+                buf.len() as i32,
+                &mut accept_result,
+                accept_list.as_mut_ptr(),
+                accept_list.len() as i32,
+                available_locales.repr(),
+                &mut status,
+            )
+        };
+
+        if status == UErrorCode::U_BUFFER_OVERFLOW_ERROR {
+            assert!(full_len > 0);
+            let full_len: usize = full_len
+                .try_into()
+                .map_err(|e| common::Error::wrapper(format!("{:?}", e)))?;
+            buf.resize(full_len, 0);
+            unsafe {
+                versioned_function!(uloc_acceptLanguage)(
+                    buf.as_mut_ptr() as *mut raw::c_char,
+                    buf.len() as i32,
+                    &mut accept_result,
+                    accept_list.as_mut_ptr(),
+                    accept_list.len() as i32,
+                    available_locales.repr(),
+                    &mut status,
+                );
+            }
+        }
+
+        common::Error::ok_or_warning(status)?;
+        // Having no match is a valid if disappointing result.
+        if accept_result == UAcceptResult::ULOC_ACCEPT_FAILED {
+            return Ok((None, accept_result));
+        }
+
+        // Adjust the size of the buffer here.
+        assert!(full_len > 0);
+        buf.resize(full_len as usize, 0);
+
+        String::from_utf8(buf)
+            .map_err(|_| common::Error::string_with_interior_nul())
+            .and_then(|s| ULoc::try_from(s.as_str()))
+            .map(|uloc| (Some(uloc), accept_result))
+    }
+
     /// Call a `uloc_*` method with a particular signature (that clones and modifies the internal
     /// representation of the locale ID and requires a resizable buffer).
     fn call_buffered_string_method(
@@ -115,8 +203,7 @@ impl ULoc {
         let mut status = common::Error::OK_CODE;
         let repr = ffi::CString::new(self.repr.clone())
             .map_err(|_| common::Error::string_with_interior_nul())?;
-        const CAP: usize = 1024;
-        let mut buf: Vec<u8> = vec![0; CAP];
+        let mut buf: Vec<u8> = vec![0; LOCALE_CAPACITY];
 
         // Requires that repr is a valid pointer
         let full_len = unsafe {
@@ -124,12 +211,12 @@ impl ULoc {
             uloc_method(
                 repr.as_ptr(),
                 buf.as_mut_ptr() as *mut raw::c_char,
-                CAP as i32,
+                LOCALE_CAPACITY as i32,
                 &mut status,
             )
         } as usize;
         common::Error::ok_or_warning(status)?;
-        if full_len > CAP {
+        if full_len > LOCALE_CAPACITY {
             buf.resize(full_len, 0);
             // Same unsafe requirements as above, plus full_len must be exactly
             // the output buffer size.
@@ -227,5 +314,56 @@ mod tests {
         let minimized_subtags = loc.minimize_subtags().expect("should minimize subtags");
         let expected = ULoc::try_from("sr").expect("get sr locale");
         assert_eq!(minimized_subtags.label(), expected.label());
+    }
+
+    #[test]
+    fn test_accept_language_fallback() {
+        let accept_list: Result<Vec<_>, _> = vec!["es_MX", "ar_EG", "fr_FR"]
+            .into_iter()
+            .map(|s| ULoc::try_from(s))
+            .collect();
+        let accept_list = accept_list.expect("make accept_list");
+
+        let available_locales: Result<Vec<_>, _> =
+            vec!["de_DE", "en_US", "es", "nl_NL", "sr_RS_Cyrl"]
+                .into_iter()
+                .map(|s| ULoc::try_from(s))
+                .collect();
+        let available_locales = available_locales.expect("make available_locales");
+
+        let actual =
+            ULoc::accept_language(accept_list, available_locales).expect("call accept_language");
+        assert_eq!(
+            actual,
+            (
+                ULoc::try_from("es").ok(),
+                UAcceptResult::ULOC_ACCEPT_FALLBACK
+            )
+        );
+    }
+
+    #[test]
+    fn test_accept_language_exact_match() {
+        let accept_list: Result<Vec<_>, _> = vec!["es_ES", "ar_EG", "fr_FR"]
+            .into_iter()
+            .map(|s| ULoc::try_from(s))
+            .collect();
+        let accept_list = accept_list.expect("make accept_list");
+
+        let available_locales: Result<Vec<_>, _> = vec!["de_DE", "en_US", "es_MX", "ar_EG"]
+            .into_iter()
+            .map(|s| ULoc::try_from(s))
+            .collect();
+        let available_locales = available_locales.expect("make available_locales");
+
+        let actual =
+            ULoc::accept_language(accept_list, available_locales).expect("call accept_language");
+        assert_eq!(
+            actual,
+            (
+                ULoc::try_from("ar_EG").ok(),
+                UAcceptResult::ULOC_ACCEPT_VALID
+            )
+        );
     }
 }
