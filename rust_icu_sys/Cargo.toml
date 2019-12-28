@@ -23,3 +23,18 @@ paste = "0.1.5"
 # Indented documentation text in the generated library is prose, not rust code.
 # See https://github.com/rust-lang/rust-bindgen/issues/378
 doctest = false
+
+[features]
+default = ["bindgen", "renaming"]
+
+# If set, cargo will run 'bindgen' to generate bindings based on the installed
+# ICU library.  The program `icu-config` must be in $PATH for this to work, and
+# you also must have `bindgen`.
+bindgen = []
+
+# If set, ICU bindings are generated with version numbers appended.  This is
+# called "renaming" in ICU, and is normally needed only when linking against
+# specific ICU version is required.  See
+# http://userguide.icu-project.org/design for a discussion of renaming.
+renaming = []
+

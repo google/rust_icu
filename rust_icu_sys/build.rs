@@ -226,12 +226,22 @@ extern crate paste;
 
 // The macro below will rename a symbol `foo::bar` to `foo::bar_64` (where "64")
 // may be some other number depending on the ICU library in use.
+#[cfg(feature="renaming")]
 #[macro_export]
 macro_rules! versioned_function {{
     ($i:ident) => {{
       paste::expr! {{
         [< $i _{0} >]
       }}
+    }}
+}}
+// This allows the user to override the renaming configuration detected from
+// icu-config.
+#[cfg(not(feature="renaming"))]
+#[macro_export]
+macro_rules! versioned_function {{
+    ($func_name:path) => {{
+        $func_name
     }}
 }}
 "#,
@@ -250,11 +260,11 @@ macro_rules! versioned_function {{
 
 // There was no renaming in this one, so just short-circuit this macro.
 #[macro_export]
-macro_rules! versioned_function {
-    ($func_name:path) => {
+macro_rules! versioned_function {{
+    ($func_name:path) => {{
         $func_name
-    }
-}
+    }}
+}}
 "#
                 .to_string()
                 .into_bytes(),
