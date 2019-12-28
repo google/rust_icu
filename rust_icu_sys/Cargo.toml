@@ -6,6 +6,7 @@ license = "Apache-2.0"
 readme = "README.md"
 build = "build.rs"
 repository = "https://github.com/google/rust_icu/rust_icu_sys"
+edition = "2018"
 
 links = "icuuc"
 
@@ -18,6 +19,9 @@ keywords = ["icu", "unicode", "i18n", "l10n"]
 [dependencies]
 libc = "0.2.14"
 paste = "0.1.5"
+
+[build-dependencies]
+anyhow = "1.0"
 
 [lib]
 # Indented documentation text in the generated library is prose, not rust code.
