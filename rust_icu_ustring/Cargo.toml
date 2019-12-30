@@ -1,11 +1,11 @@
 [package]
-edition = "2018"
-name = "rust_icu_ustring"
-version = "0.0.0"
 authors = ["Google Inc."]
+edition = "2018"
 license = "Apache-2.0"
+name = "rust_icu_ustring"
 readme = "README.md"
-repository = "https://github.com/google/rust_icu/rust_icu_ustring"
+repository = "https://github.com/google/rust_icu"
+version = "0.0.0"
 
 description = """
 Native bindings to the ICU4C library from Unicode.
@@ -18,5 +18,5 @@ keywords = ["icu", "unicode", "i18n", "l10n"]
 [dependencies]
 log = "0.4.8"
 paste = "0.1.5"
-rust_icu_common = { path = "../rust_icu_common" }
-rust_icu_sys = { path = "../rust_icu_sys" }
+rust_icu_common = { path = "../rust_icu_common", version = "0.0.0" }
+rust_icu_sys = { path = "../rust_icu_sys", version = "0.0.0" }
