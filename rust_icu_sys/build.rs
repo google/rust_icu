@@ -25,67 +25,114 @@ use {
     std::fs::File,
     std::io::Write,
     std::path::Path,
-    std::process::Command,
+    std::process,
 };
 
-// Captures the stdout of the command or panics.
-fn stdout(c: &mut Command) -> Result<String> {
-    let output = c
-        .output()
-        .with_context(|| format!("could not execute command: {}", 1))?;
-    let result = String::from_utf8(output.stdout)
-        .with_context(|| format!("could not convert output to UTF8"))?;
-    Ok(result.trim().to_string())
+/// A `Command` that also knows its name.
+struct Command {
+    name: String,
+    rep: process::Command,
 }
 
-fn icu_config_cmd() -> Command {
-    // TODO: looks like .args() will persist on a command for some reason.
-    Command::new("icu-config")
+impl Command {
+    /// Creates a new command to run, with the executable `name`.
+    pub fn new(name: &'static str) -> Self {
+        let rep = process::Command::new(&name);
+        let name = String::from(name);
+        Command { name, rep }
+    }
+
+    /// Runs this command with `args` as arguments.
+    pub fn run(&mut self, args: &[&str]) -> Result<String> {
+        self.rep.args(args);
+        let stdout = self.stdout()?;
+        Ok(String::from(&stdout).trim().to_string())
+    }
+
+    // Captures the stdout of the command.
+    fn stdout(&mut self) -> Result<String> {
+        let output = self
+            .rep
+            .output()
+            .with_context(|| format!("could not execute command: {}", self.name))?;
+        let result = String::from_utf8(output.stdout)
+            .with_context(|| format!("could not convert output to UTF8"))?;
+        Ok(result.trim().to_string())
+    }
 }
 
-fn run(cmd: &mut Command, args: &[&str]) -> Result<String> {
-    Ok(String::from(&stdout(cmd.args(args))?).trim().to_string())
+/// A command representing an `icu-config` run.  Use `ICUConfig::new()` to create.
+struct ICUConfig {
+    rep: Command,
 }
 
-fn icu_config_prefix() -> Result<String> {
-    run(&mut icu_config_cmd(), &["--prefix"])
-        .with_context(|| format!("could not get config prefix"))
-}
+impl ICUConfig {
+    /// Creates a new ICUConfig.
+    fn new() -> Self {
+        ICUConfig {
+            rep: Command::new("icu-config"),
+        }
+    }
+    /// Runs `icu-config --prefix`.
+    fn prefix(&mut self) -> Result<String> {
+        self.rep
+            .run(&["--prefix"])
+            .with_context(|| format!("could not get config prefix"))
+    }
 
-fn lib_dir() -> Result<String> {
-    run(&mut icu_config_cmd(), &["--libdir"])
-        .with_context(|| format!("could not get library directory"))
-}
+    /// Runs `icu-config --libdir`.
+    fn libdir(&mut self) -> Result<String> {
+        self.rep
+            .run(&["--libdir"])
+            .with_context(|| format!("could not get library directory"))
+    }
+    /// Runs `icu-config --ldflags`.
+    fn ldflags(&mut self) -> Result<String> {
+        // Replacements needed because of https://github.com/rust-lang/cargo/issues/7217
+        let result = self
+            .rep
+            .run(&["--ldflags"])
+            .with_context(|| format!("could not get the ld flags"))?;
+        Ok(result.replace("-L", "-L ").replace("-l", "-l "))
+    }
 
-fn ld_flags() -> Result<String> {
-    // Replacements needed because of https://github.com/rust-lang/cargo/issues/7217
-    let result = run(&mut icu_config_cmd(), &["--ldflags"])
-        .with_context(|| format!("could not get the ld flags"))?;
-    Ok(result.replace("-L", "-L ").replace("-l", "-l "))
-}
+    /// Runs `icu-config --cppflags`.
+    fn cppflags(&mut self) -> Result<String> {
+        self.rep
+            .run(&["--cppflags"])
+            .with_context(|| format!("while getting the cpp flags"))
+    }
 
-/// Returns the C preprocessor flags used to build ICU
-fn icu_cpp_flags() -> Result<String> {
-    run(&mut icu_config_cmd(), &["--cppflags"])
-        .with_context(|| format!("while getting the cpp flags"))
+    /// Runs `icu-config --version`.  Returns a string like `64.2`.
+    fn version(&mut self) -> Result<String> {
+        self.rep
+            .run(&["--version"])
+            .with_context(|| format!("while getting ICU version; is icu-config in $PATH?"))
+    }
+
+    fn install_dir(&mut self) -> Result<String> {
+        self.prefix()
+    }
+
+    /// Returns the config major number.  For example, will return "64" for
+    /// version "64.2"
+    fn version_major() -> Result<String> {
+        let version = ICUConfig::new().version()?;
+        let components = version.split(".");
+        let last = components
+            .take(1)
+            .last()
+            .with_context(|| format!("could not parse version number: {}", version))?;
+        Ok(last.to_string())
+    }
 }
 
 /// Returns true if the ICU library was compiled with renaming enabled.
 fn has_renaming() -> Result<bool> {
-    let cpp_flags = icu_cpp_flags()?;
+    let cpp_flags = ICUConfig::new().cppflags()?;
     let found = cpp_flags.find("-DU_DISABLE_RENAMING=1");
     println!("flags: {}", cpp_flags);
     Ok(found.is_none())
-}
-
-fn icu_config_version() -> Result<String> {
-    run(&mut icu_config_cmd(), &["--version"])
-        .with_context(|| format!("while getting ICU version; is icu-config in $PATH?"))
-}
-
-fn install_dir() -> Result<String> {
-    run(&mut icu_config_cmd(), &["--prefix"])
-        .with_context(|| format!("while getting directory prefix"))
 }
 
 fn rustfmt_cmd() -> Command {
@@ -93,7 +140,8 @@ fn rustfmt_cmd() -> Command {
 }
 
 fn rustfmt_version() -> Result<String> {
-    run(&mut rustfmt_cmd(), &["--version"])
+    rustfmt_cmd()
+        .run(&["--version"])
         .with_context(|| format!("while getting rustfmt version; is rustfmt in $PATH?"))
 }
 
@@ -102,20 +150,9 @@ fn bindgen_cmd() -> Command {
 }
 
 fn bindgen_version() -> Result<String> {
-    run(&mut bindgen_cmd(), &["--version"])
+    bindgen_cmd()
+        .run(&["--version"])
         .with_context(|| format!("while getting bindgen version; is bindgen in $PATH?"))
-}
-
-// Returns the config major number.  For example, will return "64" for
-// version "64.2"
-fn icu_config_major_number() -> Result<String> {
-    let version = icu_config_version()?;
-    let components = version.split(".");
-    let last = components
-        .take(1)
-        .last()
-        .with_context(|| format!("could not parse version number: {}", version))?;
-    Ok(last.to_string())
 }
 
 /// Generates an additional include file which contains the linker directives.
@@ -203,8 +240,8 @@ fn run_bindgen(header_file: &str, out_dir_path: &Path) -> Result<()> {
 
     let output_file_path = out_dir_path.join("lib.rs");
     let output_file = output_file_path.to_str().unwrap();
-    let ld_flags = ld_flags()?;
-    let cpp_flags = icu_cpp_flags()?;
+    let ld_flags = ICUConfig::new().ldflags()?;
+    let cpp_flags = ICUConfig::new().cppflags()?;
     let mut file_args = vec![
         "-o",
         &output_file,
@@ -218,7 +255,7 @@ fn run_bindgen(header_file: &str, out_dir_path: &Path) -> Result<()> {
     }
     let all_args = [&bindgen_generate_args[..], &file_args[..]].concat();
     println!("bindgen-cmdline: {:?}", all_args);
-    Command::new("bindgen")
+    process::Command::new("bindgen")
         .args(&all_args)
         .spawn()
         .with_context(|| format!("while running bindgen"))?;
@@ -235,7 +272,7 @@ fn run_renamegen(out_dir_path: &Path) -> Result<()> {
         println!("renaming: true");
         // The library names have been renamed, need to generate a macro that
         // converts the call of `foo()` into `foo_64()`.
-        let icu_major_version = icu_config_major_number()?;
+        let icu_major_version = ICUConfig::version_major()?;
         let to_write = format!(
             r#"
 // Macros for changing function names.
@@ -297,8 +334,8 @@ macro_rules! versioned_function {{
 fn main() -> Result<()> {
     std::env::set_var("RUST_BACKTRACE", "full");
     println!("rustfmt: {}", rustfmt_version()?);
-    println!("icu-config: {}", icu_config_version()?);
-    println!("icu-config-cpp-flags: {}", icu_cpp_flags()?);
+    println!("icu-config: {}", ICUConfig::new().version()?);
+    println!("icu-config-cpp-flags: {}", ICUConfig::new().cppflags()?);
     println!("icu-config-has-renaming: {}", has_renaming()?);
     println!("bindgen: {}", bindgen_version()?);
 
@@ -307,15 +344,13 @@ fn main() -> Result<()> {
     let out_dir_path = Path::new(&out_dir);
 
     // The path where all unicode headers can be found.
-    let include_dir_path = Path::new(&icu_config_prefix()?)
+    let include_dir_path = Path::new(&ICUConfig::new().prefix()?)
         .join("include")
         .join("unicode");
 
-    generate_linker_file(
-        out_dir_path,
-        &lib_dir()?,
-        &vec!["icui18n", "icuuc", "icudata"],
-    );
+    let lib_dir = ICUConfig::new().libdir()?;
+
+    generate_linker_file(out_dir_path, &lib_dir, &vec!["icui18n", "icuuc", "icudata"]);
     // The modules for which bindings will be generated.  Add more if you need
     // them.  The list should be topologicaly sorted based on the inclusion
     // relationship between the respective headers.
@@ -328,9 +363,9 @@ fn main() -> Result<()> {
     run_bindgen(&header_file, out_dir_path).with_context(|| format!("while running bindgen"))?;
     run_renamegen(out_dir_path).with_context(|| format!("while running renamegen"))?;
 
-    println!("cargo:install-dir={}", install_dir()?);
-    println!("cargo:rustc-link-search=native={}", lib_dir()?);
-    println!("cargo:rustc-flags={}", ld_flags()?);
+    println!("cargo:install-dir={}", ICUConfig::new().install_dir()?);
+    println!("cargo:rustc-link-search=native={}", lib_dir);
+    println!("cargo:rustc-flags={}", ICUConfig::new().ldflags()?);
     println!("done:true");
     Ok(())
 }
