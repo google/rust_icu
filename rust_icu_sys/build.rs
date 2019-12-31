@@ -332,6 +332,9 @@ macro_rules! versioned_function {{
 }
 
 fn main() -> Result<()> {
+    if let None = env::var_os("CARGO_FEATURE_ICU_CONFIG") {
+        return Ok(());
+    }
     std::env::set_var("RUST_BACKTRACE", "full");
     println!("rustfmt: {}", rustfmt_version()?);
     println!("icu-config: {}", ICUConfig::new().version()?);

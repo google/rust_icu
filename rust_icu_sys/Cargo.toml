@@ -1,6 +1,6 @@
 [package]
 name = "rust_icu_sys"
-version = "0.0.0"
+version = "0.0.1"
 authors = ["Google Inc."]
 license = "Apache-2.0"
 readme = "README.md"
@@ -29,7 +29,7 @@ anyhow = "1.0"
 doctest = false
 
 [features]
-default = ["bindgen", "renaming"]
+default = ["bindgen", "renaming", "icu_config"]
 
 # If set, cargo will run 'bindgen' to generate bindings based on the installed
 # ICU library.  The program `icu-config` must be in $PATH for this to work, and
@@ -41,4 +41,9 @@ bindgen = []
 # specific ICU version is required.  See
 # http://userguide.icu-project.org/design for a discussion of renaming.
 renaming = []
+
+# If set, the binary icu-config will be used to configure the library.  Turn
+# this feature off if you do not want `build.rs` to try to autodetect the build
+# environment.
+icu_config = []
 
