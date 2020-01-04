@@ -85,7 +85,7 @@ env LD_LIBRARY_PATH=$(icu-config --libdir) \
 There is plenty of prior art that has been considered:
 
 * https://github.com/servo/rust-icu
-* https://github.com/open-i18n/unic
+* https://github.com/open-i18n/rust-unic
 * https://github.com/fullcontact/icu-sys
 * https://github.com/rust-locale
 * https://github.com/unicode-rs
