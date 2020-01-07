@@ -10,6 +10,9 @@ else
   TTY :=
 endif
 
+# The buildenv version that will be used to build and test.
+USED_BUILDENV_VERSION := 0.0.1
+
 .PHONY: test
 test:
 	env LD_LIBRARY_PATH="$(shell icu-config --libdir)" cargo test
@@ -19,7 +22,7 @@ test:
 docker-test:
 	docker run ${TTY} \
 			--volume=${TOP_DIR}:/src/rust_icu \
-			rust_icu_test
+			${DOCKER_REPO}/rust_icu_testenv:${USED_BUILDENV_VERSION}
 
 # Builds and pushes the build environment containers.  You would not normally
 # need to do this.
