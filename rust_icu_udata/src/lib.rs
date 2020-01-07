@@ -59,4 +59,3 @@ impl TryFrom<Vec<u8>> for crate::UDataMemory {
         Ok(UDataMemory { buf })
     }
 }
-

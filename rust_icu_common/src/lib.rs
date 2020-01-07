@@ -16,7 +16,11 @@
 //!
 //! At the moment, this crate contains the declaration of various errors
 
-use {rust_icu_sys as sys, std::ffi, std::os, thiserror::Error};
+use {
+    rust_icu_sys as sys,
+    std::{borrow::Cow, ffi, os},
+    thiserror::Error,
+};
 
 /// Represents a Unicode error, resulting from operations of low-level ICU libraries.
 ///
@@ -36,7 +40,7 @@ pub enum Error {
     /// Errors originating from the wrapper code.  For example when pre-converting input into
     /// UTF8 for input that happens to be malformed.
     #[error("wrapper error: {}", _0)]
-    Wrapper(&'static str),
+    Wrapper(Cow<'static, str>),
 }
 
 impl Error {
@@ -80,7 +84,7 @@ impl Error {
     /// An error occurring when a string with interior NUL byte is converted to C string.
     // TODO(fmil): rework common::Error to be more rustful.
     pub fn string_with_interior_nul() -> Self {
-        Error::Wrapper("attempted to convert a string with interior NUL byte")
+        Error::wrapper("attempted to convert a string with interior NUL byte")
     }
 
     /// Returns true if this error has the supplied `code`.
@@ -122,6 +126,10 @@ impl Error {
             Error::Sys(c) => *c < sys::UErrorCode::U_ZERO_ERROR,
             _ => false,
         }
+    }
+
+    pub fn wrapper(msg: impl Into<Cow<'static, str>>) -> Self {
+        Self::Wrapper(msg.into())
     }
 }
 

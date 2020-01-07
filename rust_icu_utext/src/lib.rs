@@ -66,7 +66,7 @@ impl TryFrom<&str> for Text {
 impl Text {
     /// Constructs the Text from raw byte contents.
     ///
-    /// The expectation is that the buffer and length are valid and compatible.  That is, 
+    /// The expectation is that the buffer and length are valid and compatible.  That is,
     /// that buffer is a valid pointer, that it points to an allocated buffer and that the length
     /// of the allocated buffer is exactly `len`.
     unsafe fn from_raw_bytes(buffer: *const raw::c_char, len: i64) -> Result<Self, common::Error> {

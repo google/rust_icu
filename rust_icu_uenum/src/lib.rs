@@ -34,6 +34,13 @@ pub struct Enumeration {
     rep: *mut sys::UEnumeration,
 }
 
+impl Enumeration {
+    /// Internal representation, for ICU4C methods that require it.
+    pub fn repr(&mut self) -> *mut sys::UEnumeration {
+        self.rep
+    }
+}
+
 /// Creates an enumeration iterator from a vector of UTF-8 strings.
 impl TryFrom<&[&str]> for Enumeration {
     type Error = common::Error;
