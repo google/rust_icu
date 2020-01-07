@@ -1,0 +1,20 @@
+# rust_icu_buildenv.
+FROM rust:1.40 AS buildenv
+
+RUN mkdir -p /src
+
+WORKDIR /src
+RUN ls -l && pwd && echo $PATH
+
+RUN apt-get update && apt-get install -y \
+		apt-utils \
+		clang \
+		curl \
+		git \
+		libclang-dev \
+		llvm-dev \
+		""
+
+RUN cargo version && cargo install bindgen rustfmt
+RUN rustup toolchain install nightly && rustup default nightly
+

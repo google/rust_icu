@@ -1,0 +1,25 @@
+ARG DOCKER_REPO=filipfilmar
+ARG VERSION=0.0.0
+FROM $DOCKER_REPO/rust_icu_buildenv:$VERSION AS buildenv
+
+# Install ICU from source.
+ENV ICU_SOURCE_DIR="/src/icu"
+RUN git clone https://github.com/unicode-org/icu.git && \
+		cd $ICU_SOURCE_DIR && \
+		git fetch origin maint/maint-64 && \
+		git checkout maint/maint-64
+
+ENV ICU4C_BUILD_DIR=/build/icu4c-build
+RUN mkdir -p $ICU4C_BUILD_DIR && ls -l && \
+		pwd && \
+		cd $ICU_BUILD_DIR && \
+		env CXXFLAGS="-ggdb -DU_DEBUG=1" \
+		    $ICU_SOURCE_DIR/icu4c/source/runConfigureICU Linux \
+			  --enable-static \
+			  --prefix=/usr/local \
+			  --enable-debug && \
+		make -j && \
+		make install && \
+		icu-config --version
+
+ENTRYPOINT echo "ICU version in this container: $(icu-config --version)"

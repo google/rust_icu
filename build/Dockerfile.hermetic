@@ -1,0 +1,28 @@
+# Dockerfile for building and running ICU tests.
+#
+# Intended directory layout:
+#
+# /usr/local    - installed libraries
+# /src/icu      - ICU library checkout
+# /src/rust_icu - rust_icu library checkout, source
+#
+# Build with:
+#   docker build test .
+# Run with:
+#   docker run test
+ARG DOCKER_REPO=filipfilmar
+ARG VERSION=0.0.1
+FROM $DOCKER_REPO/rust_icu_maint-64:$VERSION AS buildenv
+
+ENV RUST_ICU_SOURCE_DIR=/src/rust_icu
+ENV RUST_ICU_BUILD_DIR=/build/rust_icu
+RUN mkdir -p $RUST_ICU_BUILD_DIR && \
+		git clone "https://github.com/google/rust_icu.git" && \
+		cd $RUST_ICU_SOURCE_DIR && \
+		ln -s $RUST_ICU_BUILD_DIR target
+
+ENTRYPOINT ( \
+		cd $RUST_ICU_SOURCE_DIR; \
+		env LD_LIBRARY_PATH=/usr/local/lib cargo test; \
+		)
+

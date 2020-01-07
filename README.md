@@ -6,7 +6,7 @@ International Components for Unicode (ICU) library for C (a.k.a. ICU4C).
 See: http://icu-project.org for details about the ICU library.  The library
 source can be viewed on Github at https://github.com/unicode-org/icu.
 
-NOTE: This is not an officially supported Google product.
+> This is not an officially supported Google product.
 
 ## Why wrap ICU (vs. doing anything else)?
 
@@ -75,18 +75,18 @@ headers of columns 2 and onwards are features set combos.  The coverage
 reflects the feature set and version points that we needed up to this point.
 The version semver in each cell denotes the version point that was tested.
 
-| ICU version | `default` | `renaming` | `renaming`, `icu_version_in_env`| 
-| ----------- | ------------------- | ---------------------- | ----- | 
+| ICU version | `default` | `renaming` | `renaming`, `icu_version_in_env`|
+| ----------- | ------------------- | ---------------------- | ----- |
 | 63.x        | ???                   | ???                      | ??? |
 | 64.2        | 0.0.{3,4}             | ???                      | ??? |
 | 65.1        | 0.0.4                 | 0.0.4                    | 0.0.4 |
 | 66.0.1      | 0.0.4                 | ???                      | ??? |
 
-NOTE: API versions that differ in the minor version number only should be
-compatible; but since it is time consuming to test all versions and relatively
-easy to keep only the last major edition of the library around, we keep only
-one minor version per library in the table, until need arises to do something
-else.
+> API versions that differ in the minor version number only should be
+> compatible; but since it is time consuming to test all versions and
+> relatively easy to keep only the last major edition of the library around, we
+> keep only one minor version per library in the table, until need arises to do
+> something else.
 
 # Features
 
@@ -127,7 +127,8 @@ confusing compilation end result.
 
 * `rustup`
 
-  Install from https://rustup.rs.  Used to set toolchain defaults.
+  Install from https://rustup.rs.  Used to set toolchain defaults.  This will
+  install `cargo` as well.
 
 * `rust` nightly toolchain
 
@@ -163,6 +164,18 @@ confusing compilation end result.
 
 ## Optional
 
+* GNU Make, if you want to use the make-based build and test.
+
+   Installing GNU Make is beyond the scope of this file. Please refer to your
+   OS instructions for installation.
+
+* `docker`, if you decide to use docker-based build and test.
+
+   Installing `docker` is beyond the scope of this file, please see the [docker
+   installation instructions](https://docs.docker.com/install/) for details.
+   As installing `docker` is intrusive to the host machine, your company may
+   have internal documentation on how to install `docker` properly.
+
 * `icu-config` utility, if `icu_config` feature is used.
 
   You need to install the ICU library on your system, such that the binary
@@ -182,6 +195,12 @@ confusing compilation end result.
 
 # Testing
 
+There are a few options to run the test for `rust_icu`.
+
+## Cargo
+
+Building and testing using `cargo` is the 
+
 The following tests should all build and pass.  Note that because the libraries
 needed are in a custom location, we need to set `LD_LIBRARY_PATH` when running
 the tests.
@@ -190,7 +209,31 @@ the tests.
 env LD_LIBRARY_PATH="$(icu-config --libdir)" cargo test
 ```
 
-NOTE: This will get better. See: https://github.com/google/rust_icu/issues/9
+## GNU Make
+
+The easiest way is to use GNU Make and run:
+
+```
+make test
+```
+
+You may want to use this method if you are working on `rust_icu`, have your
+development environment all set up and would like a shorthand to run the tests.
+
+## Docker-based
+
+> See [optional dependencies section](#optional) above.
+
+To run a hermetic build and test of the `rust_icu` source code, issue the
+following command:
+
+```bash
+make docker-test
+```
+
+This will run docker-based build and test of the source code on your local
+machine.  This is a good way to test that your code works with a specific
+reference version of ICU.
 
 # Prior art
 
@@ -311,7 +354,7 @@ that is listed in your `$PATH` you should be all set to compile `rust_icu`.
 
 If you change the configuration of the ICU library with an intention to rebuild
 the library from source you should probably add an intervening `make clean`
-command. 
+command.
 
 Since the ICU build is not hermetic, this ensures there are no remnants of the
 old compilation process sitting around in the build directory.  You need to do
