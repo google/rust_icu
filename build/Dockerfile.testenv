@@ -18,6 +18,7 @@ RUN ls -lR /src /build $HOME && ls -ld /
 
 ENTRYPOINT ( \
 		cd $RUST_ICU_SOURCE_DIR; \
+		cargo install bindgen rustfmt; \
 		env LD_LIBRARY_PATH=/usr/local/lib cargo test; \
 		)
 
