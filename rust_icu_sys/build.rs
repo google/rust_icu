@@ -282,7 +282,7 @@ extern crate paste;
 // This library was build with version renaming, so rewrite every function name
 // with its name with version number appended.
 
-// The macro below will rename a symbol `foo::bar` to `foo::bar_64` (where "64")
+// The macro below will rename a symbol `foo::bar` to `foo::bar_{0}` (where "{0}")
 // may be some other number depending on the ICU library in use.
 #[cfg(feature="renaming")]
 #[macro_export]
@@ -331,11 +331,25 @@ macro_rules! versioned_function {{
     }
 }
 
-fn main() -> Result<()> {
-    if let None = env::var_os("CARGO_FEATURE_ICU_CONFIG") {
-        return Ok(());
+/// Copies the featuers set in `Cargo.toml` into the build script.  Not sure
+/// why, but the features seem *ignored* when `build.rs` is used.
+fn copy_features() -> Result<()> {
+    if let Some(_) = env::var_os("CARGO_FEATURE_RENAMING") {
+        println!("cargo:rustc-cfg=features=\"renaming\"");
     }
-    std::env::set_var("RUST_BACKTRACE", "full");
+    if let Some(_) = env::var_os("CARGO_FEATURE_BINDGEN") {
+        println!("cargo:rustc-cfg=features=\"bindgen\"");
+    }
+    if let Some(_) = env::var_os("CARGO_FEATURE_ICU_CONFIG") {
+        println!("cargo:rustc-cfg=features=\"icu_config\"");
+    }
+    if let Some(_) = env::var_os("CARGO_FEATURE_ICU_VERSION_IN_ENV") {
+        println!("cargo:rustc-cfg=features=\"icu_version_in_env\"");
+    }
+    Ok(())
+}
+
+fn icu_config_autodetect() -> Result<()> {
     println!("rustfmt: {}", rustfmt_version()?);
     println!("icu-config: {}", ICUConfig::new().version()?);
     println!("icu-config-cpp-flags: {}", ICUConfig::new().cppflags()?);
@@ -369,6 +383,17 @@ fn main() -> Result<()> {
     println!("cargo:install-dir={}", ICUConfig::new().install_dir()?);
     println!("cargo:rustc-link-search=native={}", lib_dir);
     println!("cargo:rustc-flags={}", ICUConfig::new().ldflags()?);
+
+    Ok(())
+}
+
+fn main() -> Result<()> {
+    std::env::set_var("RUST_BACKTRACE", "full");
+    copy_features()?;
+    if let None = env::var_os("CARGO_FEATURE_ICU_CONFIG") {
+        return Ok(());
+    }
+    icu_config_autodetect()?;
     println!("done:true");
     Ok(())
 }

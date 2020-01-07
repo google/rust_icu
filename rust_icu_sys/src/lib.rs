@@ -24,16 +24,20 @@
 
 #[cfg(features="bindgen")]
 include!(concat!(env!("OUT_DIR"), "/macros.rs"));
-#[cfg(features="bindgen")]
+#[cfg(all(features="bindgen",features="icu_config",not(features="icu_version_in_env")))]
 include!(concat!(env!("OUT_DIR"), "/lib.rs"));
 // Linker trickery to ensure that we link against correct libraries.
-#[cfg(features="bindgen")]
+#[cfg(all(features="bindgen",features="icu_config",not(features="icu_version_in_env")))]
 include!(concat!(env!("OUT_DIR"), "/link.rs"));
 
 #[cfg(not(features="bindgen"))]
-include!(concat!("../bindgen", "/macros.rs"));
-#[cfg(not(features="bindgen"))]
-include!(concat!("../bindgen", "/lib.rs"));
+include!("../bindgen/macros.rs");
+
+#[cfg(all(not(features="bindgen"),not(features="icu_version_in_env"),not(features="icu_config")))]
+include!("../bindgen/lib.rs");
+
+#[cfg(all(not(features="bindgen"),features="icu_version_in_env",not(features="icu_config")))]
+include!(concat!("../bindgen/lib_", env!("RUST_ICU_MAJOR_VERSION_NUMBER"), ".rs"));
 
 // Add the ability to print the error code, so that it can be reported in
 // aggregated errors.
@@ -45,7 +49,9 @@ impl std::fmt::Display for UErrorCode {
 
 extern crate libc;
 
-// A "fake" extern used to express link preferences.
+// A "fake" extern used to express link preferences.  The libraries mentioned
+// below will be converted to "-l" flags to the linker.
 #[link(name = "icui18n", kind = "dylib")]
 #[link(name = "icuuc", kind = "dylib")]
 extern "C" {}
+
