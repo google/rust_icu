@@ -1,7 +1,7 @@
 # Uses version tag of the form buildenv-0.0.0.
 #
 RAW_VERSION := $(shell git describe --dirty --tags --match="buildenv-*")
-VERSION = $(RAW_VERSION:buildenv-%=%)
+VERSION ?= $(RAW_VERSION:buildenv-%=%)
 
 # The docker repo should be a more official one.
 DOCKER_REPO ?= filipfilmar
@@ -19,3 +19,4 @@ push-%: tag-%
 	docker push ${DOCKER_REPO}/rust_icu_$*:${VERSION}
 
 all: push-buildenv push-maint-64 push-hermetic push-testenv
+	echo "buildenv-version: ${VERSION}"

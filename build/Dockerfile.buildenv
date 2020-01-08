@@ -9,12 +9,20 @@ RUN ls -l && pwd && echo $PATH
 RUN apt-get update && apt-get install -y \
 		apt-utils \
 		clang \
+		coreutils \
 		curl \
+		exuberant-ctags \
+		gawk \
 		git \
 		libclang-dev \
 		llvm-dev \
 		""
 
-RUN cargo version && cargo install bindgen rustfmt
-RUN rustup toolchain install nightly && rustup default nightly
+RUN cargo version && \
+		cargo install bindgen rustfmt && \
+		rustup toolchain install nightly && \
+		rustup default nightly
+RUN chmod --recursive a+rwx $HOME
+RUN echo $HOME && cd && ls -ld $HOME
+
 
