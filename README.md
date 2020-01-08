@@ -1,4 +1,10 @@
-# rust-icu: low-level rust language bindings for the ICU library
+# rust_icu: low-level rust language bindings for the ICU library
+
+| Item | Description |
+| ---- | ----------- |
+| CI: ICU 64.2 | [![Build Status `master`](https://travis-ci.org/google/rust_icu.svg?branch=master)](https://travis-ci.org/google/rust_icu) |
+| Source | https://github.com/google/rust_icu |
+| README | https://github.com/google/rust_icu/blob/master/README.md |
 
 This is a library of low level native rust language bindings for the
 International Components for Unicode (ICU) library for C (a.k.a. ICU4C).
@@ -6,7 +12,10 @@ International Components for Unicode (ICU) library for C (a.k.a. ICU4C).
 See: http://icu-project.org for details about the ICU library.  The library
 source can be viewed on Github at https://github.com/unicode-org/icu.
 
+The latest version of this file is available at https://github.com/google/rust_icu.
+
 > This is not an officially supported Google product.
+
 
 ## Why wrap ICU (vs. doing anything else)?
 
@@ -29,6 +38,18 @@ corresponds to the respective header in the ICU4C library's C API.  For
 example, `rust_icu_uenum` implements the functionality that one would find in
 the [uenum.h](http://www.icu-project.org/apiref/icu4c/uenum_8h.html) header
 file.
+
+| Crate | Description |
+| ----- | ----------- |
+| [rust_icu_sys](https://crates.io/crates/rust_icu_sys)| Low-level bindings code |
+| [rust_icu_common](https://crates.io/crates/rust_icu_common)| Commonly used low-level wrappings of the bindings. |
+| [rust_icu_ucal](https://crates.io/crates/rust_icu_ucal)| Implements `ucal.h` C API header from the ICU library. |
+| [rust_icu_udat](https://crates.io/crates/rust_icu_udat)| Implements `udat.h` C API header from the ICU library. |
+| [rust_icu_udata](https://crates.io/crates/rust_icu_udata)| Implements `udata.h` C API header from the ICU library. |
+| [rust_icu_uenum](https://crates.io/crates/rust_icu_uenum)| Implements `uenum.h` C API header from the ICU library. Mainly `UEnumeration` and friends. |
+| [rust_icu_uloc](https://crates.io/crates/rust_icu_uloc)| Implements `uloc.h` C API header from the ICU library. |
+| [rust_icu_ustring](https://crates.io/crates/rust_icu_ustring)| Implements `ustring.h` C API header from the ICU library. |
+| [rust_icu_utext](https://crates.io/crates/rust_icu_utext)| Implements `utext.h` C API header from the ICU library. |
 
 At the moment, all implementations are very partial.  There is currently no
 registry of the API coverage, which makes things a bit difficult to follow.
