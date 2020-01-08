@@ -6,9 +6,15 @@ FROM $DOCKER_REPO/rust_icu_maint-64:$VERSION AS buildenv
 
 # Mount the rust_icu source top level directory here.
 ENV RUST_ICU_SOURCE_DIR=/src/rust_icu
+VOLUME $RUST_ICU_SOURCE_DIR $CARGO_BUILD_DIR
 
-RUN mkdir -p $RUST_ICU_SOURCE_DIR
-VOLUME [ $RUST_ICU_SOURCE_DIR ]
+RUN umask
+RUN mkdir -p $RUST_ICU_SOURCE_DIR && \
+		chmod --recursive a+rwx \
+		  /build \
+		  /usr/local/cargo
+
+RUN ls -lR /src /build $HOME && ls -ld /
 
 ENTRYPOINT ( \
 		cd $RUST_ICU_SOURCE_DIR; \

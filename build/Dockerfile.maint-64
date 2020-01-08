@@ -10,8 +10,7 @@ RUN git clone https://github.com/unicode-org/icu.git && \
 		git checkout maint/maint-64
 
 ENV ICU4C_BUILD_DIR=/build/icu4c-build
-RUN mkdir -p $ICU4C_BUILD_DIR && ls -l && \
-		pwd && \
+RUN mkdir -p $ICU4C_BUILD_DIR && \
 		cd $ICU_BUILD_DIR && \
 		env CXXFLAGS="-ggdb -DU_DEBUG=1" \
 		    $ICU_SOURCE_DIR/icu4c/source/runConfigureICU Linux \
@@ -21,5 +20,8 @@ RUN mkdir -p $ICU4C_BUILD_DIR && ls -l && \
 		make -j && \
 		make install && \
 		icu-config --version
+
+ENV CARGO_BUILD_DIR=/build/cargo
+RUN mkdir -p $CARGO_BUILD_DIR
 
 ENTRYPOINT echo "ICU version in this container: $(icu-config --version)"
