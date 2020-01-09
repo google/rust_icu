@@ -2,7 +2,8 @@
 # on source that has been mounted in.
 ARG DOCKER_REPO=filipfilmar
 ARG VERSION=0.0.0
-FROM $DOCKER_REPO/rust_icu_maint-64:$VERSION AS buildenv
+ARG ICU_VERSION_TAG=maint-64
+FROM $DOCKER_REPO/rust_icu_$ICU_VERSION_TAG:$VERSION AS buildenv
 
 # Mount the rust_icu source top level directory here.
 ENV RUST_ICU_SOURCE_DIR=/src/rust_icu
@@ -14,11 +15,10 @@ RUN mkdir -p $RUST_ICU_SOURCE_DIR && \
 		  /build \
 		  /usr/local/cargo
 
-RUN ls -lR /src /build $HOME && ls -ld /
+COPY entrypoint.sh /entrypoint.sh 
+RUN chmod a+rwx /entrypoint.sh
 
-ENTRYPOINT ( \
-		cd $RUST_ICU_SOURCE_DIR; \
-		cargo install bindgen rustfmt; \
-		env LD_LIBRARY_PATH=/usr/local/lib cargo test; \
-		)
+
+ENV CARGO_TEST_ARGS=""
+ENTRYPOINT /entrypoint.sh
 

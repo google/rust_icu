@@ -1,13 +1,14 @@
 ARG DOCKER_REPO=filipfilmar
 ARG VERSION=0.0.0
+ARG ICU_VERSION_TAG=maint/maint-64
 FROM $DOCKER_REPO/rust_icu_buildenv:$VERSION AS buildenv
 
 # Install ICU from source.
 ENV ICU_SOURCE_DIR="/src/icu"
 RUN git clone https://github.com/unicode-org/icu.git && \
 		cd $ICU_SOURCE_DIR && \
-		git fetch origin maint/maint-64 && \
-		git checkout maint/maint-64
+		git fetch origin $ICU_VERSION_TAG && \
+		git checkout $ICU_VERSION_TAG
 
 ENV ICU4C_BUILD_DIR=/build/icu4c-build
 RUN mkdir -p $ICU4C_BUILD_DIR && \

@@ -10,8 +10,12 @@ else
   TTY :=
 endif
 
-# The buildenv version that will be used to build and test.
-USED_BUILDENV_VERSION := 0.0.3
+# The buildenv version that will be used to build and test.  This allows us to
+# update the buildenv code but not use it immediately.  You can modify the 
+# buildenv version by passing its value through env variables like so:
+# 
+#   make USED_BUILDENV_VERSION=whatever-you-want docker-test
+USED_BUILDENV_VERSION ?= 0.0.4
 
 test:
 	env LD_LIBRARY_PATH="$(shell icu-config --libdir)" cargo test
@@ -21,6 +25,14 @@ test:
 # so that as much as possible of the host configuration is retained.
 TMP ?= /tmp
 CARGO_TARGET_DIR := ${TMP}/rust_icu-${USER}-target
+
+# The docker testing target.  Used to run tests in a dockerized environment,
+# based off of a fresh checkout of source in the current directory.
+# Pass different values for DOCKER_TEST_ENV and DOCKER_TEST_CARGO_TEST_ARGS to
+# test different configurations.  This is useful in Travis CI matrix tests, for
+# example.
+DOCKER_TEST_ENV ?= rust_icu_testenv-64
+DOCKER_TEST_CARGO_TEST_ARGS ?= 
 docker-test:
 	mkdir -p ${CARGO_TARGET_DIR}
 	docker run ${TTY} \
@@ -28,8 +40,13 @@ docker-test:
 			--volume=${TOP_DIR}:/src/rust_icu \
 			--volume=${CARGO_TARGET_DIR}:/build/cargo \
 			--volume=${HOME}/.cargo:/usr/local/cargo \
-			${DOCKER_REPO}/rust_icu_testenv:${USED_BUILDENV_VERSION}
+			--env="CARGO_TEST_ARGS=${DOCKER_TEST_CARGO_TEST_ARGS}" \
+			${DOCKER_REPO}/${DOCKER_TEST_ENV}:${USED_BUILDENV_VERSION}
 .PHONY: docker-test
+
+docker-test-65-renaming:
+	$(call run-docker-test,rust_icu_testenv-65,--no-default-features --features=renaming)
+.PHONY: docker-test-65-renaming
 
 # Builds and pushes the build environment containers.  You would not normally
 # need to do this.
