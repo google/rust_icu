@@ -1,0 +1,8 @@
+uenum_close
+uenum_count
+uenum_next
+uenum_openCharStringsEnumeration
+uenum_openFromStringEnumeration
+uenum_openUCharStringsEnumeration
+uenum_reset
+uenum_unext
