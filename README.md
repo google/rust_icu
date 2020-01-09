@@ -23,7 +23,7 @@ The latest version of this file is available at https://github.com/google/rust_i
   [Internationalisation](https://www.arewewebyet.org/topics/i18n/) page
   confirms that ICU support in rust is spotty.
 
-* Projects, such as [Fuchsia OS](https://fuchsia.dev) already depend on ICU,
+* Projects such as [Fuchsia OS](https://fuchsia.dev) already depend on ICU,
   and having rust bindings allow for an easy way to use Unicode algorithms
   without taking on more dependencies.
 
