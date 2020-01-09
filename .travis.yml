@@ -1,9 +1,12 @@
 language: rust
-rust:
-  - nightly
-
 services:
   - docker
+rust:
+  - nightly
+env:
+  - DOCKER_TEST_ENV=rust_icu_testenv-64
+  - DOCKER_TEST_ENV=rust_icu_testenv-65
+  - DOCKER_TEST_ENV=rust_icu_testenv-66
 
 script:
   - make docker-test

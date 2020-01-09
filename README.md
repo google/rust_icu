@@ -2,7 +2,7 @@
 
 | Item | Description |
 | ---- | ----------- |
-| CI: ICU 64.2 | [![Build Status `master`](https://travis-ci.org/google/rust_icu.svg?branch=master)](https://travis-ci.org/google/rust_icu) |
+| ICU 64/65/66 | [![Build Status `master`](https://travis-ci.org/google/rust_icu.svg?branch=master)](https://travis-ci.org/google/rust_icu) |
 | Source | https://github.com/google/rust_icu |
 | README | https://github.com/google/rust_icu/blob/master/README.md |
 
