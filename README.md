@@ -5,6 +5,7 @@
 | ICU 64/65/66 | [![Build Status `master`](https://travis-ci.org/google/rust_icu.svg?branch=master)](https://travis-ci.org/google/rust_icu) |
 | Source | https://github.com/google/rust_icu |
 | README | https://github.com/google/rust_icu/blob/master/README.md |
+| Coverage | [View report](/coverage/report.md)
 
 This is a library of low level native rust language bindings for the
 International Components for Unicode (ICU) library for C (a.k.a. ICU4C).
@@ -39,6 +40,9 @@ example, `rust_icu_uenum` implements the functionality that one would find in
 the [uenum.h](http://www.icu-project.org/apiref/icu4c/uenum_8h.html) header
 file.
 
+Please consult the [coverage report](/coverage/report.md) for details about
+function coverage in the headers given above.
+
 | Crate | Description |
 | ----- | ----------- |
 | [rust_icu_sys](https://crates.io/crates/rust_icu_sys)| Low-level bindings code |
@@ -50,11 +54,6 @@ file.
 | [rust_icu_uloc](https://crates.io/crates/rust_icu_uloc)| Implements `uloc.h` C API header from the ICU library. |
 | [rust_icu_ustring](https://crates.io/crates/rust_icu_ustring)| Implements `ustring.h` C API header from the ICU library. |
 | [rust_icu_utext](https://crates.io/crates/rust_icu_utext)| Implements `utext.h` C API header from the ICU library. |
-
-At the moment, all implementations are very partial.  There is currently no
-registry of the API coverage, which makes things a bit difficult to follow.
-
-The goal is to correct this situation and have a comprehensive coverage matrix.
 
 # Limitations
 

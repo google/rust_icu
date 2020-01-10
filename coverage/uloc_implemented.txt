@@ -1,0 +1,9 @@
+uloc_addLikelySubtags
+uloc_canonicalize
+uloc_getCountry
+uloc_getDefault
+uloc_getLanguage
+uloc_getScript
+uloc_getVariant
+uloc_minimizeSubtags
+uloc_setDefault

@@ -1,0 +1,8 @@
+udata_close
+udata_getInfo
+udata_getMemory
+udata_open
+udata_openChoice
+udata_setAppData
+udata_setCommonData
+udata_setFileAccess
