@@ -23,6 +23,9 @@ rust_icu_sys = { path = "../rust_icu_sys", version = "0.0.4", default-features =
 rust_icu_uenum = { path = "../rust_icu_uenum", version = "0.0.4", default-features = false }
 rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.0.4", default-features = false }
 
+[dev-dependencies]
+regex = "1"
+
 # See the feature description in ../rust_icu_sys/Cargo.toml for details.
 [features]
 default = ["bindgen", "renaming", "icu_config"]
