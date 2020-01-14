@@ -1,8 +1,14 @@
-TOP_DIR := ${PWD}
+TOP_DIR := $(shell pwd)
 DOCKER_REPO ?= filipfilmar
 
-UID := $(shell id -u)
-GID := $(shell id -g)
+# The environment is slightly different from the "regular" environment when
+# docker is started with "sudo".  The settings below recover the original user
+# name, UID, GID and home directory.
+LOGNAME := $(shell logname)
+LOGNAME_HOME := $(shell echo ~${LOGNAME})
+UID := $(shell id -u ${LOGNAME})
+GID := $(shell id -g ${LOGNAME})
+
 INTERACTIVE:=$(shell [ -t 0 ] && echo 1)
 ifeq (${INTERACTIVE},1)
   TTY := --tty --interactive
@@ -24,7 +30,7 @@ test:
 # Run a test inside a Docker container.  The --volume mounts attach local dirs
 # so that as much as possible of the host configuration is retained.
 TMP ?= /tmp
-CARGO_TARGET_DIR := ${TMP}/rust_icu-${USER}-target
+CARGO_TARGET_DIR := ${TMP}/rust_icu-${LOGNAME}-target
 
 # The docker testing target.  Used to run tests in a dockerized environment,
 # based off of a fresh checkout of source in the current directory.
@@ -35,11 +41,13 @@ DOCKER_TEST_ENV ?= rust_icu_testenv-64
 DOCKER_TEST_CARGO_TEST_ARGS ?= 
 docker-test:
 	mkdir -p ${CARGO_TARGET_DIR}
+	echo top_dir: ${TOP_DIR}
+	echo pwd: $(shell pwd)
 	docker run ${TTY} \
 			--user=${UID}:${GID} \
 			--volume=${TOP_DIR}:/src/rust_icu \
 			--volume=${CARGO_TARGET_DIR}:/build/cargo \
-			--volume=${HOME}/.cargo:/usr/local/cargo \
+			--volume=${LOGNAME_HOME}/.cargo:/usr/local/cargo \
 			--env="CARGO_TEST_ARGS=${DOCKER_TEST_CARGO_TEST_ARGS}" \
 			${DOCKER_REPO}/${DOCKER_TEST_ENV}:${USED_BUILDENV_VERSION}
 .PHONY: docker-test
