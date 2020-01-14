@@ -6,6 +6,7 @@
 | Source | https://github.com/google/rust_icu |
 | README | https://github.com/google/rust_icu/blob/master/README.md |
 | Coverage | [View report](/coverage/report.md)
+| Docs | https://github.com/google/rust_icu/blob/master/docs/README.md |
 
 This is a library of low level native rust language bindings for the
 International Components for Unicode (ICU) library for C (a.k.a. ICU4C).
