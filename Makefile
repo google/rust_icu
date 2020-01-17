@@ -21,6 +21,8 @@ endif
 # buildenv version by passing its value through env variables like so:
 # 
 #   make USED_BUILDENV_VERSION=whatever-you-want docker-test
+#
+# NOTE: This version number is completely independent of the crate version.
 USED_BUILDENV_VERSION ?= 0.0.4
 
 test:
@@ -89,8 +91,10 @@ publish:
 	$(call publish,rust_icu_udata)
 
 # A helper to up-rev the cargo crate versions.
-UPREV_OLD_VERSION ?= 0.0.4
-UPREV_NEW_VERSION ?= 0.0.5
+# NOTE: The cargo crate version number is completely independent of the Docker
+# build environment version number.
+UPREV_OLD_VERSION ?= 0.0.5
+UPREV_NEW_VERSION ?= 0.0.6
 define uprev
 	( \
 		cd $(1) && \
