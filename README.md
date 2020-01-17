@@ -91,7 +91,7 @@ The limitations we know of today are as follows:
 The table below shows the support matrix that has been verified so far. Any
 versions not mentioned explicitly have not been tested.  Feel free to test a
 version and send a pull request to add to this matrix once you confirm the
-fucntionality.  Each row is for a particular ICU library version.  The column
+functionality.  Each row is for a particular ICU library version.  The column
 headers of columns 2 and onwards are features set combos.  The coverage
 reflects the feature set and version points that we needed up to this point.
 The version semver in each cell denotes the version point that was tested.
@@ -99,9 +99,9 @@ The version semver in each cell denotes the version point that was tested.
 | ICU version | `default` | `renaming` | `renaming`, `icu_version_in_env`|
 | ----------- | ------------------- | ---------------------- | ----- |
 | 63.x        | ???                   | ???                      | ??? |
-| 64.2        | 0.0.{3,4}             | ???                      | ??? |
-| 65.1        | 0.0.4                 | 0.0.4                    | 0.0.4 |
-| 66.0.1      | 0.0.4                 | ???                      | ??? |
+| 64.2        | 0.0.{3,4,5}             | ???                      | ??? |
+| 65.1        | 0.0.5                 | 0.0.5                    | 0.0.5 |
+| 66.0.1      | 0.0.5                 | ???                      | ??? |
 
 > API versions that differ in the minor version number only should be
 > compatible; but since it is time consuming to test all versions and
