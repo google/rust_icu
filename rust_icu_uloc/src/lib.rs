@@ -160,7 +160,7 @@ macro_rules! buffered_string_method_with_retry {
             common::Error::ok_or_warning(status)?;
 
             // Adjust the size of the buffer here.
-            if (full_len > 0) {
+            if (full_len >= 0) {
                 let full_len: usize = full_len
                     .try_into()
                     .map_err(|e| common::Error::wrapper(format!("{:?}", e)))?;
@@ -362,6 +362,13 @@ mod tests {
         let loc = ULoc::try_from("sr-Cyrl").expect("get sr_Cyrl locale");
         let script = loc.script().expect("should get script");
         assert_eq!(&script, "Cyrl");
+    }
+
+    #[test]
+    fn test_script_absent() {
+        let loc = ULoc::try_from("sr").expect("get sr locale");
+        let script = loc.script().expect("should get script");
+        assert_eq!(&script, "");
     }
 
     #[test]
