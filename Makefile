@@ -93,8 +93,8 @@ publish:
 # A helper to up-rev the cargo crate versions.
 # NOTE: The cargo crate version number is completely independent of the Docker
 # build environment version number.
-UPREV_OLD_VERSION ?= 0.0.5
-UPREV_NEW_VERSION ?= 0.0.6
+UPREV_OLD_VERSION ?= 0.0.6
+UPREV_NEW_VERSION ?= 0.0.7
 define uprev
 	( \
 		cd $(1) && \
