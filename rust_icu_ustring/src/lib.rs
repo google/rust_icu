@@ -146,7 +146,7 @@ impl TryFrom<&UChar> for String {
         common::Error::ok_or_warning(status)?;
         let s = String::from_utf8(buf);
         match s {
-            Err(_) => Err(common::Error::wrapper("could not convert to utf8")),
+            Err(e) => Err(e.into()),
             Ok(x) => {
                 trace!("result UChar*->utf8: {:?}", x);
                 Ok(x)
