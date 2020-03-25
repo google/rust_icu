@@ -9,5 +9,6 @@ members = [
   "rust_icu_uloc",
   "rust_icu_ustring",
   "rust_icu_utext",
+  "rust_icu_umsg",
 ]
 

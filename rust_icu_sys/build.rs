@@ -214,11 +214,13 @@ fn run_bindgen(header_file: &str, out_dir_path: &Path) -> Result<()> {
         "UDateFormat.*",
         "UEnumeration.*",
         "UErrorCode",
+        "UMessageFormat",
+        "UParseError",
         "UText.*",
     ]);
 
     let whitelist_functions_regexes = commaify(&vec![
-        "u_.*", "ucal_.*", "udata_*", "udat_.*", "uenum_.*", "uloc_.*", "utext_.*",
+        "u_.*", "ucal_.*", "udata_*", "udat_.*", "uenum_.*", "uloc_.*", "utext_.*", "umsg_.*",
     ]);
 
     let opaque_types_regexes = commaify(&vec![]);
@@ -376,7 +378,7 @@ fn icu_config_autodetect() -> Result<()> {
     // relationship between the respective headers.
     // Any of these will fail if the required binaries are not present in $PATH.
     let bindgen_source_modules: Vec<&str> = vec![
-        "ucal", "udat", "udata", "uenum", "ustring", "utext", "uclean",
+        "ucal", "udat", "udata", "uenum", "ustring", "utext", "uclean", "umsg",
     ];
     let header_file =
         generate_wrapper_header(&out_dir_path, &bindgen_source_modules, &include_dir_path);
