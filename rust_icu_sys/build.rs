@@ -162,10 +162,6 @@ fn generate_linker_file(out_dir_path: &Path, lib_dir: &str, lib_names: &Vec<&str
     let file_path = out_dir_path.join("link.rs");
     let mut linker_file = File::create(&file_path).unwrap();
     let mut content: Vec<String> = vec![];
-    for lib in lib_names {
-        let linkopt: String = format!(r#"#[link_args="-Wl,-rpath={}/lib{}.so"]"#, lib_dir, lib);
-        content.push(linkopt);
-    }
     content.push(String::from(r#"extern "C" {}"#));
     linker_file
         .write_all(&content.join("\n").into_bytes())
