@@ -89,6 +89,7 @@ publish:
 	$(call publish,rust_icu_ucal)
 	$(call publish,rust_icu_udat)
 	$(call publish,rust_icu_udata)
+	$(call publish,rust_icu_umsg)
 
 # A helper to up-rev the cargo crate versions.
 # NOTE: The cargo crate version number is completely independent of the Docker
