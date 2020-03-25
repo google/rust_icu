@@ -1,0 +1,35 @@
+[package]
+authors = ["Google Inc."]
+edition = "2018"
+license = "Apache-2.0"
+name = "rust_icu_intl"
+readme = "README.md"
+repository = "https://github.com/google/rust_icu"
+version = "0.1.2"
+
+description = """
+Native bindings to the ICU4C library from Unicode.
+
+umsg.h
+"""
+
+[dependencies]
+anyhow = "1.0.25"
+log = "0.4.6"
+paste = "0.1.5"
+rust_icu_common = { path = "../rust_icu_common", version = "0.1.2", default-features = false }
+rust_icu_sys = { path = "../rust_icu_sys", version = "0.1.2", default-features = false }
+rust_icu_uloc = { path = "../rust_icu_uloc", version = "0.1.2", default-features = false }
+rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.1.2", default-features = false }
+rust_icu_umsg = { path = "../rust_icu_umsg", version = "0.1.2", default-features = false }
+thiserror = "1.0.9"
+
+# See the feature description in ../rust_icu_sys/Cargo.toml for details.
+[features]
+default = ["use-bindgen", "renaming", "icu_config"]
+
+use-bindgen = ["rust_icu_sys/use-bindgen", "rust_icu_common/use-bindgen"]
+renaming = ["rust_icu_sys/renaming", "rust_icu_common/renaming"]
+icu_config = ["rust_icu_sys/icu_config", "rust_icu_common/icu_config"]
+icu_version_in_env = ["rust_icu_sys/icu_version_in_env", "rust_icu_common/icu_version_in_env"]
+
