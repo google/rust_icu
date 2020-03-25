@@ -115,6 +115,7 @@ uprev:
 	$(call uprev,rust_icu_udat)
 	$(call uprev,rust_icu_udata)
 	$(call uprev,rust_icu_umsg)
+	$(call uprev,rust_icu_intl)
 
 cov:
 	./build/showprogress.sh

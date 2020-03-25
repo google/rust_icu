@@ -46,13 +46,15 @@ function coverage in the headers given above.
 
 | Crate | Description |
 | ----- | ----------- |
-| [rust_icu_sys](https://crates.io/crates/rust_icu_sys)| Low-level bindings code |
 | [rust_icu_common](https://crates.io/crates/rust_icu_common)| Commonly used low-level wrappings of the bindings. |
+| [rust_icu_intl](https://crates.io/crates/rust_icu_intl)| Implements ECMA 402 recommendation APIs. |
+| [rust_icu_sys](https://crates.io/crates/rust_icu_sys)| Low-level bindings code |
 | [rust_icu_ucal](https://crates.io/crates/rust_icu_ucal)| Implements `ucal.h` C API header from the ICU library. |
 | [rust_icu_udat](https://crates.io/crates/rust_icu_udat)| Implements `udat.h` C API header from the ICU library. |
 | [rust_icu_udata](https://crates.io/crates/rust_icu_udata)| Implements `udata.h` C API header from the ICU library. |
 | [rust_icu_uenum](https://crates.io/crates/rust_icu_uenum)| Implements `uenum.h` C API header from the ICU library. Mainly `UEnumeration` and friends. |
 | [rust_icu_uloc](https://crates.io/crates/rust_icu_uloc)| Implements `uloc.h` C API header from the ICU library. |
+| [rust_icu_umsg](https://crates.io/crates/rust_icu_umsg)| Implements `umsg.h` C API header from the ICU library. |
 | [rust_icu_ustring](https://crates.io/crates/rust_icu_ustring)| Implements `ustring.h` C API header from the ICU library. |
 | [rust_icu_utext](https://crates.io/crates/rust_icu_utext)| Implements `utext.h` C API header from the ICU library. |
 

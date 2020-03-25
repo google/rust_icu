@@ -420,7 +420,7 @@ mod tests {
     impl Drop for TzSave {
         // Restore the system time zone upon exit.
         fn drop(&mut self) {
-            ucal::set_default_time_zone(&self.0);
+            ucal::set_default_time_zone(&self.0).expect("timezone set success");
         }
     }
 
