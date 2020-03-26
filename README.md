@@ -96,12 +96,12 @@ headers of columns 2 and onwards are features set combos.  The coverage
 reflects the feature set and version points that we needed up to this point.
 The version semver in each cell denotes the version point that was tested.
 
-| ICU version | `default` | `renaming` | `renaming`, `icu_version_in_env`|
-| ----------- | ------------------- | ---------------------- | ----- |
-| 63.x        | ???                   | ???                      | ??? |
-| 64.2        | 0.1.0                 | ???                      | ??? |
-| 65.1        | 0.1.0                 | 0.1.0                    | 0.1.0 |
-| 66.0.1      | 0.1.0                 | ???                      | ??? |
+| ICU version | `default`           | `renaming`             | `renaming`, `icu_version_in_env`|
+| ----------- | ------------------- | ---------------------- | ------------------------------- |
+| 63.x        | 0.1.1               | 0.1.1                  | 0.1.1                           |
+| 64.2        | 0.1.1               | N/A                    | ???                             |
+| 65.1        | 0.1.1               | 0.1.1                  | 0.1.1                           |
+| 66.0.1      | 0.1.1               | N/A                    | N/A                             |
 
 > API versions that differ in the minor version number only should be
 > compatible; but since it is time consuming to test all versions and
