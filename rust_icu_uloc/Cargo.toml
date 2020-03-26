@@ -28,13 +28,13 @@ anyhow = "1.0.25"
 
 # See the feature description in ../rust_icu_sys/Cargo.toml for details.
 [features]
-default = ["bindgen", "renaming", "icu_config"]
+default = ["use-bindgen", "renaming", "icu_config"]
 
-bindgen = [
-  "rust_icu_common/bindgen",
-  "rust_icu_sys/bindgen",
-  "rust_icu_uenum/bindgen",
-  "rust_icu_ustring/bindgen",
+use-bindgen = [
+  "rust_icu_common/use-bindgen",
+  "rust_icu_sys/use-bindgen",
+  "rust_icu_uenum/use-bindgen",
+  "rust_icu_ustring/use-bindgen",
 ]
 renaming = [
   "rust_icu_common/renaming",

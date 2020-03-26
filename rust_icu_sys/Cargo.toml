@@ -22,17 +22,18 @@ paste = "0.1.5"
 
 [build-dependencies]
 anyhow = "1.0"
+bindgen = "0.53.2"
 
 [lib]
 # Indented documentation text in the generated library is prose, not rust code.
-# See https://github.com/rust-lang/rust-bindgen/issues/378
+# See https://github.com/rust-lang/rust-use-bindgen/issues/378
 doctest = false
 
 # Please see https://github.com/google/rust_icu#features for the explanation
 # of these features.
 [features]
-default = ["bindgen", "renaming", "icu_config"]
-bindgen = []
+default = ["use-bindgen", "renaming", "icu_config"]
+use-bindgen = []
 renaming = []
 icu_config = []
 icu_version_in_env = []

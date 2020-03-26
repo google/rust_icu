@@ -22,9 +22,9 @@ rust_icu_common = { path = "../rust_icu_common", version = "0.1.1", default-feat
 
 # See the feature description in ../rust_icu_sys/Cargo.toml for details.
 [features]
-default = ["bindgen", "renaming", "icu_config"]
+default = ["use-bindgen", "renaming", "icu_config"]
 
-bindgen = ["rust_icu_sys/bindgen", "rust_icu_common/bindgen"]
+use-bindgen = ["rust_icu_sys/use-bindgen", "rust_icu_common/use-bindgen"]
 renaming = ["rust_icu_sys/renaming", "rust_icu_common/renaming"]
 icu_config = ["rust_icu_sys/icu_config", "rust_icu_common/icu_config"]
 icu_version_in_env = ["rust_icu_sys/icu_version_in_env", "rust_icu_common/icu_version_in_env"]
