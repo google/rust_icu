@@ -36,6 +36,8 @@ push-%: tag-%
 
 all: \
 	push-buildenv \
+	push-maint-63 \
+	push-testenv-63 \
 	push-maint-64 \
 	push-testenv-64 \
 	push-maint-65 \
