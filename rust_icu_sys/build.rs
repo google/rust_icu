@@ -21,6 +21,7 @@
 
 use {
     anyhow::{Context, Result},
+    bindgen,
     std::env,
     std::fs::File,
     std::io::Write,
@@ -145,29 +146,6 @@ fn rustfmt_version() -> Result<String> {
         .with_context(|| format!("while getting rustfmt version; is rustfmt in $PATH?"))
 }
 
-fn bindgen_cmd() -> Command {
-    Command::new("bindgen")
-}
-
-fn bindgen_version() -> Result<String> {
-    bindgen_cmd()
-        .run(&["--version"])
-        .with_context(|| format!("while getting bindgen version; is bindgen in $PATH?"))
-}
-
-/// Generates an additional include file which contains the linker directives.
-/// This is done because cargo does not allow the rustc link directives to be
-/// anything other than `-L` and `-l`.
-fn generate_linker_file(out_dir_path: &Path, lib_dir: &str, lib_names: &Vec<&str>) {
-    let file_path = out_dir_path.join("link.rs");
-    let mut linker_file = File::create(&file_path).unwrap();
-    let mut content: Vec<String> = vec![];
-    content.push(String::from(r#"extern "C" {}"#));
-    linker_file
-        .write_all(&content.join("\n").into_bytes())
-        .expect("successful write into linker file");
-}
-
 /// Generates a wrapper header that includes all headers of interest for binding.
 ///
 /// This is the recommended way to bind complex libraries at the moment.  Returns
@@ -195,69 +173,73 @@ fn generate_wrapper_header(
     String::from(wrapper_path.to_str().unwrap())
 }
 
-fn commaify(s: &Vec<&str>) -> String {
-    format!("{}", s.join("|"))
-}
-
 fn run_bindgen(header_file: &str, out_dir_path: &Path) -> Result<()> {
-    let whitelist_types_regexes = commaify(&vec![
-        "UAcceptResult",
-        "UBool",
-        "UCalendar.*",
-        "UChar.*",
-        "UData.*",
-        "UDate",
-        "UDateFormat.*",
-        "UEnumeration.*",
-        "UErrorCode",
-        "UMessageFormat",
-        "UParseError",
-        "UText.*",
-    ]);
+    let builder = bindgen::Builder::default()
+        .header(header_file)
+        .default_enum_style(bindgen::EnumVariation::Rust {
+            non_exhaustive: false,
+        })
+        // Some comments get recognized as rust doctests, which will fail compilation.
+        // Turning the comments off will remove that error.  We do get left without
+        // documentation, but one should probably use online docs anyways.
+        .generate_comments(false)
+        // These attributes are useful to have around for generated types.
+        .derive_default(true)
+        .derive_hash(true)
+        .derive_partialord(true)
+        .derive_partialeq(true)
+        // C types that will be made available to rust code.
+        // Add more to this list if you want to generate more bindings.
+        .whitelist_type("UAcceptResult")
+        .whitelist_type("UBool")
+        .whitelist_type("UCalendar.*")
+        .whitelist_type("UChar.*")
+        .whitelist_type("UData.*")
+        .whitelist_type("UDate.*")
+        .whitelist_type("UDateFormat.*")
+        .whitelist_type("UEnumeration.*")
+        .whitelist_type("UErrorCode")
+        .whitelist_type("UMessageFormat")
+        .whitelist_type("UParseError")
+        .whitelist_type("UText")
+        // C functions that will be made available to rust code.
+        // Add more to this list if you want to bring in more types.
+        .whitelist_function("u_.*")
+        .whitelist_function("ucal_.*")
+        .whitelist_function("udata_.*")
+        .whitelist_function("udat_.*")
+        .whitelist_function("uenum_.*")
+        .whitelist_function("uloc_.*")
+        .whitelist_function("utext_.*")
+        .whitelist_function("umsg_.*");
 
-    let whitelist_functions_regexes = commaify(&vec![
-        "u_.*", "ucal_.*", "udata_*", "udat_.*", "uenum_.*", "uloc_.*", "utext_.*", "umsg_.*",
-    ]);
+    // Add the correct clang settings.
+    let renaming_arg = match has_renaming().with_context(|| "could not prepare bindgen builder")? {
+        true => "",
+        // When renaming is disabled, the functions will have a suffix that
+        // represents the library version in use, for example funct_64 for ICU
+        // version 64.
+        false => "-DU_DISABLE_RENAMING=1",
+    };
+    let builder = builder.clang_arg(renaming_arg);
+    let ld_flags = ICUConfig::new()
+        .ldflags()
+        .with_context(|| "could not prepare bindgen builder")?;
+    let builder = builder.clang_arg(&ld_flags);
+    let cpp_flags = ICUConfig::new()
+        .cppflags()
+        .with_context(|| "could not prepare bindgen builder")?;
+    let builder = builder.clang_arg(cpp_flags);
 
-    let opaque_types_regexes = commaify(&vec![]);
-
-    // Common arguments for all bindgen invocations.
-    let bindgen_generate_args = vec![
-        "--default-enum-style=rust",
-        "--no-doc-comments",
-        "--with-derive-default",
-        "--with-derive-hash",
-        "--with-derive-partialord",
-        "--with-derive-partialeq",
-        "--whitelist-type",
-        &whitelist_types_regexes,
-        "--whitelist-function",
-        &whitelist_functions_regexes,
-        "--opaque-type",
-        &opaque_types_regexes,
-    ];
+    let bindings = builder
+        .generate()
+        .map_err(|_| anyhow::anyhow!("could not generate bindings"))?;
 
     let output_file_path = out_dir_path.join("lib.rs");
     let output_file = output_file_path.to_str().unwrap();
-    let ld_flags = ICUConfig::new().ldflags()?;
-    let cpp_flags = ICUConfig::new().cppflags()?;
-    let mut file_args = vec![
-        "-o",
-        &output_file,
-        &header_file,
-        "--",
-        &ld_flags,
-        &cpp_flags,
-    ];
-    if !has_renaming()? {
-        file_args.push("-DU_DISABLE_RENAMING=1");
-    }
-    let all_args = [&bindgen_generate_args[..], &file_args[..]].concat();
-    println!("bindgen-cmdline: {:?}", all_args);
-    process::Command::new("bindgen")
-        .args(&all_args)
-        .spawn()
-        .with_context(|| format!("while running bindgen"))?;
+    bindings
+        .write_to_file(output_file)
+        .with_context(|| format!("while writing output"))?;
     Ok(())
 }
 
@@ -338,8 +320,8 @@ fn copy_features() -> Result<()> {
     if let Some(_) = env::var_os("CARGO_FEATURE_RENAMING") {
         println!("cargo:rustc-cfg=features=\"renaming\"");
     }
-    if let Some(_) = env::var_os("CARGO_FEATURE_BINDGEN") {
-        println!("cargo:rustc-cfg=features=\"bindgen\"");
+    if let Some(_) = env::var_os("CARGO_FEATURE_USE_BINDGEN") {
+        println!("cargo:rustc-cfg=features=\"use-bindgen\"");
     }
     if let Some(_) = env::var_os("CARGO_FEATURE_ICU_CONFIG") {
         println!("cargo:rustc-cfg=features=\"icu_config\"");
@@ -355,7 +337,6 @@ fn icu_config_autodetect() -> Result<()> {
     println!("icu-config: {}", ICUConfig::new().version()?);
     println!("icu-config-cpp-flags: {}", ICUConfig::new().cppflags()?);
     println!("icu-config-has-renaming: {}", has_renaming()?);
-    println!("bindgen: {}", bindgen_version()?);
 
     // The path to the directory where cargo will add the output artifacts.
     let out_dir = env::var("OUT_DIR").unwrap();
@@ -366,9 +347,7 @@ fn icu_config_autodetect() -> Result<()> {
         .join("include")
         .join("unicode");
 
-    let lib_dir = ICUConfig::new().libdir()?;
 
-    generate_linker_file(out_dir_path, &lib_dir, &vec!["icui18n", "icuuc", "icudata"]);
     // The modules for which bindings will be generated.  Add more if you need
     // them.  The list should be topologicaly sorted based on the inclusion
     // relationship between the respective headers.
@@ -382,6 +361,8 @@ fn icu_config_autodetect() -> Result<()> {
     run_renamegen(out_dir_path).with_context(|| format!("while running renamegen"))?;
 
     println!("cargo:install-dir={}", ICUConfig::new().install_dir()?);
+
+    let lib_dir = ICUConfig::new().libdir()?;
     println!("cargo:rustc-link-search=native={}", lib_dir);
     println!("cargo:rustc-flags={}", ICUConfig::new().ldflags()?);
 
