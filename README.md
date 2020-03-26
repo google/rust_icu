@@ -224,10 +224,12 @@ Building and testing using `cargo` is the
 
 The following tests should all build and pass.  Note that because the libraries
 needed are in a custom location, we need to set `LD_LIBRARY_PATH` when running
-the tests.
+the tests, as well as `PKG_CONFIG_PATH`.
 
 ```bash
-env LD_LIBRARY_PATH="$(icu-config --libdir)" cargo test
+env PGK_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
+    LD_LIBRARY_PATH="$HOME/local/lib" \
+        bash -c 'cargo test'
 ```
 
 ## GNU Make
@@ -398,14 +400,20 @@ linking or running your programs.
 The following is a tested example.
 
 ```bash
-env LD_LIBRARY_PATH=$HOME/local/lib RUST_ICU_MAJOR_VERSION_NUMBER=65 bash -c `cargo test`
+env PGK_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
+    LD_LIBRARY_PATH="$HOME/local/lib" \
+    RUST_ICU_MAJOR_VERSION_NUMBER=65 \
+	    bash -c 'cargo test'
 ```
 
 The following would be an as of yet *untested* example of compiling `rust_icu` against
 a preexisting ICU version 66.
 
 ```bash
-env LD_LIBRARY_PATH=$HOME/local/lib RUST_ICU_MAJOR_VERSION_NUMBER=66 bash -c `cargo test`
+env PGK_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
+    LD_LIBRARY_PATH="$HOME/local/lib" \
+    RUST_ICU_MAJOR_VERSION_NUMBER=66 \
+	    bash -c 'cargo test'
 ```
 
 ## Adding support for a new version of ICU.

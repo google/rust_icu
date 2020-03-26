@@ -62,7 +62,7 @@ impl Command {
     }
 }
 
-/// A command representing an `icu-config` run.  Use `ICUConfig::new()` to create.
+/// A command representing an auto-configuration detector.  Use `ICUConfig::new()` to create.
 struct ICUConfig {
     rep: Command,
 }
@@ -71,43 +71,44 @@ impl ICUConfig {
     /// Creates a new ICUConfig.
     fn new() -> Self {
         ICUConfig {
-            rep: Command::new("icu-config"),
+            rep: Command::new("pkg-config"),
         }
     }
-    /// Runs `icu-config --prefix`.
+    /// Obtains the prefix directory, e.g. `$HOME/local`
     fn prefix(&mut self) -> Result<String> {
         self.rep
-            .run(&["--prefix"])
+            .run(&["--variable=prefix", "icu-i18n"])
             .with_context(|| format!("could not get config prefix"))
     }
 
-    /// Runs `icu-config --libdir`.
+    /// Obtains the default library path for the libraries.
     fn libdir(&mut self) -> Result<String> {
         self.rep
-            .run(&["--libdir"])
+            .run(&["--variable=libdir", "icu-i18n"])
             .with_context(|| format!("could not get library directory"))
     }
-    /// Runs `icu-config --ldflags`.
+
+    /// Obtains the needed flags for the linker.
     fn ldflags(&mut self) -> Result<String> {
         // Replacements needed because of https://github.com/rust-lang/cargo/issues/7217
         let result = self
             .rep
-            .run(&["--ldflags"])
+            .run(&["--libs", "icu-i18n"])
             .with_context(|| format!("could not get the ld flags"))?;
         Ok(result.replace("-L", "-L ").replace("-l", "-l "))
     }
 
-    /// Runs `icu-config --cppflags`.
+    /// Obtains the needed flags for the C++ compiler.
     fn cppflags(&mut self) -> Result<String> {
         self.rep
-            .run(&["--cppflags"])
+            .run(&["--cflags", "icu-i18n"])
             .with_context(|| format!("while getting the cpp flags"))
     }
 
-    /// Runs `icu-config --version`.  Returns a string like `64.2`.
+    /// Obtains the major-minor version number for the library. Returns a string like `64.2`.
     fn version(&mut self) -> Result<String> {
         self.rep
-            .run(&["--version"])
+            .run(&["--modversion", "icu-i18n"])
             .with_context(|| format!("while getting ICU version; is icu-config in $PATH?"))
     }
 
@@ -132,18 +133,7 @@ impl ICUConfig {
 fn has_renaming() -> Result<bool> {
     let cpp_flags = ICUConfig::new().cppflags()?;
     let found = cpp_flags.find("-DU_DISABLE_RENAMING=1");
-    println!("flags: {}", cpp_flags);
     Ok(found.is_none())
-}
-
-fn rustfmt_cmd() -> Command {
-    Command::new("rustfmt")
-}
-
-fn rustfmt_version() -> Result<String> {
-    rustfmt_cmd()
-        .run(&["--version"])
-        .with_context(|| format!("while getting rustfmt version; is rustfmt in $PATH?"))
 }
 
 /// Generates a wrapper header that includes all headers of interest for binding.
@@ -179,6 +169,8 @@ fn run_bindgen(header_file: &str, out_dir_path: &Path) -> Result<()> {
         .default_enum_style(bindgen::EnumVariation::Rust {
             non_exhaustive: false,
         })
+        // Bindings are pretty much unreadable without rustfmt.
+        .rustfmt_bindings(true)
         // Some comments get recognized as rust doctests, which will fail compilation.
         // Turning the comments off will remove that error.  We do get left without
         // documentation, but one should probably use online docs anyways.
@@ -333,10 +325,9 @@ fn copy_features() -> Result<()> {
 }
 
 fn icu_config_autodetect() -> Result<()> {
-    println!("rustfmt: {}", rustfmt_version()?);
-    println!("icu-config: {}", ICUConfig::new().version()?);
-    println!("icu-config-cpp-flags: {}", ICUConfig::new().cppflags()?);
-    println!("icu-config-has-renaming: {}", has_renaming()?);
+    println!("icu-version: {}", ICUConfig::new().version()?);
+    println!("icu-cppflags: {}", ICUConfig::new().cppflags()?);
+    println!("icu-has-renaming: {}", has_renaming()?);
 
     // The path to the directory where cargo will add the output artifacts.
     let out_dir = env::var("OUT_DIR").unwrap();
