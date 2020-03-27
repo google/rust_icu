@@ -227,7 +227,7 @@ needed are in a custom location, we need to set `LD_LIBRARY_PATH` when running
 the tests, as well as `PKG_CONFIG_PATH`.
 
 ```bash
-env PGK_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
+env PKG_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
     LD_LIBRARY_PATH="$HOME/local/lib" \
         bash -c 'cargo test'
 ```
@@ -400,7 +400,7 @@ linking or running your programs.
 The following is a tested example.
 
 ```bash
-env PGK_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
+env PKG_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
     LD_LIBRARY_PATH="$HOME/local/lib" \
     RUST_ICU_MAJOR_VERSION_NUMBER=65 \
 	    bash -c 'cargo test'
@@ -410,7 +410,7 @@ The following would be an as of yet *untested* example of compiling `rust_icu` a
 a preexisting ICU version 66.
 
 ```bash
-env PGK_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
+env PKG_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
     LD_LIBRARY_PATH="$HOME/local/lib" \
     RUST_ICU_MAJOR_VERSION_NUMBER=66 \
 	    bash -c 'cargo test'
