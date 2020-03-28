@@ -11,6 +11,9 @@
 This is a library of low level native rust language bindings for the
 International Components for Unicode (ICU) library for C (a.k.a. ICU4C).
 
+If you just want quick instructions to contribute, see the [quickstart
+guide](https://github.com/google/rust_icu#icu-installation-instructions).
+
 See: http://icu-project.org for details about the ICU library.  The library
 source can be viewed on Github at https://github.com/unicode-org/icu.
 
@@ -18,45 +21,42 @@ The latest version of this file is available at https://github.com/google/rust_i
 
 > This is not an officially supported Google product.
 
-
 ## Why wrap ICU (vs. doing anything else)?
 
 * The rust language
   [Internationalisation](https://www.arewewebyet.org/topics/i18n/) page
-  confirms that ICU support in rust is spotty.
+  confirms that ICU support in rust is spotty, so having a functional wrapper
+  helps advance the state of the art.
 
 * Projects such as [Fuchsia OS](https://fuchsia.dev) already depend on ICU,
   and having rust bindings allow for an easy way to use Unicode algorithms
   without taking on more dependencies.
 
 * Cooperation on the interface with projects such as the [I18N
-  concept](https://github.com/i18n-concept/rust-discuss) could allow seamless
+  concept](https://github.com/unicode-org/rust-discuss) could allow seamless
   transition to an all-rust implementation in the future.
 
 # Structure of the repository
 
 The repository is organized as a cargo workspace of rust crates.  Each crate
-corresponds to the respective header in the ICU4C library's C API.  For
-example, `rust_icu_uenum` implements the functionality that one would find in
-the [uenum.h](http://www.icu-project.org/apiref/icu4c/uenum_8h.html) header
-file.
-
-Please consult the [coverage report](/coverage/report.md) for details about
-function coverage in the headers given above.
+corresponds to the respective header in the ICU4C library's C API.  Please
+consult the [coverage report](/coverage/report.md) for details about function
+coverage in the headers.
 
 | Crate | Description |
 | ----- | ----------- |
+| [rust_icu](https://crates.io/crates/rust_icu)| Top-level crate.  Include this if you just want to have all the functionality available for use. |
 | [rust_icu_common](https://crates.io/crates/rust_icu_common)| Commonly used low-level wrappings of the bindings. |
 | [rust_icu_intl](https://crates.io/crates/rust_icu_intl)| Implements ECMA 402 recommendation APIs. |
 | [rust_icu_sys](https://crates.io/crates/rust_icu_sys)| Low-level bindings code |
-| [rust_icu_ucal](https://crates.io/crates/rust_icu_ucal)| Implements `ucal.h` C API header from the ICU library. |
-| [rust_icu_udat](https://crates.io/crates/rust_icu_udat)| Implements `udat.h` C API header from the ICU library. |
-| [rust_icu_udata](https://crates.io/crates/rust_icu_udata)| Implements `udata.h` C API header from the ICU library. |
-| [rust_icu_uenum](https://crates.io/crates/rust_icu_uenum)| Implements `uenum.h` C API header from the ICU library. Mainly `UEnumeration` and friends. |
-| [rust_icu_uloc](https://crates.io/crates/rust_icu_uloc)| Implements `uloc.h` C API header from the ICU library. |
-| [rust_icu_umsg](https://crates.io/crates/rust_icu_umsg)| Implements `umsg.h` C API header from the ICU library. |
-| [rust_icu_ustring](https://crates.io/crates/rust_icu_ustring)| Implements `ustring.h` C API header from the ICU library. |
-| [rust_icu_utext](https://crates.io/crates/rust_icu_utext)| Implements `utext.h` C API header from the ICU library. |
+| [rust_icu_ucal](https://crates.io/crates/rust_icu_ucal)| Implements [`ucal.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/ucal_8h.html) C API header from the ICU library. |
+| [rust_icu_udat](https://crates.io/crates/rust_icu_udat)| Implements [`udat.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/udat_8h.html) C API header from the ICU library. |
+| [rust_icu_udata](https://crates.io/crates/rust_icu_udata)| Implements [`udata.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/udata_8h.html) C API header from the ICU library. |
+| [rust_icu_uenum](https://crates.io/crates/rust_icu_uenum)| Implements [`uenum.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/uenum_8h.html) C API header from the ICU library. Mainly `UEnumeration` and friends. |
+| [rust_icu_uloc](https://crates.io/crates/rust_icu_uloc)| Implements [`uloc.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/uloc_8h.html) C API header from the ICU library. |
+| [rust_icu_ustring](https://crates.io/crates/rust_icu_ustring)| Implements [`ustring.h`]() C API header from the ICU library. |
+| [rust_icu_utext](https://crates.io/crates/rust_icu_utext)| Implements [`utext.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/utext_8h.html) C API header from the ICU library. |
+| [rust_icu_umsg](https://crates.io/crates/rust_icu_umsg)| Implements [`umsg.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/umsg_8h.html) C API header from the ICU library. |
 
 # Limitations
 
@@ -98,12 +98,12 @@ headers of columns 2 and onwards are features set combos.  The coverage
 reflects the feature set and version points that we needed up to this point.
 The version semver in each cell denotes the version point that was tested.
 
-| ICU version | `default`           | `renaming`             | `renaming`, `icu_version_in_env`|
-| ----------- | ------------------- | ---------------------- | ------------------------------- |
-| 63.x        | 0.1.1               | 0.1.1                  | 0.1.1                           |
-| 64.2        | 0.1.1               | N/A                    | ???                             |
-| 65.1        | 0.1.1               | 0.1.1                  | 0.1.1                           |
-| 66.0.1      | 0.1.1               | N/A                    | N/A                             |
+| ICU version | `default` | `renaming` | `renaming`, `icu_version_in_env`|
+| ----------- | ------------------- | ---------------------- | ----- |
+| 63.x        | ???                   | ???                      | ??? |
+| 64.2        | 0.1.3                 | ???                      | ??? |
+| 65.1        | 0.1.3                 | 0.1.3                    | 0.1.3 |
+| 66.0.1      | 0.1.3                 | ???                      | ??? |
 
 > API versions that differ in the minor version number only should be
 > compatible; but since it is time consuming to test all versions and

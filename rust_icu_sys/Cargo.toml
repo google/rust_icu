@@ -1,6 +1,6 @@
 [package]
 name = "rust_icu_sys"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Google Inc."]
 license = "Apache-2.0"
 readme = "README.md"
@@ -38,3 +38,8 @@ renaming = []
 icu_config = []
 icu_version_in_env = []
 
+[badges]
+maintenance = { status = "actively-developed" }
+is-it-maintained-issue-resolution = { repository = "google/rust_icu" }
+is-it-maintained-open-issues = { repository = "google/rust_icu" }
+travis-ci = { repository = "google/rust_icu", branch = "master" }
