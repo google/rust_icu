@@ -90,6 +90,7 @@ publish:
 	$(call publish,rust_icu_udat)
 	$(call publish,rust_icu_udata)
 	$(call publish,rust_icu_umsg)
+	$(call publish,rust_icu)
 
 # A helper to up-rev the cargo crate versions.
 # NOTE: The cargo crate version number is completely independent of the Docker
@@ -105,7 +106,7 @@ endef
 
 .PHONY: uprev
 uprev:
-	$(call uprev,rust_icu_sys,)
+	$(call uprev,rust_icu_sys)
 	$(call uprev,rust_icu_common)
 	$(call uprev,rust_icu_uenum)
 	$(call uprev,rust_icu_ustring)
@@ -116,6 +117,7 @@ uprev:
 	$(call uprev,rust_icu_udata)
 	$(call uprev,rust_icu_umsg)
 	$(call uprev,rust_icu_intl)
+	$(call uprev,rust_icu)
 
 cov:
 	./build/showprogress.sh

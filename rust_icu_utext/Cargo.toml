@@ -1,7 +1,7 @@
 [package]
 edition = "2018"
 name = "rust_icu_utext"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Google Inc."]
 license = "Apache-2.0"
 readme = "README.md"
@@ -17,8 +17,8 @@ keywords = ["icu", "unicode", "i18n", "l10n"]
 
 [dependencies]
 paste = "0.1.5"
-rust_icu_common = { path = "../rust_icu_common", version = "0.1.2", default-features = false }
-rust_icu_sys = { path = "../rust_icu_sys", version = "0.1.2", default-features = false }
+rust_icu_common = { path = "../rust_icu_common", version = "0.1.3", default-features = false }
+rust_icu_sys = { path = "../rust_icu_sys", version = "0.1.3", default-features = false }
 
 # See the feature description in ../rust_icu_sys/Cargo.toml for details.
 [features]
@@ -29,3 +29,8 @@ renaming = ["rust_icu_sys/renaming", "rust_icu_common/renaming"]
 icu_config = ["rust_icu_sys/icu_config", "rust_icu_common/icu_config"]
 icu_version_in_env = ["rust_icu_sys/icu_version_in_env", "rust_icu_common/icu_version_in_env"]
 
+[badges]
+maintenance = { status = "actively-developed" }
+is-it-maintained-issue-resolution = { repository = "google/rust_icu" }
+is-it-maintained-open-issues = { repository = "google/rust_icu" }
+travis-ci = { repository = "google/rust_icu", branch = "master" }

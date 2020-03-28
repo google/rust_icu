@@ -1,5 +1,6 @@
 [workspace]
 members = [
+  "rust_icu",
   "rust_icu_common",
   "rust_icu_sys",
   "rust_icu_ucal",
