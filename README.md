@@ -222,11 +222,22 @@ There are a few options to run the test for `rust_icu`.
 
 ## Cargo
 
-Building and testing using `cargo` is the 
+Building and testing using `cargo` is the canonical way of building and testing
+rust code.
+
+In the case of the `rust_icu` library you may find that your
+system's default ICU development package is ancient, in which case you will
+need to build your own ICU4C library (see below for that). That will make
+it necessary to pass in `PKG_CONFIG_PATH` and `LD_LIBRARY_PATH` environment
+variables to help the bulid code locate and use the library you built, instead
+of the system default.
 
 The following tests should all build and pass.  Note that because the libraries
 needed are in a custom location, we need to set `LD_LIBRARY_PATH` when running
 the tests, as well as `PKG_CONFIG_PATH`.
+
+If you find that you are able to use your system's default ICU installation,
+you can safely omit the two libraries.
 
 ```bash
 env PKG_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
@@ -234,7 +245,13 @@ env PKG_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
         bash -c 'cargo test'
 ```
 
+If you think that the above approach is too much of a hassle, consider trying
+out the [Docker-based approach](#docker-based).
+
 ## GNU Make
+
+If you happen to like the GNU way of doing things, you may appreciate 
+the GNU Make approach.
 
 The easiest way is to use GNU Make and run:
 
