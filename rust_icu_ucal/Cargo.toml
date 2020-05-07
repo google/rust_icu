@@ -25,6 +25,9 @@ rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.1.4", default-fe
 
 [dev-dependencies]
 regex = "1"
+rust_icu_udat = { path = "../rust_icu_udat", version = "0.1.4", default-features = false }
+rust_icu_uloc = { path = "../rust_icu_uloc", version = "0.1.4", default-features = false }
+
 
 # See the feature description in ../rust_icu_sys/Cargo.toml for details.
 [features]

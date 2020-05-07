@@ -2,11 +2,11 @@
 
 | Header | Implemented |
 | ------ | ----------- |
-| `ucal.h` | 6 / 46 | 
+| `ucal.h` | 12 / 46 | 
 | `udat.h` | 6 / 38 | 
 | `udata.h` | 2 / 8 | 
 | `uenum.h` | 8 / 8 | 
-| `uloc.h` | 19 / 42 | 
+| `uloc.h` | 19 / 41 | 
 | `umsg.h` | 6 / 20 | 
 | `ustring.h` | 3 / 61 | 
 | `ustring.h` | 3 / 61 | 
@@ -19,18 +19,23 @@
 | Unimplemented | Implemented |
 | ------------- | ----------- |
 | | `ucal_close` |
+| | `ucal_get` |
 | | `ucal_getDefaultTimeZone` |
+| | `ucal_getMillis` |
 | | `ucal_getNow` |
 | | `ucal_getTZDataVersion` |
+| | `ucal_inDaylightTime` |
 | | `ucal_open` |
+| | `ucal_setDate` |
+| | `ucal_setDateTime` |
 | | `ucal_setDefaultTimeZone` |
+| | `ucal_setMillis` |
 | `ucal_add` | |
 | `ucal_clear` | |
 | `ucal_clearField` | |
 | `ucal_clone` | |
 | `ucal_countAvailable` | |
 | `ucal_equivalentTo` | |
-| `ucal_get` | |
 | `ucal_getAttribute` | |
 | `ucal_getAvailable` | |
 | `ucal_getCanonicalTimeZoneID` | |
@@ -42,7 +47,6 @@
 | `ucal_getKeywordValuesForLocale` | |
 | `ucal_getLimit` | |
 | `ucal_getLocaleByType` | |
-| `ucal_getMillis` | |
 | `ucal_getTimeZoneDisplayName` | |
 | `ucal_getTimeZoneID` | |
 | `ucal_getTimeZoneIDForWindowsID` | |
@@ -50,7 +54,6 @@
 | `ucal_getType` | |
 | `ucal_getWeekendTransition` | |
 | `ucal_getWindowsTimeZoneID` | |
-| `ucal_inDaylightTime` | |
 | `ucal_isSet` | |
 | `ucal_isWeekend` | |
 | `ucal_openCountryTimeZones` | |
@@ -59,10 +62,7 @@
 | `ucal_roll` | |
 | `ucal_set` | |
 | `ucal_setAttribute` | |
-| `ucal_setDate` | |
-| `ucal_setDateTime` | |
 | `ucal_setGregorianChange` | |
-| `ucal_setMillis` | |
 | `ucal_setTimeZone` | |
 
 # Header: `udat.h`
@@ -187,7 +187,6 @@
 | `uloc_getName` | |
 | `uloc_getParent` | |
 | `uloc_isRightToLeft` | |
-| `uloc_openAvailableByType` | |
 | `uloc_openKeywords` | |
 | `uloc_setKeywordValue` | |
 | `uloc_toLegacyType` | |
