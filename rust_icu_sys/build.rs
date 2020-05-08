@@ -127,6 +127,11 @@ impl ICUConfig {
             .with_context(|| format!("could not parse version number: {}", version))?;
         Ok(last.to_string())
     }
+    
+    fn version_major_int() -> Result<i32> {
+        let version_str = ICUConfig::version_major()?;
+        Ok(version_str.parse().unwrap())
+    }
 }
 
 /// Returns true if the ICU library was compiled with renaming enabled.
@@ -320,6 +325,9 @@ fn copy_features() -> Result<()> {
     }
     if let Some(_) = env::var_os("CARGO_FEATURE_ICU_VERSION_IN_ENV") {
         println!("cargo:rustc-cfg=features=\"icu_version_in_env\"");
+    }
+    if ICUConfig::version_major_int()? >= 67 {
+        println!("cargo:rustc-cfg=features=\"icu_version_67_plus\"");
     }
     Ok(())
 }
