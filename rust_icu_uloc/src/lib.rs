@@ -585,10 +585,13 @@ mod tests {
         Ok(())
     }
 
+    // This test yields a different result in ICU versions prior to 64:
+    // "zh-Latn@collation=pinyin".
+    #[cfg(features = "icu_version_64_plus")]
     #[test]
     fn test_variant() -> Result<(), Error> {
         let loc = ULoc::try_from("zh-Latn-pinyin")?;
-        assert_eq!(loc.variant(), Some("PINYIN".to_string()));
+        assert_eq!(loc.variant(), Some("PINYIN".to_string()), "locale was: {:?}", loc);
         Ok(())
     }
 
@@ -756,6 +759,8 @@ mod tests {
         );
     }
 
+    // This tests verifies buggy behavior which is fixed since ICU version 67.1
+    #[cfg(not(features = "icu_version_67_plus"))]
     #[test]
     fn test_accept_language_exact_match() {
         let accept_list: Result<Vec<_>, _> = vec!["es_ES", "ar_EG", "fr_FR"]
@@ -774,8 +779,34 @@ mod tests {
         assert_eq!(
             actual,
             (
+                // "es_MX" should be preferred as a fallback over exact match "ar_EG".
                 ULoc::try_from("ar_EG").ok(),
                 UAcceptResult::ULOC_ACCEPT_VALID
+            )
+        );
+    }
+
+    #[cfg(features = "icu_version_67_plus")]
+    #[test]
+    fn test_accept_language_exact_match() {
+        let accept_list: Result<Vec<_>, _> = vec!["es_ES", "ar_EG", "fr_FR"]
+            .into_iter()
+            .map(ULoc::try_from)
+            .collect();
+        let accept_list = accept_list.expect("make accept_list");
+
+        let available_locales: Result<Vec<_>, _> = vec!["de_DE", "en_US", "es_MX", "ar_EG"]
+            .into_iter()
+            .map(ULoc::try_from)
+            .collect();
+        let available_locales = available_locales.expect("make available_locales");
+
+        let actual = accept_language(accept_list, available_locales).expect("call accept_language");
+        assert_eq!(
+            actual,
+            (
+                ULoc::try_from("es_MX").ok(),
+                UAcceptResult::ULOC_ACCEPT_FALLBACK,
             )
         );
     }

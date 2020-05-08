@@ -3,6 +3,7 @@ authors = ["Google Inc."]
 edition = "2018"
 license = "Apache-2.0"
 name = "rust_icu_uloc"
+build = "build.rs"
 readme = "README.md"
 repository = "https://github.com/google/rust_icu"
 version = "0.1.4"
@@ -54,6 +55,12 @@ icu_version_in_env = [
   "rust_icu_uenum/icu_version_in_env",
   "rust_icu_ustring/icu_version_in_env",
 ]
+icu_version_64_plus = []
+icu_version_67_plus = []
+
+[build-dependencies]
+anyhow = "1.0"
+bindgen = "0.53.2"
 
 [badges]
 maintenance = { status = "actively-developed" }

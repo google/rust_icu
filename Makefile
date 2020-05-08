@@ -25,11 +25,14 @@ endif
 # NOTE: This version number is completely independent of the crate version.
 USED_BUILDENV_VERSION ?= 0.0.4
 
+CARGO_FEATURE_VERSION :=
+
 ICU_LIBDIR := $(shell icu-config --libdir)
 test:
-	env PKG_CONFIG_PATH="${HOME}/local/lib/pkgconfig" \
+	@env PKG_CONFIG_PATH="${HOME}/local/lib/pkgconfig" \
 	    LD_LIBRARY_PATH="${ICU_LIBDIR}" \
-		cargo test
+		echo "ICU version detected: $(shell icu-config --version)" && \
+		  cargo test
 .PHONY: test
 
 # Run a test inside a Docker container.  The --volume mounts attach local dirs

@@ -2,11 +2,11 @@
 
 | Item | Description |
 | ---- | ----------- |
-| ICU 64/65/66 | [![Build Status `master`](https://travis-ci.org/google/rust_icu.svg?branch=master)](https://travis-ci.org/google/rust_icu) |
+| ICU 64..67 | [![Build Status `master`](https://travis-ci.org/google/rust_icu.svg?branch=master)](https://travis-ci.org/google/rust_icu) |
 | Source | https://github.com/google/rust_icu |
 | README | https://github.com/google/rust_icu/blob/master/README.md |
 | Coverage | [View report](/coverage/report.md)
-| Docs | https://github.com/google/rust_icu/blob/master/docs/README.md |
+| Docs | https://docs.rs/crate/rust_icu |
 
 This is a library of low level native rust language bindings for the
 International Components for Unicode (ICU) library for C (a.k.a. ICU4C).
@@ -98,12 +98,13 @@ headers of columns 2 and onwards are features set combos.  The coverage
 reflects the feature set and version points that we needed up to this point.
 The version semver in each cell denotes the version point that was tested.
 
-| ICU version | `default` | `renaming` | `renaming`, `icu_version_in_env`|
-| ----------- | ------------------- | ---------------------- | ----- |
-| 63.x        | ???                   | ???                      | ??? |
-| 64.2        | 0.1.3                 | ???                      | ??? |
-| 65.1        | 0.1.3                 | 0.1.3                    | 0.1.3 |
-| 66.0.1      | 0.1.3                 | ???                      | ??? |
+| ICU version | `default` | `renaming` | `renaming`, `icu_version_in_env`  |
+| ----------- | ----------| ---------- | --------------------------------- |
+| 63.x        | ???       |  -         |  -                                |
+| 64.2        | 0.1.3+    |  -         |  -                                |
+| 65.1        | 0.1.3+    | 0.1.3+     | 0.1.3+                            |
+| 66.0.1      | 0.1.3+    |  -         |  -                                |
+| 67.1        | 0.1.4     |  -         |  -                                |
 
 > API versions that differ in the minor version number only should be
 > compatible; but since it is time consuming to test all versions and
