@@ -57,6 +57,7 @@ docker-test:
 			--volume=${CARGO_TARGET_DIR}:/build/cargo \
 			--volume=${LOGNAME_HOME}/.cargo:/usr/local/cargo \
 			--env="CARGO_TEST_ARGS=${DOCKER_TEST_CARGO_TEST_ARGS}" \
+			--env="RUST_BACKTRACE=full" \
 			${DOCKER_REPO}/${DOCKER_TEST_ENV}:${USED_BUILDENV_VERSION}
 .PHONY: docker-test
 
