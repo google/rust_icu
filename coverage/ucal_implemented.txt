@@ -6,6 +6,9 @@ ucal_getNow
 ucal_getTZDataVersion
 ucal_inDaylightTime
 ucal_open
+ucal_openCountryTimeZones
+ucal_openTimeZoneIDEnumeration
+ucal_openTimeZones
 ucal_setDate
 ucal_setDateTime
 ucal_setDefaultTimeZone

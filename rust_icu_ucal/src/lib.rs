@@ -19,7 +19,8 @@
 
 use {
     log::trace, rust_icu_common as common, rust_icu_sys as sys, rust_icu_sys::versioned_function,
-    rust_icu_sys::*, rust_icu_ustring as ustring, std::convert::TryFrom, std::ffi,
+    rust_icu_sys::*, rust_icu_uenum as uenum, rust_icu_ustring as ustring, std::convert::TryFrom,
+    std::ffi,
 };
 
 /// Implements the UCalendar type from `ucal.h`.
@@ -267,23 +268,48 @@ pub fn get_now() -> f64 {
     unsafe { versioned_function!(ucal_getNow)() as f64 }
 }
 
+/// Opens a list of available time zones for the given country.
+///
+/// Implements `ucal_openCountryTimeZones`.
+pub fn country_time_zones(country: &str) -> Result<uenum::Enumeration, common::Error> {
+    uenum::ucal_open_country_time_zones(country)
+}
+
+/// Opens a list of available time zone IDs with the given filters.
+///
+/// Implements `ucal_openTimeZoneIDEnumeration`
+pub fn time_zone_id_enumeration(
+    zone_type: sys::USystemTimeZoneType,
+    region: Option<&str>,
+    raw_offset: Option<i32>,
+) -> Result<uenum::Enumeration, common::Error> {
+    uenum::ucal_open_time_zone_id_enumeration(zone_type, region, raw_offset)
+}
+
+/// Opens a list of available time zones.
+///
+/// Implements `ucal_openTimeZones`
+pub fn time_zones() -> Result<uenum::Enumeration, common::Error> {
+    uenum::open_time_zones()
+}
+
 #[cfg(test)]
 mod tests {
     use {
         super::{UCalendar, *},
         regex::Regex,
         rust_icu_udat::UDateFormat,
-        rust_icu_uenum as uenum,
         rust_icu_uloc::ULoc,
         rust_icu_ustring::UChar,
+        std::collections::HashSet,
     };
 
     #[test]
-    fn test_open_time_zones() {
-        let tz_iter = uenum::open_time_zones().expect("time zones opened");
+    fn test_time_zones() {
+        let tz_iter = time_zones().expect("time zones opened");
         assert_eq!(
             tz_iter
-                .map(|r| { r.expect("timezone is available") })
+                .map(|r| { r.expect("time zone is available") })
                 .take(3)
                 .collect::<Vec<String>>(),
             vec!["ACT", "AET", "AGT"]
@@ -291,16 +317,36 @@ mod tests {
     }
 
     #[test]
-    fn test_open_time_zone_id_enumeration() {
-        let tz_iter = uenum::open_time_zone_id_enumeration(
+    fn test_time_zone_id_enumeration_no_filters() {
+        let tz_iter =
+            time_zone_id_enumeration(sys::USystemTimeZoneType::UCAL_ZONE_TYPE_ANY, None, None)
+                .expect("time_zone_id_enumeration() opened");
+
+        let from_enumeration = tz_iter
+            .map(|r| r.expect("timezone is available"))
+            .collect::<Vec<String>>();
+
+        let from_time_zones = time_zones()
+            .expect("time_zones() opened")
+            .map(|r| r.expect("time zone is available"))
+            .collect::<Vec<String>>();
+
+        assert!(!from_time_zones.is_empty());
+
+        assert_eq!(from_enumeration, from_time_zones);
+    }
+
+    #[test]
+    fn test_time_zone_id_enumeration_by_type_region() {
+        let tz_iter = time_zone_id_enumeration(
             sys::USystemTimeZoneType::UCAL_ZONE_TYPE_CANONICAL,
-            "us",
+            Some("us"),
             None,
         )
-        .expect("time zones available");
+        .expect("time_zone_id_enumeration() opened");
         assert_eq!(
             tz_iter
-                .map(|r| { r.expect("timezone is available") })
+                .map(|r| { r.expect("time zone is available") })
                 .take(3)
                 .collect::<Vec<String>>(),
             vec!["America/Adak", "America/Anchorage", "America/Boise"]
@@ -308,11 +354,27 @@ mod tests {
     }
 
     #[test]
-    fn test_open_country_time_zones() {
-        let tz_iter = uenum::open_country_time_zones("us").expect("time zones available");
+    fn test_time_zone_id_enumeration_by_offset() {
+        let tz_iter = time_zone_id_enumeration(
+            sys::USystemTimeZoneType::UCAL_ZONE_TYPE_ANY,
+            None,
+            Some(0), /* GMT */
+        )
+        .expect("time_zone_id_enumeration() opened");
+        let tz_ids = tz_iter
+            .map(|r| r.expect("time zone is available"))
+            .collect::<HashSet<String>>();
+
+        assert!(tz_ids.contains("UTC"));
+        assert!(!tz_ids.contains("Etc/GMT-1"));
+    }
+
+    #[test]
+    fn test_country_time_zones() {
+        let tz_iter = country_time_zones("us").expect("time zones available");
         assert_eq!(
             tz_iter
-                .map(|r| { r.expect("timezone is available") })
+                .map(|r| { r.expect("time zone is available") })
                 .take(3)
                 .collect::<Vec<String>>(),
             vec!["AST", "America/Adak", "America/Anchorage"]

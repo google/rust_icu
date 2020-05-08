@@ -87,7 +87,7 @@ impl ICUConfig {
             .with_context(|| format!("could not parse version number: {}", version))?;
         Ok(last.to_string())
     }
-    
+
     fn version_major_int() -> Result<i32> {
         let version_str = ICUConfig::version_major()?;
         Ok(version_str.parse().unwrap())
