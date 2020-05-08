@@ -2,83 +2,17 @@
 
 | Header | Implemented |
 | ------ | ----------- |
-| `ustring.h` | 3 / 61 | 
-| `ucal.h` | 5 / 45 | 
+| `ucal.h` | 6 / 46 | 
 | `udat.h` | 6 / 38 | 
 | `udata.h` | 2 / 8 | 
-| `uenum.h` | 7 / 8 | 
-| `uloc.h` | 9 / 41 | 
+| `uenum.h` | 8 / 8 | 
+| `uloc.h` | 19 / 42 | 
+| `umsg.h` | 6 / 20 | 
+| `ustring.h` | 3 / 61 | 
 | `ustring.h` | 3 / 61 | 
 | `utext.h` | 3 / 28 | 
 # Unimplemented functions per header
 
-
-# Header: `ustring.h`
-
-| Unimplemented | Implemented |
-| ------------- | ----------- |
-| | `UChar*` |
-| | `u_strFromUTF8` |
-| | `u_strToUTF8` |
-| `u_austrcpy` | |
-| `u_austrncpy` | |
-| `u_countChar32` | |
-| `u_memcasecmp` | |
-| `u_memchr` | |
-| `u_memchr32` | |
-| `u_memcmp` | |
-| `u_memcmpCodePointOrder` | |
-| `u_memcpy` | |
-| `u_memmove` | |
-| `u_memrchr` | |
-| `u_memrchr32` | |
-| `u_memset` | |
-| `u_strcasecmp` | |
-| `u_strCaseCompare` | |
-| `u_strcat` | |
-| `u_strchr` | |
-| `u_strchr32` | |
-| `u_strcmp` | |
-| `u_strcmpCodePointOrder` | |
-| `u_strCompare` | |
-| `u_strCompareIter` | |
-| `u_strcpy` | |
-| `u_strcspn` | |
-| `u_strFindFirst` | |
-| `u_strFindLast` | |
-| `u_strFoldCase` | |
-| `u_strFromJavaModifiedUTF8WithSub` | |
-| `u_strFromUTF32` | |
-| `u_strFromUTF32WithSub` | |
-| `u_strFromUTF8Lenient` | |
-| `u_strFromUTF8WithSub` | |
-| `u_strFromWCS` | |
-| `u_strHasMoreChar32Than` | |
-| `u_strlen` | |
-| `u_strncasecmp` | |
-| `u_strncat` | |
-| `u_strncmp` | |
-| `u_strncmpCodePointOrder` | |
-| `u_strncpy` | |
-| `u_strpbrk` | |
-| `u_strrchr` | |
-| `u_strrchr32` | |
-| `u_strrstr` | |
-| `u_strspn` | |
-| `u_strstr` | |
-| `u_strToJavaModifiedUTF8` | |
-| `u_strtok_r` | |
-| `u_strToLower` | |
-| `u_strToTitle` | |
-| `u_strToUpper` | |
-| `u_strToUTF32` | |
-| `u_strToUTF32WithSub` | |
-| `u_strToUTF8WithSub` | |
-| `u_strToWCS` | |
-| `u_uastrcpy` | |
-| `u_uastrncpy` | |
-| `u_unescape` | |
-| `u_unescapeAt` | |
 
 # Header: `ucal.h`
 
@@ -87,6 +21,7 @@
 | | `ucal_close` |
 | | `ucal_getDefaultTimeZone` |
 | | `ucal_getNow` |
+| | `ucal_getTZDataVersion` |
 | | `ucal_open` |
 | | `ucal_setDefaultTimeZone` |
 | `ucal_add` | |
@@ -103,6 +38,7 @@
 | `ucal_getDSTSavings` | |
 | `ucal_getFieldDifference` | |
 | `ucal_getGregorianChange` | |
+| `ucal_getHostTimeZone` | |
 | `ucal_getKeywordValuesForLocale` | |
 | `ucal_getLimit` | |
 | `ucal_getLocaleByType` | |
@@ -112,7 +48,6 @@
 | `ucal_getTimeZoneIDForWindowsID` | |
 | `ucal_getTimeZoneTransitionDate` | |
 | `ucal_getType` | |
-| `ucal_getTZDataVersion` | |
 | `ucal_getWeekendTransition` | |
 | `ucal_getWindowsTimeZoneID` | |
 | `ucal_inDaylightTime` | |
@@ -199,6 +134,7 @@
 | | `UEnumeration` |
 | | `uenum_next` |
 | | `uenum_openCharStringsEnumeration` |
+| | `uloc_openKeywords` |
 | `uenum_count` | |
 | `uenum_openFromStringEnumeration` | |
 | `uenum_openUCharStringsEnumeration` | |
@@ -209,19 +145,27 @@
 
 | Unimplemented | Implemented |
 | ------------- | ----------- |
+| | `icu::Locale::getUnicodeKeywords()` |
+| | `icu::Locale::getUnicodeKeywordValue()` |
+| | `uloc_acceptLanguage` |
 | | `uloc_addLikelySubtags` |
 | | `uloc_canonicalize` |
+| | `uloc_forLanguageTag` |
 | | `uloc_getCountry` |
 | | `uloc_getDefault` |
+| | `uloc_getKeywordValue()` |
 | | `uloc_getLanguage` |
 | | `uloc_getScript` |
 | | `uloc_getVariant` |
 | | `uloc_minimizeSubtags` |
+| | `uloc_openKeywords()` |
 | | `uloc_setDefault` |
-| `uloc_acceptLanguage` | |
+| | `uloc_toLanguageTag` |
+| | `uloc_toLegacyKey` |
+| | `uloc_toUnicodeLocaleKey` |
+| | `uloc_toUnicodeLocaleType` |
 | `uloc_acceptLanguageFromHTTP` | |
 | `uloc_countAvailable` | |
-| `uloc_forLanguageTag` | |
 | `uloc_getAvailable` | |
 | `uloc_getBaseName` | |
 | `uloc_getCharacterOrientation` | |
@@ -243,13 +187,103 @@
 | `uloc_getName` | |
 | `uloc_getParent` | |
 | `uloc_isRightToLeft` | |
+| `uloc_openAvailableByType` | |
 | `uloc_openKeywords` | |
 | `uloc_setKeywordValue` | |
-| `uloc_toLanguageTag` | |
-| `uloc_toLegacyKey` | |
 | `uloc_toLegacyType` | |
-| `uloc_toUnicodeLocaleKey` | |
-| `uloc_toUnicodeLocaleType` | |
+
+# Header: `umsg.h`
+
+| Unimplemented | Implemented |
+| ------------- | ----------- |
+| | `UMessageFormat` |
+| | `umsg_clone` |
+| | `umsg_close` |
+| | `umsg_format` |
+| | `umsg_open` |
+| | `umsg_vformat` |
+| `u_formatMessage` | |
+| `u_formatMessageWithError` | |
+| `umsg_applyPattern` | |
+| `umsg_autoQuoteApostrophe` | |
+| `umsg_getLocale` | |
+| `umsg_parse` | |
+| `umsg_setLocale` | |
+| `umsg_toPattern` | |
+| `umsg_vparse` | |
+| `u_parseMessage` | |
+| `u_parseMessageWithError` | |
+| `u_vformatMessage` | |
+| `u_vformatMessageWithError` | |
+| `u_vparseMessage` | |
+| `u_vparseMessageWithError` | |
+
+# Header: `ustring.h`
+
+| Unimplemented | Implemented |
+| ------------- | ----------- |
+| | `UChar*` |
+| | `u_strFromUTF8` |
+| | `u_strToUTF8` |
+| `u_austrcpy` | |
+| `u_austrncpy` | |
+| `u_countChar32` | |
+| `u_memcasecmp` | |
+| `u_memchr` | |
+| `u_memchr32` | |
+| `u_memcmp` | |
+| `u_memcmpCodePointOrder` | |
+| `u_memcpy` | |
+| `u_memmove` | |
+| `u_memrchr` | |
+| `u_memrchr32` | |
+| `u_memset` | |
+| `u_strcasecmp` | |
+| `u_strCaseCompare` | |
+| `u_strcat` | |
+| `u_strchr` | |
+| `u_strchr32` | |
+| `u_strcmp` | |
+| `u_strcmpCodePointOrder` | |
+| `u_strCompare` | |
+| `u_strCompareIter` | |
+| `u_strcpy` | |
+| `u_strcspn` | |
+| `u_strFindFirst` | |
+| `u_strFindLast` | |
+| `u_strFoldCase` | |
+| `u_strFromJavaModifiedUTF8WithSub` | |
+| `u_strFromUTF32` | |
+| `u_strFromUTF32WithSub` | |
+| `u_strFromUTF8Lenient` | |
+| `u_strFromUTF8WithSub` | |
+| `u_strFromWCS` | |
+| `u_strHasMoreChar32Than` | |
+| `u_strlen` | |
+| `u_strncasecmp` | |
+| `u_strncat` | |
+| `u_strncmp` | |
+| `u_strncmpCodePointOrder` | |
+| `u_strncpy` | |
+| `u_strpbrk` | |
+| `u_strrchr` | |
+| `u_strrchr32` | |
+| `u_strrstr` | |
+| `u_strspn` | |
+| `u_strstr` | |
+| `u_strToJavaModifiedUTF8` | |
+| `u_strtok_r` | |
+| `u_strToLower` | |
+| `u_strToTitle` | |
+| `u_strToUpper` | |
+| `u_strToUTF32` | |
+| `u_strToUTF32WithSub` | |
+| `u_strToUTF8WithSub` | |
+| `u_strToWCS` | |
+| `u_uastrcpy` | |
+| `u_uastrncpy` | |
+| `u_unescape` | |
+| `u_unescapeAt` | |
 
 # Header: `ustring.h`
 
