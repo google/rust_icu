@@ -66,7 +66,6 @@
 //!
 //!     let fmt = umsg::UMessageFormat::try_from(&msg, &loc)?;
 //!     let hello = ustring::UChar::try_from("Hello! Добар дан!")?;
-//!     let _ = message_format!(&fmt);
 //!     let result = umsg::message_format!(
 //!       fmt,
 //!       { 43.4 => Double },
@@ -279,7 +278,6 @@ impl UMessageFormat {
 ///
 ///   let fmt = umsg::UMessageFormat::try_from(&msg, &loc)?;
 ///   let hello = ustring::UChar::try_from("Hello! Добар дан!")?;
-///   let _ = message_format!(&fmt);
 ///   let result = umsg::message_format!(
 ///     fmt,
 ///     { 43.4 => Double },
@@ -307,9 +305,7 @@ impl UMessageFormat {
 #[macro_export]
 macro_rules! message_format {
     ($dest:expr) => {
-        unsafe {
-            $crate::format_varargs(&$dest)
-        }
+        panic!("you should not format a message without parameters")
     };
     ($dest:expr, $( {$arg:expr => $t:ident}),* ) => {
         unsafe {
@@ -424,6 +420,12 @@ mod tests {
         }
     }
 
+    fn tzsave() -> Result<(), common::Error> {
+        let _ = TzSave(ucal::get_default_time_zone()?);
+        ucal::set_default_time_zone("Europe/Amsterdam")?;
+        Ok(())
+    }
+
     #[test]
     fn basic() -> Result<(), common::Error> {
         let _ = TzSave(ucal::get_default_time_zone()?);
@@ -439,7 +441,6 @@ mod tests {
 
         let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
         let hello = ustring::UChar::try_from("Hello! Добар дан!")?;
-        let _ = message_format!(&fmt);
         let value: i32 = 31337;
         let result = message_format!(
             fmt,
@@ -457,6 +458,25 @@ mod tests {
             result
         );
         Ok(())
+    }
+
+    #[test]
+    #[should_panic]
+    fn empty_args_in_format() {
+        let _ = TzSave(ucal::get_default_time_zone().unwrap());
+        ucal::set_default_time_zone("Europe/Amsterdam").unwrap();
+
+        let loc = uloc::ULoc::try_from("en-US").unwrap();
+        let msg = ustring::UChar::try_from(
+            r"Formatted double: {0,number,##.#},
+              Formatted integer: {1,number,integer},
+              Formatted string: {2},
+              Date: {3,date,full}",
+        ).unwrap();
+        let fmt = crate::UMessageFormat::try_from(&msg, &loc).unwrap();
+
+        // This is not allowed!
+        let _ = message_format!(&fmt);
     }
 
     #[test]
