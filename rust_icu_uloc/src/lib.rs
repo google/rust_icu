@@ -591,7 +591,12 @@ mod tests {
     #[test]
     fn test_variant() -> Result<(), Error> {
         let loc = ULoc::try_from("zh-Latn-pinyin")?;
-        assert_eq!(loc.variant(), Some("PINYIN".to_string()), "locale was: {:?}", loc);
+        assert_eq!(
+            loc.variant(),
+            Some("PINYIN".to_string()),
+            "locale was: {:?}",
+            loc
+        );
         Ok(())
     }
 

@@ -2,7 +2,7 @@
 
 | Header | Implemented |
 | ------ | ----------- |
-| `ucal.h` | 12 / 46 | 
+| `ucal.h` | 15 / 46 | 
 | `udat.h` | 6 / 38 | 
 | `udata.h` | 2 / 8 | 
 | `uenum.h` | 8 / 8 | 
@@ -26,6 +26,9 @@
 | | `ucal_getTZDataVersion` |
 | | `ucal_inDaylightTime` |
 | | `ucal_open` |
+| | `ucal_openCountryTimeZones` |
+| | `ucal_openTimeZoneIDEnumeration` |
+| | `ucal_openTimeZones` |
 | | `ucal_setDate` |
 | | `ucal_setDateTime` |
 | | `ucal_setDefaultTimeZone` |
@@ -56,9 +59,6 @@
 | `ucal_getWindowsTimeZoneID` | |
 | `ucal_isSet` | |
 | `ucal_isWeekend` | |
-| `ucal_openCountryTimeZones` | |
-| `ucal_openTimeZoneIDEnumeration` | |
-| `ucal_openTimeZones` | |
 | `ucal_roll` | |
 | `ucal_set` | |
 | `ucal_setAttribute` | |
@@ -128,7 +128,7 @@
 | Unimplemented | Implemented |
 | ------------- | ----------- |
 | | `ucal_openCountryTimeZones` |
-| | `ucal_openTimeZoneIDENumeration` |
+| | `ucal_openTimeZoneIDEnumeration` |
 | | `ucal_openTimeZones` |
 | | `uenum_close` |
 | | `UEnumeration` |

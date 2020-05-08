@@ -1,5 +1,5 @@
 ucal_openCountryTimeZones
-ucal_openTimeZoneIDENumeration
+ucal_openTimeZoneIDEnumeration
 ucal_openTimeZones
 uenum_close
 UEnumeration
