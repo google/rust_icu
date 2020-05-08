@@ -100,7 +100,7 @@ The version semver in each cell denotes the version point that was tested.
 
 | ICU version | `default` | `renaming` | `renaming`, `icu_version_in_env`  |
 | ----------- | ----------| ---------- | --------------------------------- |
-| 63.x        | ???       |  -         |  -                                |
+| 63.x        | 0.1.3+    |  -         |  -                                |
 | 64.2        | 0.1.3+    |  -         |  -                                |
 | 65.1        | 0.1.3+    | 0.1.3+     | 0.1.3+                            |
 | 66.0.1      | 0.1.3+    |  -         |  -                                |
