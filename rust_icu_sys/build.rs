@@ -22,12 +22,53 @@
 use {
     anyhow::{Context, Result},
     bindgen,
+    lazy_static::lazy_static,
     std::env,
     std::fs::File,
     std::io::Write,
     std::path::Path,
     std::process,
 };
+
+lazy_static! {
+    // The modules for which bindings will be generated.  Add more if you need them.  The list
+    // should be topologicaly sorted based on the inclusion relationship between the respective
+    // headers.  Any of these will fail if the required binaries are not present in $PATH.
+    static ref BINDGEN_SOURCE_MODULES: Vec<&'static str> = vec![
+        "ucal", "udat", "udata", "uenum", "ustring", "utext", "uclean", "umsg",
+        "ucol",
+    ];
+
+    // C functions that will be made available to rust code.  Add more to this list if you want to
+    // bring in more types.
+    static ref BINDGEN_ALLOWLIST_FUNCTIONS: Vec<&'static str> = vec![
+        "u_.*",
+        "ucal_.*",
+        "udata_.*",
+        "udat_.*",
+        "uenum_.*",
+        "uloc_.*",
+        "utext_.*",
+        "umsg_.*",
+    ];
+
+    // C types that will be made available to rust code.  Add more to this list if you want to
+    // generate more bindings.
+    static ref BINDGEN_ALLOWLIST_TYPES: Vec<&'static str> = vec![
+        "UAcceptResult",
+        "UBool",
+        "UCalendar.*",
+        "UChar.*",
+        "UData.*",
+        "UDate.*",
+        "UDateFormat.*",
+        "UEnumeration.*",
+        "UErrorCode",
+        "UMessageFormat",
+        "UParseError",
+        "UText",
+    ];
+}
 
 /// A `Command` that also knows its name.
 struct Command {
@@ -127,7 +168,6 @@ impl ICUConfig {
             .with_context(|| format!("could not parse version number: {}", version))?;
         Ok(last.to_string())
     }
-    
     fn version_major_int() -> Result<i32> {
         let version_str = ICUConfig::version_major()?;
         Ok(version_str.parse().unwrap())
@@ -169,7 +209,7 @@ fn generate_wrapper_header(
 }
 
 fn run_bindgen(header_file: &str, out_dir_path: &Path) -> Result<()> {
-    let builder = bindgen::Builder::default()
+    let mut builder = bindgen::Builder::default()
         .header(header_file)
         .default_enum_style(bindgen::EnumVariation::Rust {
             non_exhaustive: false,
@@ -184,31 +224,17 @@ fn run_bindgen(header_file: &str, out_dir_path: &Path) -> Result<()> {
         .derive_default(true)
         .derive_hash(true)
         .derive_partialord(true)
-        .derive_partialeq(true)
-        // C types that will be made available to rust code.
-        // Add more to this list if you want to generate more bindings.
-        .whitelist_type("UAcceptResult")
-        .whitelist_type("UBool")
-        .whitelist_type("UCalendar.*")
-        .whitelist_type("UChar.*")
-        .whitelist_type("UData.*")
-        .whitelist_type("UDate.*")
-        .whitelist_type("UDateFormat.*")
-        .whitelist_type("UEnumeration.*")
-        .whitelist_type("UErrorCode")
-        .whitelist_type("UMessageFormat")
-        .whitelist_type("UParseError")
-        .whitelist_type("UText")
-        // C functions that will be made available to rust code.
-        // Add more to this list if you want to bring in more types.
-        .whitelist_function("u_.*")
-        .whitelist_function("ucal_.*")
-        .whitelist_function("udata_.*")
-        .whitelist_function("udat_.*")
-        .whitelist_function("uenum_.*")
-        .whitelist_function("uloc_.*")
-        .whitelist_function("utext_.*")
-        .whitelist_function("umsg_.*");
+        .derive_partialeq(true);
+
+    // Add all types that should be exposed to rust code.
+    for bindgen_type in BINDGEN_ALLOWLIST_TYPES.iter() {
+        builder = builder.whitelist_type(bindgen_type);
+    }
+
+    // Add all functions that should be exposed to rust code.
+    for bindgen_function in BINDGEN_ALLOWLIST_FUNCTIONS.iter() {
+        builder = builder.whitelist_function(bindgen_function);
+    }
 
     // Add the correct clang settings.
     let renaming_arg = match has_renaming().with_context(|| "could not prepare bindgen builder")? {
@@ -346,16 +372,8 @@ fn icu_config_autodetect() -> Result<()> {
         .join("include")
         .join("unicode");
 
-
-    // The modules for which bindings will be generated.  Add more if you need
-    // them.  The list should be topologicaly sorted based on the inclusion
-    // relationship between the respective headers.
-    // Any of these will fail if the required binaries are not present in $PATH.
-    let bindgen_source_modules: Vec<&str> = vec![
-        "ucal", "udat", "udata", "uenum", "ustring", "utext", "uclean", "umsg",
-    ];
     let header_file =
-        generate_wrapper_header(&out_dir_path, &bindgen_source_modules, &include_dir_path);
+        generate_wrapper_header(&out_dir_path, &BINDGEN_SOURCE_MODULES, &include_dir_path);
     run_bindgen(&header_file, out_dir_path).with_context(|| format!("while running bindgen"))?;
     run_renamegen(out_dir_path).with_context(|| format!("while running renamegen"))?;
 
