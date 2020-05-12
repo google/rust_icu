@@ -9,6 +9,7 @@ cd $TOP_DIR
 
 C_API_HEADER_NAMES=(
   "ucal"
+  "ucol"
   "udat"
   "udata"
   "uenum"

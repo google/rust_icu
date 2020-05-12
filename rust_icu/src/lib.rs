@@ -27,22 +27,26 @@
 //!
 //! | Original | Remapped |
 //! | -------- | -------- |
-//! | rust_icu_sys | icu::sys |
 //! | rust_icu_common | icu::common |
+//! | rust_icu_sys | icu::sys |
 //! | rust_icu_ucal | icu::cal |
+//! | rust_icu_ucol | icu::col |
 //! | rust_icu_udat | icu::dat |
 //! | rust_icu_udata | icu::data |
 //! | rust_icu_uenum | icu::enums |
+//! | rust_icu_uloc | icu::loc |
 //! | rust_icu_umsg | icu::msg |
 //! | rust_icu_ustring | icu::string |
 //! | rust_icu_utext | text |
 
-pub use rust_icu_sys as sys;
 pub use rust_icu_common as common;
+pub use rust_icu_sys as sys;
 pub use rust_icu_ucal as cal;
+pub use rust_icu_ucol as col;
 pub use rust_icu_udat as dat;
 pub use rust_icu_udata as data;
 pub use rust_icu_uenum as enums;
+pub use rust_icu_uloc as loc;
 pub use rust_icu_umsg as msg;
 pub use rust_icu_ustring as string;
 pub use rust_icu_utext as text;
