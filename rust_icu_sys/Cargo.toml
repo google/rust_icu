@@ -23,6 +23,7 @@ paste = "0.1.5"
 [build-dependencies]
 anyhow = "1.0"
 bindgen = "0.53.2"
+lazy_static = "1.4"
 
 [lib]
 # Indented documentation text in the generated library is prose, not rust code.
