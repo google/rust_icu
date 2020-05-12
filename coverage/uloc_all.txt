@@ -31,7 +31,6 @@ uloc_getScript
 uloc_getVariant
 uloc_isRightToLeft
 uloc_minimizeSubtags
-uloc_openAvailableByType
 uloc_openKeywords
 uloc_setDefault
 uloc_setKeywordValue

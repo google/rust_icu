@@ -1,6 +1,12 @@
 ucal_close
+ucal_get
 ucal_getDefaultTimeZone
+ucal_getMillis
 ucal_getNow
 ucal_getTZDataVersion
+ucal_inDaylightTime
 ucal_open
+ucal_setDate
+ucal_setDateTime
 ucal_setDefaultTimeZone
+ucal_setMillis

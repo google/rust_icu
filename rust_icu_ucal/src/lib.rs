@@ -90,6 +90,116 @@ impl UCalendar {
     pub fn as_c_calendar(&self) -> *const sys::UCalendar {
         self.rep
     }
+
+    /// Sets the calendar's current date/time in milliseconds since the epoch.
+    ///
+    /// Implements `ucal_setMillis`.
+    pub fn set_millis(&mut self, date_time: sys::UDate) -> Result<(), common::Error> {
+        let mut status = common::Error::OK_CODE;
+        unsafe {
+            versioned_function!(ucal_setMillis)(self.rep, date_time, &mut status);
+        };
+        common::Error::ok_or_warning(status)
+    }
+
+    /// Gets the calendar's current date/time in milliseconds since the epoch.
+    ///
+    /// Implements `ucal_getMillis`.
+    pub fn get_millis(&self) -> Result<sys::UDate, common::Error> {
+        let mut status = common::Error::OK_CODE;
+        let millis = unsafe { versioned_function!(ucal_getMillis)(self.rep, &mut status) };
+        common::Error::ok_or_warning(status)?;
+        Ok(millis)
+    }
+
+    /// Sets the calendar's current date in the calendar's local time zone.
+    ///
+    /// Note that `month` is 0-based.
+    ///
+    /// Implements `ucal_setDate`.
+    pub fn set_date(&mut self, year: i32, month: i32, date: i32) -> Result<(), common::Error> {
+        let mut status = common::Error::OK_CODE;
+        unsafe {
+            versioned_function!(ucal_setDate)(self.rep, year, month, date, &mut status);
+        }
+        common::Error::ok_or_warning(status)?;
+        Ok(())
+    }
+
+    /// Sets the calendar's current date and time in the calendar's local time zone.
+    ///
+    /// Note that `month` is 0-based.
+    ///
+    /// Implements `ucal_setDateTime`.
+    pub fn set_date_time(
+        &mut self,
+        year: i32,
+        month: i32,
+        date: i32,
+        hour: i32,
+        minute: i32,
+        second: i32,
+    ) -> Result<(), common::Error> {
+        let mut status = common::Error::OK_CODE;
+        unsafe {
+            versioned_function!(ucal_setDateTime)(
+                self.rep,
+                year,
+                month,
+                date,
+                hour,
+                minute,
+                second,
+                &mut status,
+            );
+        }
+        common::Error::ok_or_warning(status)?;
+        Ok(())
+    }
+
+    /// Returns the calendar's time zone's offset from UTC in milliseconds, for the calendar's
+    /// current date/time.
+    ///
+    /// This does not include the daylight savings offset, if any. Note that the calendar's current
+    /// date/time is significant because time zones are occasionally redefined -- a time zone that
+    /// has a +16.5 hour offset today might have had a +17 hour offset a decade ago.
+    ///
+    /// Wraps `ucal_get` for `UCAL_ZONE_OFFSET`.
+    pub fn get_zone_offset(&self) -> Result<i32, common::Error> {
+        self.get(UCalendarDateFields::UCAL_ZONE_OFFSET)
+    }
+
+    /// Returns the calendar's daylight savings offset from its non-DST time, in milliseconds, for
+    /// the calendar's current date/time. This may be 0 if the time zone does not observe DST at
+    /// all, or if the time zone is not in the daylight savings period at the calendar's current
+    /// date/time.
+    ///
+    /// Wraps `ucal_get` for `UCAL_ZONE_DST_OFFSET`.
+    pub fn get_dst_offset(&self) -> Result<i32, common::Error> {
+        self.get(UCalendarDateFields::UCAL_DST_OFFSET)
+    }
+
+    /// Returns true if the calendar is currently in daylight savings / summer time.
+    ///
+    /// Implements `ucal_inDaylightTime`.
+    pub fn in_daylight_time(&self) -> Result<bool, common::Error> {
+        let mut status = common::Error::OK_CODE;
+        let in_daylight_time: sys::UBool =
+            unsafe { versioned_function!(ucal_inDaylightTime)(self.as_c_calendar(), &mut status) };
+        common::Error::ok_or_warning(status)?;
+        Ok(in_daylight_time != 0)
+    }
+
+    /// Implements `ucal_get`.
+    ///
+    /// Consider using specific higher-level methods instead.
+    pub fn get(&self, field: UCalendarDateFields) -> Result<i32, common::Error> {
+        let mut status: UErrorCode = common::Error::OK_CODE;
+        let value =
+            unsafe { versioned_function!(ucal_get)(self.as_c_calendar(), field, &mut status) };
+        common::Error::ok_or_warning(status)?;
+        Ok(value)
+    }
 }
 
 /// Implements `ucal_setDefaultTimeZone`
@@ -159,7 +269,14 @@ pub fn get_now() -> f64 {
 
 #[cfg(test)]
 mod tests {
-    use {super::*, regex::Regex, rust_icu_uenum as uenum};
+    use {
+        super::{UCalendar, *},
+        regex::Regex,
+        rust_icu_udat::UDateFormat,
+        rust_icu_uenum as uenum,
+        rust_icu_uloc::ULoc,
+        rust_icu_ustring::UChar,
+    };
 
     #[test]
     fn test_open_time_zones() {
@@ -216,5 +333,103 @@ mod tests {
         let re = Regex::new(r"^[0-9][0-9][0-9][0-9][a-z]$").expect("valid regex");
         let tz_version = super::get_tz_data_version().expect("get_tz_data_version works");
         assert!(re.is_match(&tz_version));
+    }
+
+    #[test]
+    fn test_get_set_millis() -> Result<(), common::Error> {
+        let now = get_now();
+        let mut cal = UCalendar::new("America/New_York", "en-US", UCalendarType::UCAL_GREGORIAN)?;
+        // Assert that the times are basically the same.
+        // Let's assume that no more than 1 second might elapse between the execution of `get_now()`
+        // and `get_millis()`.
+        assert!((now - cal.get_millis()?).abs() <= 1000f64);
+
+        let arbitrary_delta_ms = 17.0;
+        let date = now + arbitrary_delta_ms;
+        cal.set_millis(date)?;
+        assert_eq!(cal.get_millis()?, date);
+        Ok(())
+    }
+
+    /// Returns a `UDateFormat` for ISO 8601 dates of the form "2020-05-01T23:01:34.842+17:00".
+    fn iso_8601_format() -> Result<UDateFormat, common::Error> {
+        // Locale and tz don't matter for this pattern.
+        let locale = ULoc::try_from("und")?;
+        let tz = UChar::try_from("UTC")?;
+        let pattern = UChar::try_from("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ")?;
+        UDateFormat::new_with_pattern(&locale, &tz, &pattern)
+    }
+
+    #[test]
+    fn test_set_date() -> Result<(), common::Error> {
+        let date_format = iso_8601_format()?;
+
+        let time_a = date_format.parse("2020-05-07T21:00:00.000-04:00")?;
+        let time_b = date_format.parse("2020-05-04T21:00:00.000-04:00")?;
+
+        let mut cal = UCalendar::new("America/New_York", "en-US", UCalendarType::UCAL_GREGORIAN)?;
+        cal.set_millis(time_a)?;
+        cal.set_date(2020, UCalendarMonths::UCAL_MAY as i32, 4)?;
+        assert_eq!(cal.get_millis()?, time_b);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_set_date_time() -> Result<(), common::Error> {
+        let date_format = iso_8601_format()?;
+
+        let time_a = date_format.parse("2020-05-07T21:26:55.898-04:00")?;
+        let time_b = date_format.parse("2020-05-04T21:00:00.898-04:00")?;
+
+        let mut cal = UCalendar::new("America/New_York", "en-US", UCalendarType::UCAL_GREGORIAN)?;
+        cal.set_millis(time_a)?;
+        cal.set_date_time(2020, UCalendarMonths::UCAL_MAY as i32, 4, 21, 0, 0)?;
+
+        assert_eq!(cal.get_millis()?, time_b);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_get() -> Result<(), common::Error> {
+        let date_format = iso_8601_format()?;
+        let date_time = date_format.parse("2020-05-07T21:26:55.898-04:00")?;
+
+        let mut cal = UCalendar::new("America/New_York", "en-US", UCalendarType::UCAL_GREGORIAN)?;
+        cal.set_millis(date_time)?;
+
+        assert_eq!(cal.get(UCalendarDateFields::UCAL_DAY_OF_MONTH)?, 7);
+
+        assert_eq!(cal.get(UCalendarDateFields::UCAL_MILLISECOND)?, 898);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_offsets_and_daylight_time() -> Result<(), common::Error> {
+        let mut cal = UCalendar::new("America/New_York", "en-US", UCalendarType::UCAL_GREGORIAN)?;
+
+        // -5 hours
+        let expected_zone_offset_ms: i32 = -5 * 60 * 60 * 1000;
+        // + 1 hour
+        let expected_dst_offset_ms: i32 = 1 * 60 * 60 * 1000;
+
+        cal.set_date_time(2020, UCalendarMonths::UCAL_MAY as i32, 7, 21, 0, 0)?;
+        assert_eq!(cal.get_zone_offset()?, expected_zone_offset_ms);
+        assert_eq!(cal.get_dst_offset()?, expected_dst_offset_ms);
+        assert!(cal.in_daylight_time()?);
+
+        // -5 hours
+        let expected_zone_offset: i32 = -5 * 60 * 60 * 1000;
+        // No offset
+        let expected_dst_offset: i32 = 0;
+
+        cal.set_date_time(2020, UCalendarMonths::UCAL_JANUARY as i32, 15, 12, 0, 0)?;
+        assert_eq!(cal.get_zone_offset()?, expected_zone_offset);
+        assert_eq!(cal.get_dst_offset()?, expected_dst_offset);
+        assert!(!cal.in_daylight_time()?);
+
+        Ok(())
     }
 }
