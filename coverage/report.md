@@ -2,7 +2,8 @@
 
 | Header | Implemented |
 | ------ | ----------- |
-| `ucal.h` | 15 / 46 | 
+| `ucal.h` | 15 / 45 | 
+| `ucol.h` | 2 / 50 | 
 | `udat.h` | 6 / 38 | 
 | `udata.h` | 2 / 8 | 
 | `uenum.h` | 8 / 8 | 
@@ -46,7 +47,6 @@
 | `ucal_getDSTSavings` | |
 | `ucal_getFieldDifference` | |
 | `ucal_getGregorianChange` | |
-| `ucal_getHostTimeZone` | |
 | `ucal_getKeywordValuesForLocale` | |
 | `ucal_getLimit` | |
 | `ucal_getLocaleByType` | |
@@ -64,6 +64,61 @@
 | `ucal_setAttribute` | |
 | `ucal_setGregorianChange` | |
 | `ucal_setTimeZone` | |
+
+# Header: `ucol.h`
+
+| Unimplemented | Implemented |
+| ------------- | ----------- |
+| | `ucol_close` |
+| | `ucol_strcoll` |
+| `ucol_cloneBinary` | |
+| `ucol_countAvailable` | |
+| `ucol_equal` | |
+| `ucol_getAttribute` | |
+| `ucol_getAvailable` | |
+| `ucol_getBound` | |
+| `ucol_getContractions` | |
+| `ucol_getContractionsAndExpansions` | |
+| `ucol_getDisplayName` | |
+| `ucol_getEquivalentReorderCodes` | |
+| `ucol_getFunctionalEquivalent` | |
+| `ucol_getKeywords` | |
+| `ucol_getKeywordValues` | |
+| `ucol_getKeywordValuesForLocale` | |
+| `ucol_getLocale` | |
+| `ucol_getLocaleByType` | |
+| `ucol_getMaxVariable` | |
+| `ucol_getReorderCodes` | |
+| `ucol_getRules` | |
+| `ucol_getRulesEx` | |
+| `ucol_getShortDefinitionString` | |
+| `ucol_getSortKey` | |
+| `ucol_getStrength` | |
+| `ucol_getTailoredSet` | |
+| `ucol_getUCAVersion` | |
+| `ucol_getUnsafeSet` | |
+| `ucol_getVariableTop` | |
+| `ucol_getVersion` | |
+| `ucol_greater` | |
+| `ucol_greaterOrEqual` | |
+| `ucol_mergeSortkeys` | |
+| `ucol_nextSortKeyPart` | |
+| `ucol_normalizeShortDefinitionString` | |
+| `ucol_open` | |
+| `ucol_openAvailableLocales` | |
+| `ucol_openBinary` | |
+| `ucol_openFromShortString` | |
+| `ucol_openRules` | |
+| `ucol_prepareShortStringOpen` | |
+| `ucol_restoreVariableTop` | |
+| `ucol_safeClone` | |
+| `ucol_setAttribute` | |
+| `ucol_setMaxVariable` | |
+| `ucol_setReorderCodes` | |
+| `ucol_setStrength` | |
+| `ucol_setVariableTop` | |
+| `ucol_strcollIter` | |
+| `ucol_strcollUTF8` | |
 
 # Header: `udat.h`
 

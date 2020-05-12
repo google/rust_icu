@@ -96,6 +96,7 @@ publish:
 	$(call publish,rust_icu_ucal)
 	$(call publish,rust_icu_udat)
 	$(call publish,rust_icu_udata)
+	$(call publish,rust_icu_ucol)
 	$(call publish,rust_icu_umsg)
 	$(call publish,rust_icu)
 
@@ -124,6 +125,7 @@ uprev:
 	$(call uprev,rust_icu_udata)
 	$(call uprev,rust_icu_umsg)
 	$(call uprev,rust_icu_intl)
+	$(call uprev,rust_icu_ucol)
 	$(call uprev,rust_icu)
 
 cov:

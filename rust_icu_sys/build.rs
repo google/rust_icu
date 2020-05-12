@@ -36,7 +36,7 @@ lazy_static! {
     // headers.  Any of these will fail if the required binaries are not present in $PATH.
     static ref BINDGEN_SOURCE_MODULES: Vec<&'static str> = vec![
         "ucal", "udat", "udata", "uenum", "ustring", "utext", "uclean", "umsg",
-        "ucol",
+        "ucol", "uset",
     ];
 
     // C functions that will be made available to rust code.  Add more to this list if you want to
@@ -50,6 +50,7 @@ lazy_static! {
         "uloc_.*",
         "utext_.*",
         "umsg_.*",
+        "ucol_.*",
     ];
 
     // C types that will be made available to rust code.  Add more to this list if you want to
@@ -67,6 +68,9 @@ lazy_static! {
         "UMessageFormat",
         "UParseError",
         "UText",
+        "UCollator",
+        "USet",
+        "UCol.*",
     ];
 }
 

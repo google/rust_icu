@@ -25,6 +25,7 @@ rust_icu_udat = { path = "../rust_icu_udat", version = "0.1.4", default-features
 rust_icu_udata = { path = "../rust_icu_udata", version = "0.1.4", default-features = false }
 rust_icu_uenum = { path = "../rust_icu_uenum", version = "0.1.4", default-features = false }
 rust_icu_uloc = { path = "../rust_icu_uloc", version = "0.1.4", default-features = false }
+rust_icu_ucol = { path = "../rust_icu_ucol", version = "0.1.4", default-features = false }
 rust_icu_umsg = { path = "../rust_icu_umsg", version = "0.1.4", default-features = false }
 rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.1.4", default-features = false }
 rust_icu_utext = { path = "../rust_icu_utext", version = "0.1.4", default-features = false }
@@ -38,6 +39,7 @@ use-bindgen = [
   "rust_icu_common/use-bindgen",
   "rust_icu_sys/use-bindgen",
   "rust_icu_ucal/use-bindgen",
+  "rust_icu_ucol/use-bindgen",
   "rust_icu_udat/use-bindgen",
   "rust_icu_udata/use-bindgen",
   "rust_icu_uenum/use-bindgen",
@@ -50,6 +52,7 @@ renaming = [
   "rust_icu_common/renaming",
   "rust_icu_sys/renaming",
   "rust_icu_ucal/renaming",
+  "rust_icu_ucol/renaming",
   "rust_icu_udat/renaming",
   "rust_icu_udata/renaming",
   "rust_icu_uenum/renaming",
@@ -62,6 +65,7 @@ icu_config = [
   "rust_icu_common/icu_config",
   "rust_icu_sys/icu_config",
   "rust_icu_ucal/icu_config",
+  "rust_icu_ucol/icu_config",
   "rust_icu_udat/icu_config",
   "rust_icu_udata/icu_config",
   "rust_icu_uenum/icu_config",
@@ -74,6 +78,7 @@ icu_version_in_env = [
   "rust_icu_common/icu_version_in_env",
   "rust_icu_sys/icu_version_in_env",
   "rust_icu_ucal/icu_version_in_env",
+  "rust_icu_ucol/icu_version_in_env",
   "rust_icu_udat/icu_version_in_env",
   "rust_icu_udata/icu_version_in_env",
   "rust_icu_uenum/icu_version_in_env",
