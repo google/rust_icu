@@ -420,6 +420,7 @@ mod tests {
         }
     }
 
+    #[test]
     fn tzsave() -> Result<(), common::Error> {
         let _ = TzSave(ucal::get_default_time_zone()?);
         ucal::set_default_time_zone("Europe/Amsterdam")?;
@@ -473,10 +474,10 @@ mod tests {
               Formatted string: {2},
               Date: {3,date,full}",
         ).unwrap();
-        let fmt = crate::UMessageFormat::try_from(&msg, &loc).unwrap();
+        let _fmt = crate::UMessageFormat::try_from(&msg, &loc).unwrap();
 
         // This is not allowed!
-        let _ = message_format!(&fmt);
+        let _ = message_format!(&_fmt);
     }
 
     #[test]
