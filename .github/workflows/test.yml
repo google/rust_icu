@@ -1,0 +1,17 @@
+name: rust_icu
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        icu_version: [63, 64, 65, 66, 67]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Test ICU version ${{ matrix.icu_version }}
+        run: "make DOCKER_TEST_ENV=rust_icu_testenv-${{ matrix.icu_version}} docker-test"
