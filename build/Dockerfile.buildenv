@@ -7,21 +7,27 @@ WORKDIR /src
 RUN ls -l && pwd && echo $PATH
 
 RUN apt-get update && apt-get install -y \
-		apt-utils \
-		clang \
-		coreutils \
-		curl \
-		exuberant-ctags \
-		gawk \
-		git \
-		libclang-dev \
-		llvm-dev \
-		""
+apt-utils \
+clang \
+coreutils \
+curl \
+exuberant-ctags \
+gawk \
+git \
+libclang-dev \
+llvm-dev \
+strace \
+""
 
-RUN cargo version && \
-		cargo install bindgen rustfmt && \
-		rustup toolchain install nightly && \
-		rustup default nightly
+RUN \
+cargo version && \
+rustup toolchain install nightly && \
+rustup default nightly && \
+rustup component add rustfmt --toolchain nightly
+
+RUN \
+cargo install --force bindgen rustfmt
+
 RUN chmod --recursive a+rwx $HOME
 RUN echo $HOME && cd && ls -ld $HOME
 

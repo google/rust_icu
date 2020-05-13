@@ -4,6 +4,9 @@ ARG DOCKER_REPO=filipfilmar
 ARG VERSION=0.0.0
 ARG ICU_VERSION_TAG=maint-64
 FROM $DOCKER_REPO/rust_icu_$ICU_VERSION_TAG:$VERSION AS buildenv
+ARG DOCKER_REPO
+ARG VERSION
+ARG ICU_VERSION_TAG
 
 # Mount the rust_icu source top level directory here.
 ENV RUST_ICU_SOURCE_DIR=/src/rust_icu
@@ -18,6 +21,7 @@ RUN mkdir -p $RUST_ICU_SOURCE_DIR && \
 COPY entrypoint.sh /entrypoint.sh 
 RUN chmod a+rwx /entrypoint.sh
 
+RUN cargo +nightly install bindgen rustfmt
 
 ENV CARGO_TEST_ARGS=""
 ENV RUST_ICU_MAJOR_VERSION_NUMBER=""

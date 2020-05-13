@@ -3,10 +3,17 @@ ARG VERSION=0.0.0
 ARG ICU_VERSION_TAG=maint/maint-64
 FROM $DOCKER_REPO/rust_icu_buildenv:$VERSION AS buildenv
 
+# Every FROM declaration clears ARG values; but re-declaring
+# them gets the values back.
+ARG DOCKER_REPO
+ARG VERSION
+ARG ICU_VERSION_TAG
+
 # Install ICU from source.
 ENV ICU_SOURCE_DIR="/src/icu"
+RUN echo "$ICU_VERSION_TAG"
 RUN git clone https://github.com/unicode-org/icu.git && \
-		cd $ICU_SOURCE_DIR && \
+    cd $ICU_SOURCE_DIR && \
 		git fetch origin $ICU_VERSION_TAG && \
 		git checkout $ICU_VERSION_TAG
 
