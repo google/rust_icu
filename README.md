@@ -498,3 +498,12 @@ Some clarification:
   used to run the test in.  The container `rust_icu_testenv-67` is a container image
   that contains preinstalled environment with a compiled version of ICU 67.
 
+## Refreshing static bindgen files
+
+Requires docker.
+
+Run `make static-bindgen` periodically, to refresh the static bindgen files.
+
+For more information on why this is needed, see the [bindgen
+README.md](rust_icu_sys/bindgen/README.md).
+

@@ -12,24 +12,24 @@ build-%: Dockerfile.%
 	docker build \
 			--build-arg DOCKER_REPO=${DOCKER_REPO} \
 			--build-arg VERSION=${VERSION} \
-			-f $< -t rust_icu_$*:latest .
+			-f $< -t rust_icu_$*:${VERSION} .
 
-build-maint-%: Dockerfile.maint
+build-maint-%: Dockerfile.maint Dockerfile.buildenv
 	docker build \
 			--build-arg DOCKER_REPO=${DOCKER_REPO} \
 			--build-arg VERSION=${VERSION} \
 			--build-arg ICU_VERSION_TAG=maint/maint-$* \
-			-f $< -t rust_icu_maint-$*:latest .
+			-f $< -t rust_icu_maint-$*:${VERSION} .
 
-build-testenv-%: Dockerfile.testenv
+build-testenv-%: Dockerfile.testenv Dockerfile.buildenv
 	docker build \
 			--build-arg DOCKER_REPO=${DOCKER_REPO} \
 			--build-arg VERSION=${VERSION} \
 			--build-arg ICU_VERSION_TAG=maint-$* \
-			-f $< -t rust_icu_testenv-$*:latest .
+			-f $< -t rust_icu_testenv-$*:${VERSION} .
 
 tag-%: build-%
-	docker tag rust_icu_$*:latest ${DOCKER_REPO}/rust_icu_$*:${VERSION}
+	docker tag rust_icu_$*:${VERSION} ${DOCKER_REPO}/rust_icu_$*:${VERSION}
 
 push-%: tag-%
 	docker push ${DOCKER_REPO}/rust_icu_$*:${VERSION}

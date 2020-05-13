@@ -66,6 +66,31 @@ docker-test:
 			${DOCKER_REPO}/${DOCKER_TEST_ENV}:${USED_BUILDENV_VERSION}
 .PHONY: docker-test
 
+# Refreshes the static bindgen output (contents of ./rust_icu_sys/bindgen) based
+# on the currently present ICU versions in the test environment.
+#
+# % is expected to be a number equal to a valid ICU major version number, such
+# as "65" or such.
+static-bindgen-%:
+	mkdir -p ${CARGO_TARGET_DIR}
+	echo top_dir: ${TOP_DIR}
+	echo pwd: $(shell pwd)
+	docker run ${TTY} \
+			--user=${UID}:${GID} \
+			--volume=${TOP_DIR}:/src/rust_icu \
+			--volume=${LOGNAME_HOME}/.cargo:/usr/local/cargo \
+			--env="RUST_ICU_MAJOR_VERSION_NUMBER=$*" \
+			--entrypoint="/bin/bash" \
+			${DOCKER_REPO}/rust_icu_testenv-$*:${USED_BUILDENV_VERSION} \
+			  "-c" "env OUTPUT_DIR=./rust_icu/rust_icu_sys/bindgen \
+			  ./rust_icu/rust_icu_sys/bindgen/run_bindgen.sh"
+
+static-bindgen: \
+		static-bindgen-65 \
+		static-bindgen-66 \
+		static-bindgen-67
+.PHONY: static-bindgen
+
 # Builds and pushes the build environment containers.  You would not normally
 # need to do this.
 buildenv:

@@ -124,7 +124,7 @@ function main() {
 
   set -x 
 
-  # Example: "67.1"
+  # Example: "67.1", "66.0.1"
   local _icu_version="$(icu-config --version)"
   # Example: "67"
   local _icu_version_major="${_icu_version%.*}"
