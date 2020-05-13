@@ -27,11 +27,14 @@ USED_BUILDENV_VERSION ?= 0.0.4
 
 CARGO_FEATURE_VERSION :=
 
+ICU_VERSION ?= $(shell icu-config --version)
+ICU_MAJOR_VERSION ?= $(basename ${ICU_VERSION})
 ICU_LIBDIR := $(shell icu-config --libdir)
 test:
 	@env PKG_CONFIG_PATH="${HOME}/local/lib/pkgconfig" \
 	    LD_LIBRARY_PATH="${ICU_LIBDIR}" \
-		echo "ICU version detected: $(shell icu-config --version)" && \
+		echo "ICU version detected:       ${ICU_VERSION}" && \
+		echo "ICU major version detected: ${ICU_MAJOR_VERSION}"
 		  cargo test
 .PHONY: test
 
@@ -45,7 +48,8 @@ CARGO_TARGET_DIR := ${TMP}/rust_icu-${LOGNAME}-target
 # Pass different values for DOCKER_TEST_ENV and DOCKER_TEST_CARGO_TEST_ARGS to
 # test different configurations.  This is useful in Travis CI matrix tests, for
 # example.
-DOCKER_TEST_ENV ?= rust_icu_testenv-64
+RUST_ICU_MAJOR_VERSION_NUMBER ?= 64
+DOCKER_TEST_ENV ?= rust_icu_testenv-${RUST_ICU_MAJOR_VERSION_NUMBER}
 DOCKER_TEST_CARGO_TEST_ARGS ?= 
 docker-test:
 	mkdir -p ${CARGO_TARGET_DIR}
@@ -57,13 +61,10 @@ docker-test:
 			--volume=${CARGO_TARGET_DIR}:/build/cargo \
 			--volume=${LOGNAME_HOME}/.cargo:/usr/local/cargo \
 			--env="CARGO_TEST_ARGS=${DOCKER_TEST_CARGO_TEST_ARGS}" \
+			--env="RUST_ICU_MAJOR_VERSION_NUMBER=${RUST_ICU_MAJOR_VERSION_NUMBER}"\
 			--env="RUST_BACKTRACE=full" \
 			${DOCKER_REPO}/${DOCKER_TEST_ENV}:${USED_BUILDENV_VERSION}
 .PHONY: docker-test
-
-docker-test-65-renaming:
-	$(call run-docker-test,rust_icu_testenv-65,--no-default-features --features=renaming)
-.PHONY: docker-test-65-renaming
 
 # Builds and pushes the build environment containers.  You would not normally
 # need to do this.
