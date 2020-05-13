@@ -92,26 +92,28 @@ The limitations we know of today are as follows:
 # Compatibility
 
 The table below shows the support matrix that has been verified so far. Any
-versions not mentioned explicitly have not been tested.  Feel free to test a
-version and send a pull request to add to this matrix once you confirm the
-functionality.  Each row is for a particular ICU library version.  The column
-headers of columns 2 and onwards are features set combos.  The coverage
-reflects the feature set and version points that we needed up to this point.
-The version semver in each cell denotes the version point that was tested.
+versions not mentioned explicitly have not been tested. No guarantees are made
+for those versions.
 
-| ICU version | `default` | `renaming` | `renaming`, `icu_version_in_env`  |
-| ----------- | ----------| ---------- | --------------------------------- |
-| 63.x        | 0.1.3+    |  -         |  -                                |
-| 64.2        | 0.1.3+    |  -         |  -                                |
-| 65.1        | 0.1.3+    | 0.1.3+     | 0.1.3+                            |
-| 66.0.1      | 0.1.3+    |  -         |  -                                |
-| 67.1        | 0.1.4     |  -         |  -                                |
+## Feature sets
+
+* 1: default
+* 2: "renaming"
+* 3: "icu_version_in_env"
+
+## Compatibility matrix
+
+Each cell in the table shows which feature set combination has been tested for
+this particular ICU library and `rust_icu` version combination.
+
+| `rust_icu` version | ICU 63.x | ICU 64.2 | ICU 65.1  | ICU 66.0.1 | ICU 67.1 |
+| ------------------ | -------- | -------- | --------- | ---------- | -------- |
+| 0.1                | ☟        | ☟        | ☟         | ☟          | ☟        |
+| 0.1.3              | 1        | 1        | 1; 2; 2+3 | 1          | 1        |
+| 0.1.4              | 1        | 1        | 1; 2; 2+3 | 1          | 1        |
 
 > API versions that differ in the minor version number only should be
-> compatible; but since it is time consuming to test all versions and
-> relatively easy to keep only the last major edition of the library around, we
-> keep only one minor version per library in the table, until need arises to do
-> something else.
+> compatible.
 
 # Features
 
@@ -466,4 +468,32 @@ When adding more ICU wrappers, make sure to do the following:
 
 * Check `build.rs` to add appropriate lines into `bindgen_source_modules`, then
   `whitelist_types_regexes` and `whitelist_functions_regexes`.
+
+## Testing with a specific feature set turned on
+
+Here's an example of running a docker test on ICU 67, with features
+`icu_version_in_env` and `renaming` turned on instead of the default.  Note that
+the parameters are mostly passed into the container that runs `docker-test` via
+environment variables.
+
+```bash
+make DOCKER_TEST_ENV=rust_icu_testenv-67 \
+  RUST_ICU_MAJOR_VERSION_NUMBER=67 \
+  DOCKER_TEST_CARGO_TEST_ARGS='--no-default-features --features icu_version_in_env renaming' \
+  docker-test
+```
+
+Some clarification:
+
+* The environment variable `RUST_ICU_MAJOR_VERSION_NUMBER` is used for the
+ feature `icu_version_in_env` to instruct `cargo` to use the file
+ `rust_icu_sys/bindgen/lib_67.rs` as a prebuilt bindgen source file instead of
+ trying to generate one on the fly.
+* The environment variable `DOCKER_TEST_CARGO_TEST_ARGS` is used to pass the
+  command line arguments to the `cargo test` which is used in the docker container.
+  The environment is passed in verbatim to `cargo test` without quoting, so separate
+  words in the environment end up being separate args to `cargo test`.
+* The environment variable `DOCKER_TEST_ENV` is the base name of the Docker container
+  used to run the test in.  The container `rust_icu_testenv-67` is a container image
+  that contains preinstalled environment with a compiled version of ICU 67.
 
