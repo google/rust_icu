@@ -110,10 +110,11 @@ this particular ICU library and `rust_icu` version combination.
 | ------------------ | -------- | -------- | --------- | ---------- | -------- |
 | 0.1                | ☟        | ☟        | ☟         | ☟          | ☟        |
 | 0.1.3              | 1        | 1        | 1; 2; 2+3 | 1          | 1        |
-| 0.1.4              | 1        | 1        | 1; 2; 2+3 | 1          | 1        |
+| 0.2                | ☟        | ☟        | ☟         | ☟          | ☟        |
+| 0.2.0              | 1        | 1        | 1; 2; 2+3 | 1          | 1        |
 
-> API versions that differ in the minor version number only should be
-> compatible.
+> Prior to a 1.0.0 release, API versions that only differ in the patch version
+> number (0.x.**y**) only should be compatible.
 
 # Features
 

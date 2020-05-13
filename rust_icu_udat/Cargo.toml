@@ -5,7 +5,7 @@ license = "Apache-2.0"
 name = "rust_icu_udat"
 readme = "README.md"
 repository = "https://github.com/google/rust_icu"
-version = "0.1.4"
+version = "0.2.0"
 
 description = """
 Native bindings to the ICU4C library from Unicode.
@@ -18,12 +18,12 @@ keywords = ["icu", "unicode", "i18n", "l10n"]
 [dependencies]
 log = "0.4.6"
 paste = "0.1.5"
-rust_icu_common = { path = "../rust_icu_common", version = "0.1.4", default-features = false }
-rust_icu_sys = { path = "../rust_icu_sys", version = "0.1.4", default-features = false }
-rust_icu_ucal = { path = "../rust_icu_ucal", version = "0.1.4", default-features = false }
-rust_icu_uenum = { path = "../rust_icu_uenum", version = "0.1.4", default-features = false }
-rust_icu_uloc = { path = "../rust_icu_uloc", version = "0.1.4", default-features = false }
-rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.1.4", default-features = false }
+rust_icu_common = { path = "../rust_icu_common", version = "0.2.0", default-features = false }
+rust_icu_sys = { path = "../rust_icu_sys", version = "0.2.0", default-features = false }
+rust_icu_ucal = { path = "../rust_icu_ucal", version = "0.2.0", default-features = false }
+rust_icu_uenum = { path = "../rust_icu_uenum", version = "0.2.0", default-features = false }
+rust_icu_uloc = { path = "../rust_icu_uloc", version = "0.2.0", default-features = false }
+rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.2.0", default-features = false }
 
 # See the feature description in ../rust_icu_sys/Cargo.toml for details.
 [features]
