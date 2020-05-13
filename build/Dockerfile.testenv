@@ -20,5 +20,6 @@ RUN chmod a+rwx /entrypoint.sh
 
 
 ENV CARGO_TEST_ARGS=""
+ENV RUST_ICU_MAJOR_VERSION_NUMBER=""
 ENTRYPOINT /entrypoint.sh
 

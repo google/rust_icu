@@ -1,4 +1,5 @@
 #! /bin/bash
+set -euo pipefail
 set -x
 env
 cd $RUST_ICU_SOURCE_DIR
