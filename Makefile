@@ -23,7 +23,7 @@ endif
 #   make USED_BUILDENV_VERSION=whatever-you-want docker-test
 #
 # NOTE: This version number is completely independent of the crate version.
-USED_BUILDENV_VERSION ?= 0.0.4
+USED_BUILDENV_VERSION ?= 1.0.0
 
 CARGO_FEATURE_VERSION :=
 
