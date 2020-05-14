@@ -58,10 +58,6 @@ icu_version_in_env = [
 icu_version_64_plus = []
 icu_version_67_plus = []
 
-[build-dependencies]
-anyhow = "1.0"
-bindgen = "0.53.2"
-
 [badges]
 maintenance = { status = "actively-developed" }
 is-it-maintained-issue-resolution = { repository = "google/rust_icu" }
