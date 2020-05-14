@@ -10,6 +10,7 @@ pub type __uint32_t = ::std::os::raw::c_uint;
 pub type __int64_t = ::std::os::raw::c_long;
 pub type UBool = i8;
 pub type UChar = u16;
+pub type OldUChar = ::std::os::raw::c_ushort;
 pub type UChar32 = i32;
 pub type UVersionInfo = [u8; 4usize];
 extern "C" {
@@ -3616,6 +3617,14 @@ extern "C" {
         destCapacity: i32,
         ec: *mut UErrorCode,
     ) -> i32;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd)]
+pub enum USetSpanCondition {
+    USET_SPAN_NOT_CONTAINED = 0,
+    USET_SPAN_CONTAINED = 1,
+    USET_SPAN_SIMPLE = 2,
+    USET_SPAN_CONDITION_COUNT = 3,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
