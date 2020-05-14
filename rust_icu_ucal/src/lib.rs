@@ -298,9 +298,6 @@ mod tests {
     use {
         super::{UCalendar, *},
         regex::Regex,
-        rust_icu_udat::UDateFormat,
-        rust_icu_uloc::ULoc,
-        rust_icu_ustring::UChar,
         std::collections::HashSet,
     };
 
@@ -413,21 +410,14 @@ mod tests {
         Ok(())
     }
 
-    /// Returns a `UDateFormat` for ISO 8601 dates of the form "2020-05-01T23:01:34.842+17:00".
-    fn iso_8601_format() -> Result<UDateFormat, common::Error> {
-        // Locale and tz don't matter for this pattern.
-        let locale = ULoc::try_from("und")?;
-        let tz = UChar::try_from("UTC")?;
-        let pattern = UChar::try_from("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ")?;
-        UDateFormat::new_with_pattern(&locale, &tz, &pattern)
-    }
-
     #[test]
     fn test_set_date() -> Result<(), common::Error> {
-        let date_format = iso_8601_format()?;
+        // Timestamps hard-coded, not parsed, to avoid cyclic dependency on udat.
 
-        let time_a = date_format.parse("2020-05-07T21:00:00.000-04:00")?;
-        let time_b = date_format.parse("2020-05-04T21:00:00.000-04:00")?;
+        // 2020-05-07T21:00:00.000-04:00
+        let time_a = 1588899600000f64;
+        // 2020-05-04T21:00:00.000-04:00
+        let time_b = 1588640400000f64;
 
         let mut cal = UCalendar::new("America/New_York", "en-US", UCalendarType::UCAL_GREGORIAN)?;
         cal.set_millis(time_a)?;
@@ -439,10 +429,12 @@ mod tests {
 
     #[test]
     fn test_set_date_time() -> Result<(), common::Error> {
-        let date_format = iso_8601_format()?;
+        // Timestamps hard-coded, not parsed, to avoid cyclic dependency on udat.
 
-        let time_a = date_format.parse("2020-05-07T21:26:55.898-04:00")?;
-        let time_b = date_format.parse("2020-05-04T21:00:00.898-04:00")?;
+        // 2020-05-07T21:26:55.898-04:00
+        let time_a = 1588901215898f64;
+        // 2020-05-04T21:00:00.898-04:00
+        let time_b = 1588640400898f64;
 
         let mut cal = UCalendar::new("America/New_York", "en-US", UCalendarType::UCAL_GREGORIAN)?;
         cal.set_millis(time_a)?;
@@ -455,8 +447,10 @@ mod tests {
 
     #[test]
     fn test_get() -> Result<(), common::Error> {
-        let date_format = iso_8601_format()?;
-        let date_time = date_format.parse("2020-05-07T21:26:55.898-04:00")?;
+        // Timestamps hard-coded, not parsed, to avoid cyclic dependency on udat.
+
+        // 2020-05-07T21:26:55.898-04:00
+        let date_time = 1588901215898f64;
 
         let mut cal = UCalendar::new("America/New_York", "en-US", UCalendarType::UCAL_GREGORIAN)?;
         cal.set_millis(date_time)?;
