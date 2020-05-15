@@ -13,11 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// See LICENSE for licensing information.
-//
-// This build.rs script tries to generate low-level rust bindings for the current ICU library.
-// Please refer to README.md for instructions on how to build the library for
-// your use.
+//! See LICENSE for licensing information.
+//!
+//! This build.rs script provides Cargo _features_ indicating the target ICU4C library version,
+//! enabling some conditionally compiled Rust code in this crate that depends on the particular
+//! ICU4C version.
+//!
+//! Please refer to README.md for instructions on how to build the library for your use.
 
 use {
     anyhow::{Context, Result},
