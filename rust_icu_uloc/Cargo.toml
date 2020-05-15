@@ -60,7 +60,6 @@ icu_version_67_plus = []
 
 [build-dependencies]
 anyhow = "1.0"
-bindgen = "0.53.2"
 
 [badges]
 maintenance = { status = "actively-developed" }
