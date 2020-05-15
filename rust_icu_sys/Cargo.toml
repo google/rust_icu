@@ -22,7 +22,7 @@ paste = "0.1.5"
 
 [build-dependencies]
 anyhow = "1.0"
-bindgen = { version = "0.53.2", optional = true }
+bindgen = "0.53.2"
 lazy_static = "1.4"
 
 [lib]
@@ -34,7 +34,7 @@ doctest = false
 # of these features.
 [features]
 default = ["use-bindgen", "renaming", "icu_config"]
-use-bindgen = ["bindgen"]
+use-bindgen = []
 renaming = []
 icu_config = []
 icu_version_in_env = []
