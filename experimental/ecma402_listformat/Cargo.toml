@@ -1,0 +1,9 @@
+[package]
+name = "ecma402_listformat"
+version = "0.1.0"
+authors = ["Filip Filmar <filmil@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+
+[workspace]
