@@ -22,7 +22,7 @@ jobs:
         # This test matrix should be backfilled with more version/feature combos.
         # I think any other combinations will fail today.  We should fix those
         # combinations, then expand this matrix.
-        icu_version: [65, 67]
+        icu_version: [63, 64, 65, 67]
         feature_set: ["renaming icu_version_in_env"]
     steps:
       - uses: actions/checkout@v2
