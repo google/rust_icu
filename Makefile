@@ -35,7 +35,7 @@ test:
 	    LD_LIBRARY_PATH="${ICU_LIBDIR}" \
 		echo "ICU version detected:       ${ICU_VERSION}" && \
 		echo "ICU major version detected: ${ICU_MAJOR_VERSION}"
-		  cargo test
+		  cargo test && cargo doc
 .PHONY: test
 
 # Run a test inside a Docker container.  The --volume mounts attach local dirs
@@ -86,6 +86,8 @@ static-bindgen-%:
 			  ./rust_icu/rust_icu_sys/bindgen/run_bindgen.sh"
 
 static-bindgen: \
+		static-bindgen-63 \
+		static-bindgen-64 \
 		static-bindgen-65 \
 		static-bindgen-66 \
 		static-bindgen-67
@@ -129,8 +131,8 @@ publish:
 # A helper to up-rev the cargo crate versions.
 # NOTE: The cargo crate version number is completely independent of the Docker
 # build environment version number.
-UPREV_OLD_VERSION ?= 0.2.2
-UPREV_NEW_VERSION ?= 0.2.3
+UPREV_OLD_VERSION ?= 0.2.3
+UPREV_NEW_VERSION ?= 0.2.4
 define uprev
 	( \
 		cd $(1) && \

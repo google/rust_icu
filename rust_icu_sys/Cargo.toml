@@ -1,6 +1,6 @@
 [package]
 name = "rust_icu_sys"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["Google Inc."]
 license = "Apache-2.0"
 readme = "README.md"
@@ -17,7 +17,7 @@ Native bindings to the ICU4C library from Unicode.
 keywords = ["icu", "unicode", "i18n", "l10n"]
 
 [dependencies]
-libc = "0.2.24"
+libc = "0.2.34"
 paste = "0.1.5"
 
 [build-dependencies]
