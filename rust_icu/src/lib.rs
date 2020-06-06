@@ -34,6 +34,7 @@
 //! | rust_icu_udat | icu::dat |
 //! | rust_icu_udata | icu::data |
 //! | rust_icu_uenum | icu::enums |
+//! | rust_icu_ulistformatter | icu::listformatter |
 //! | rust_icu_uloc | icu::loc |
 //! | rust_icu_umsg | icu::msg |
 //! | rust_icu_ustring | icu::string |
@@ -46,6 +47,7 @@ pub use rust_icu_ucol as col;
 pub use rust_icu_udat as dat;
 pub use rust_icu_udata as data;
 pub use rust_icu_uenum as enums;
+pub use rust_icu_ulistformatter as listformatter;
 pub use rust_icu_uloc as loc;
 pub use rust_icu_umsg as msg;
 pub use rust_icu_ustring as string;

@@ -21,11 +21,12 @@ paste = "0.1.5"
 rust_icu_common = { path = "../rust_icu_common", version = "0.2.3", default-features = false }
 rust_icu_sys = { path = "../rust_icu_sys", version = "0.2.3", default-features = false }
 rust_icu_ucal = { path = "../rust_icu_ucal", version = "0.2.3", default-features = false }
+rust_icu_ucol = { path = "../rust_icu_ucol", version = "0.2.3", default-features = false }
 rust_icu_udat = { path = "../rust_icu_udat", version = "0.2.3", default-features = false }
 rust_icu_udata = { path = "../rust_icu_udata", version = "0.2.3", default-features = false }
 rust_icu_uenum = { path = "../rust_icu_uenum", version = "0.2.3", default-features = false }
+rust_icu_ulistformatter = { path = "../rust_icu_ulistformatter", version = "0.2.3", default-features = false }
 rust_icu_uloc = { path = "../rust_icu_uloc", version = "0.2.3", default-features = false }
-rust_icu_ucol = { path = "../rust_icu_ucol", version = "0.2.3", default-features = false }
 rust_icu_umsg = { path = "../rust_icu_umsg", version = "0.2.3", default-features = false }
 rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.2.3", default-features = false }
 rust_icu_utext = { path = "../rust_icu_utext", version = "0.2.3", default-features = false }
@@ -43,6 +44,7 @@ use-bindgen = [
   "rust_icu_udat/use-bindgen",
   "rust_icu_udata/use-bindgen",
   "rust_icu_uenum/use-bindgen",
+  "rust_icu_ulistformatter/use-bindgen",
   "rust_icu_uloc/use-bindgen",
   "rust_icu_umsg/use-bindgen",
   "rust_icu_ustring/use-bindgen",
@@ -56,6 +58,7 @@ renaming = [
   "rust_icu_udat/renaming",
   "rust_icu_udata/renaming",
   "rust_icu_uenum/renaming",
+  "rust_icu_ulistformatter/renaming",
   "rust_icu_uloc/renaming",
   "rust_icu_umsg/renaming",
   "rust_icu_ustring/renaming",
@@ -69,6 +72,7 @@ icu_config = [
   "rust_icu_udat/icu_config",
   "rust_icu_udata/icu_config",
   "rust_icu_uenum/icu_config",
+  "rust_icu_ulistformatter/icu_config",
   "rust_icu_uloc/icu_config",
   "rust_icu_umsg/icu_config",
   "rust_icu_ustring/icu_config",
@@ -82,10 +86,39 @@ icu_version_in_env = [
   "rust_icu_udat/icu_version_in_env",
   "rust_icu_udata/icu_version_in_env",
   "rust_icu_uenum/icu_version_in_env",
+  "rust_icu_ulistformatter/icu_version_in_env",
   "rust_icu_uloc/icu_version_in_env",
   "rust_icu_umsg/icu_version_in_env",
   "rust_icu_ustring/icu_version_in_env",
   "rust_icu_utext/icu_version_in_env",
+]
+icu_version_64_plus = [
+  "rust_icu_common/icu_version_64_plus",
+  "rust_icu_sys/icu_version_64_plus",
+  "rust_icu_ucal/icu_version_64_plus",
+  "rust_icu_ucol/icu_version_64_plus",
+  "rust_icu_udat/icu_version_64_plus",
+  "rust_icu_udata/icu_version_64_plus",
+  "rust_icu_uenum/icu_version_64_plus",
+  "rust_icu_ulistformatter/icu_version_64_plus",
+  "rust_icu_uloc/icu_version_64_plus",
+  "rust_icu_umsg/icu_version_64_plus",
+  "rust_icu_ustring/icu_version_64_plus",
+  "rust_icu_utext/icu_version_64_plus",
+]
+icu_version_67_plus = [
+  "rust_icu_common/icu_version_67_plus",
+  "rust_icu_sys/icu_version_67_plus",
+  "rust_icu_ucal/icu_version_67_plus",
+  "rust_icu_ucol/icu_version_67_plus",
+  "rust_icu_udat/icu_version_67_plus",
+  "rust_icu_udata/icu_version_67_plus",
+  "rust_icu_uenum/icu_version_67_plus",
+  "rust_icu_ulistformatter/icu_version_67_plus",
+  "rust_icu_uloc/icu_version_67_plus",
+  "rust_icu_umsg/icu_version_67_plus",
+  "rust_icu_ustring/icu_version_67_plus",
+  "rust_icu_utext/icu_version_67_plus",
 ]
 
 [badges]

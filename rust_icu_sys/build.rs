@@ -38,8 +38,17 @@ mod inner {
         // should be topologicaly sorted based on the inclusion relationship between the respective
         // headers.  Any of these will fail if the required binaries are not present in $PATH.
         static ref BINDGEN_SOURCE_MODULES: Vec<&'static str> = vec![
-            "ucal", "udat", "udata", "uenum", "ustring", "utext", "uclean", "umsg",
-            "ucol", "uset",
+            "ucal",
+            "uclean",
+            "ucol",
+            "udat",
+            "udata",
+            "uenum",
+            "ulistformatter",
+            "umsg",
+            "uset",
+            "ustring",
+            "utext",
         ];
 
         // C functions that will be made available to rust code.  Add more to this list if you want to
@@ -47,13 +56,14 @@ mod inner {
         static ref BINDGEN_ALLOWLIST_FUNCTIONS: Vec<&'static str> = vec![
             "u_.*",
             "ucal_.*",
-            "udata_.*",
-            "udat_.*",
-            "uenum_.*",
-            "uloc_.*",
-            "utext_.*",
-            "umsg_.*",
             "ucol_.*",
+            "udat_.*",
+            "udata_.*",
+            "uenum_.*",
+            "ulistfmt_.*",
+            "uloc_.*",
+            "umsg_.*",
+            "utext_.*",
         ];
 
         // C types that will be made available to rust code.  Add more to this list if you want to
@@ -63,18 +73,20 @@ mod inner {
             "UBool",
             "UCalendar.*",
             "UChar.*",
+            "UCol.*",
+            "UCollation.*",
+            "UCollator",
             "UData.*",
             "UDate.*",
             "UDateFormat.*",
             "UEnumeration.*",
             "UErrorCode",
+            "UFormattedList.*",
+            "UListFormatter.*",
             "UMessageFormat",
             "UParseError",
-            "UCollation.*",
-            "UCollator",
             "USet",
             "UText",
-            "UCol.*",
         ];
     }
 
