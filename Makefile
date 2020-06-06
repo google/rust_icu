@@ -108,7 +108,7 @@ clean:
 # not found by cargo immediately after a publish.  Sleeping on this is bad,
 # but there doesn't seem to be a much better option available.
 define publish
-	( cd $(1) && cargo publish && sleep 5)
+	( cd $(1) && cargo publish && sleep 30)
 endef
 
 # This is not the best method, since it will error out if a crate has already
