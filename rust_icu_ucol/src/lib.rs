@@ -25,7 +25,7 @@
 //! reader can check out the [collation documentation on the ICU user
 //! guide](http://userguide.icu-project.org/collation).
 //!
-//! Are you missing some features from this crate?  Consider [reporting an
+//! > Are you missing some features from this crate?  Consider [reporting an
 //! issue](https://github.com/google/rust_icu/issues) or even [contributing the
 //! functionality](https://github.com/google/rust_icu/pulls).
 //!

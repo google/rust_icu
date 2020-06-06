@@ -1,0 +1,61 @@
+[package]
+authors = ["Google Inc."]
+edition = "2018"
+license = "Apache-2.0"
+name = "rust_icu_ulistformatter"
+readme = "README.md"
+repository = "https://github.com/google/rust_icu"
+version = "0.2.3"
+default-features = false
+keywords = ["icu", "unicode", "i18n", "l10n"]
+
+description = """
+Native bindings to the ICU4C library from Unicode.
+
+- ulistformatter.h: Collation support
+"""
+
+[dependencies]
+log = "0.4.6"
+paste = "0.1.5"
+rust_icu_common = { path = "../rust_icu_common", version = "0.2.3", default-features = false }
+rust_icu_sys = { path = "../rust_icu_sys", version = "0.2.3", default-features = false }
+#rust_icu_uenum = { path = "../rust_icu_uenum", version = "0.2.3", default-features = false }
+rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.2.3", default-features = false }
+anyhow = "1.0.25"
+
+[dev-dependencies]
+anyhow = "1.0.25"
+
+# See the feature description in ../rust_icu_sys/Cargo.toml for details.
+[features]
+default = ["use-bindgen", "renaming", "icu_config"]
+
+use-bindgen = [
+  "rust_icu_common/use-bindgen",
+  "rust_icu_sys/use-bindgen",
+  "rust_icu_ustring/use-bindgen",
+]
+renaming = [
+  "rust_icu_common/renaming",
+  "rust_icu_sys/renaming",
+  "rust_icu_ustring/renaming",
+]
+icu_config = [
+  "rust_icu_common/icu_config",
+  "rust_icu_sys/icu_config",
+  "rust_icu_ustring/icu_config",
+]
+icu_version_in_env = [
+  "rust_icu_common/icu_version_in_env",
+  "rust_icu_sys/icu_version_in_env",
+  "rust_icu_ustring/icu_version_in_env",
+]
+icu_version_64_plus = []
+icu_version_67_plus = []
+
+[badges]
+maintenance = { status = "actively-developed" }
+is-it-maintained-issue-resolution = { repository = "google/rust_icu" }
+is-it-maintained-open-issues = { repository = "google/rust_icu" }
+travis-ci = { repository = "google/rust_icu", branch = "master" }
