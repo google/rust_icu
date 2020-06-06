@@ -38,6 +38,9 @@ use-bindgen = ["bindgen"]
 renaming = []
 icu_config = []
 icu_version_in_env = []
+icu_version_64_plus = []
+icu_version_67_plus = []
+
 
 [badges]
 maintenance = { status = "actively-developed" }

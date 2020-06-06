@@ -126,6 +126,7 @@ publish:
 	$(call publish,rust_icu_udata)
 	$(call publish,rust_icu_ucol)
 	$(call publish,rust_icu_umsg)
+	$(call publish,rust_icu_ulistformatter)
 	$(call publish,rust_icu)
 
 # A helper to up-rev the cargo crate versions.
@@ -154,6 +155,7 @@ uprev:
 	$(call uprev,rust_icu_umsg)
 	$(call uprev,rust_icu_intl)
 	$(call uprev,rust_icu_ucol)
+	$(call uprev,rust_icu_ulistformatter)
 	$(call uprev,rust_icu)
 
 cov:

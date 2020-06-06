@@ -1,4 +1,4 @@
-name: rust_icu default feature set
+name: Test
 on:
   push:
     branches: [ master ]
@@ -19,11 +19,28 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # This test matrix should be backfilled with more version/feature combos.
-        # I think any other combinations will fail today.  We should fix those
-        # combinations, then expand this matrix.
         icu_version: [63, 64, 65, 67]
-        feature_set: ["renaming icu_version_in_env"]
+        feature_set: ["renaming,icu_version_in_env"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Test ICU version ${{ matrix.icu_version }}
+        run: make DOCKER_TEST_ENV=rust_icu_testenv-${{ matrix.icu_version }} RUST_ICU_MAJOR_VERSION_NUMBER=${{ matrix.icu_version }} DOCKER_TEST_CARGO_TEST_ARGS="--no-default-features --features ${{ matrix.feature_set }}" docker-test
+  test-64-plus-features:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        icu_version: [64, 65]
+        feature_set: ["renaming,icu_version_in_env,icu_version_64_plus"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Test ICU version ${{ matrix.icu_version }}
+        run: make DOCKER_TEST_ENV=rust_icu_testenv-${{ matrix.icu_version }} RUST_ICU_MAJOR_VERSION_NUMBER=${{ matrix.icu_version }} DOCKER_TEST_CARGO_TEST_ARGS="--no-default-features --features ${{ matrix.feature_set }}" docker-test
+  test-67-plus-features:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        icu_version: [67]
+        feature_set: ["renaming,icu_version_in_env,icu_version_64_plus,icu_version_67_plus"]
     steps:
       - uses: actions/checkout@v2
       - name: Test ICU version ${{ matrix.icu_version }}
