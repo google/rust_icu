@@ -157,9 +157,9 @@ impl UCollator {
             assert!(second.as_ref().len() <= std::i32::MAX as usize);
             versioned_function!(ucol_strcollUTF8)(
                 self.rep.as_ptr(),
-                first.as_ref().as_ptr() as *const i8,
+                first.as_ref().as_ptr() as *const ::std::os::raw::c_char,
                 first.as_ref().len() as i32,
-                second.as_ref().as_ptr() as *const i8,
+                second.as_ref().as_ptr() as *const ::std::os::raw::c_char,
                 second.as_ref().len() as i32,
                 &mut status,
             )
