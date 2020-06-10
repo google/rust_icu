@@ -261,7 +261,6 @@ mod testing {
         let array = UCharArray::try_from(&["eenie", "meenie", "minie", "moe"][..])
             .expect("created with success");
         let array_len = array.len();
-        println!("blah");
         let (strings, strlens, len) = unsafe { array.as_pascal_strings() };
         assert_eq!(len, array_len);
 
@@ -293,7 +292,7 @@ mod testing {
     #[cfg(features = "icu_version_67_plus")]
     #[test]
     fn test_formatting_styled() {
-        let array = ["Раја", "Гаја", "Влаја"]; // Hewey, Dewey, and Louie.
+        let array = ["Раја", "Гаја", "Влаја"];
         let formatter = crate::UListFormatter::try_new_styled(
             "sr-RS",
             sys: UListFormatterType::ULISTFMT_TYPE_OR,
