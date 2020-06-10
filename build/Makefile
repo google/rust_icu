@@ -21,7 +21,7 @@ build-maint-%: Dockerfile.maint Dockerfile.buildenv
 			--build-arg ICU_VERSION_TAG=maint/maint-$* \
 			-f $< -t rust_icu_maint-$*:${VERSION} .
 
-build-testenv-%: Dockerfile.testenv Dockerfile.buildenv
+build-testenv-%: Dockerfile.testenv Dockerfile.buildenv entrypoint.sh
 	docker build \
 			--build-arg DOCKER_REPO=${DOCKER_REPO} \
 			--build-arg VERSION=${VERSION} \

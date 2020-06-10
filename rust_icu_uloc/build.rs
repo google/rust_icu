@@ -101,10 +101,10 @@ fn main() -> Result<()> {
     let icu_major_version = ICUConfig::version_major_int()?;
     println!("icu-major-version: {}", icu_major_version);
     if icu_major_version >= 64 {
-        println!("cargo:rustc-cfg=features=\"icu_version_64_plus\"");
+        println!("cargo:rustc-cfg=feature=\"icu_version_64_plus\"");
     }
     if icu_major_version >= 67 {
-        println!("cargo:rustc-cfg=features=\"icu_version_67_plus\"");
+        println!("cargo:rustc-cfg=feature=\"icu_version_67_plus\"");
     }
     println!("done");
     Ok(())

@@ -484,7 +484,7 @@ environment variables.
 ```bash
 make DOCKER_TEST_ENV=rust_icu_testenv-67 \
   RUST_ICU_MAJOR_VERSION_NUMBER=67 \
-  DOCKER_TEST_CARGO_TEST_ARGS='--no-default-features --features icu_version_in_env renaming' \
+  DOCKER_TEST_CARGO_TEST_ARGS='--no-default-features --features icu_version_in_env,renaming' \
   docker-test
 ```
 

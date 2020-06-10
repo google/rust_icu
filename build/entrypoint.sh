@@ -1,19 +1,32 @@
 #! /bin/bash
-set -euo pipefail
+set -eo pipefail
 set -x
-env
-cd $RUST_ICU_SOURCE_DIR
-cargo install bindgen rustfmt
-(
-  cd rust_icu_sys
-  env LD_LIBRARY_PATH="/usr/local/lib" cargo test ${CARGO_TEST_ARGS}
-)
-(
-  cd rust_icu_common
-  env LD_LIBRARY_PATH="/usr/local/lib" cargo test ${CARGO_TEST_ARGS}
-)
-(
-  env LD_LIBRARY_PATH="/usr/local/lib" cargo test
-  env LD_LIBRARY_PATH="/usr/local/lib" cargo doc
-)
 
+ICU_LIBRARY_PATH="${ICU_LIBRARY_PATH:-/usr/local/lib}"
+
+cd $RUST_ICU_SOURCE_DIR
+ls -d .
+readonly __all_dirs="$(ls -d rust_icu_*)"
+
+env
+
+cargo install bindgen rustfmt
+
+function run_cargo_test() {
+  env LD_LIBRARY_PATH="/usr/local/lib" cargo test ${CARGO_TEST_ARGS}
+}
+
+function run_cargo_doc() {
+  env LD_LIBRARY_PATH="/usr/local/lib" cargo doc ${CARGO_TEST_ARGS}
+}
+
+# Running cargo test or doc in the top level directory actually does nothing.
+# Because of that, descend in each directory individually and run tests and doc
+# generation with features.
+for directory in ${__all_dirs}; do
+  (
+    cd "${directory}"
+    run_cargo_test
+    run_cargo_doc
+  )
+done
