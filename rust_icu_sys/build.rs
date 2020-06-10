@@ -362,19 +362,22 @@ macro_rules! versioned_function {{
     /// why, but the features seem *ignored* when `build.rs` is used.
     pub fn copy_features() -> Result<()> {
         if let Some(_) = env::var_os("CARGO_FEATURE_RENAMING") {
-            println!("cargo:rustc-cfg=features=\"renaming\"");
+            println!("cargo:rustc-cfg=feature=\"renaming\"");
         }
         if let Some(_) = env::var_os("CARGO_FEATURE_USE_BINDGEN") {
-            println!("cargo:rustc-cfg=features=\"use-bindgen\"");
+            println!("cargo:rustc-cfg=feature=\"use-bindgen\"");
         }
         if let Some(_) = env::var_os("CARGO_FEATURE_ICU_CONFIG") {
-            println!("cargo:rustc-cfg=features=\"icu_config\"");
+            println!("cargo:rustc-cfg=feature=\"icu_config\"");
         }
         if let Some(_) = env::var_os("CARGO_FEATURE_ICU_VERSION_IN_ENV") {
-            println!("cargo:rustc-cfg=features=\"icu_version_in_env\"");
+            println!("cargo:rustc-cfg=feature=\"icu_version_in_env\"");
         }
         if ICUConfig::version_major_int()? >= 67 {
-            println!("cargo:rustc-cfg=features=\"icu_version_67_plus\"");
+            println!("cargo:rustc-cfg=feature=\"icu_version_67_plus\"");
+        }
+        if ICUConfig::version_major_int()? >= 67 {
+            println!("cargo:rustc-cfg=feature=\"icu_version_67_plus\"");
         }
         Ok(())
     }
