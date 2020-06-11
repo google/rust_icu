@@ -1,7 +1,9 @@
 [workspace]
 members = [
+  "ecma402_traits",
   "rust_icu",
   "rust_icu_common",
+  "rust_icu_ecma402",
   "rust_icu_intl",
   "rust_icu_sys",
   "rust_icu_ucal",
