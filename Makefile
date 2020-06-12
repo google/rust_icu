@@ -133,7 +133,7 @@ publish:
 # NOTE: The cargo crate version number is completely independent of the Docker
 # build environment version number.
 UPREV_OLD_VERSION ?= 0.2.3
-UPREV_NEW_VERSION ?= 0.2.4
+UPREV_NEW_VERSION ?= 0.3.0
 define uprev
 	( \
 		cd $(1) && \

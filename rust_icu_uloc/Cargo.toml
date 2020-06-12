@@ -6,7 +6,7 @@ name = "rust_icu_uloc"
 build = "build.rs"
 readme = "README.md"
 repository = "https://github.com/google/rust_icu"
-version = "0.2.3"
+version = "0.3.0"
 default-features = false
 keywords = ["icu", "unicode", "i18n", "l10n"]
 
@@ -19,10 +19,10 @@ uloc.h
 [dependencies]
 log = "0.4.6"
 paste = "0.1.5"
-rust_icu_common = { path = "../rust_icu_common", version = "0.2.3", default-features = false }
-rust_icu_sys = { path = "../rust_icu_sys", version = "0.2.3", default-features = false }
-rust_icu_uenum = { path = "../rust_icu_uenum", version = "0.2.3", default-features = false }
-rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.2.3", default-features = false }
+rust_icu_common = { path = "../rust_icu_common", version = "0.3.0", default-features = false }
+rust_icu_sys = { path = "../rust_icu_sys", version = "0.3.0", default-features = false }
+rust_icu_uenum = { path = "../rust_icu_uenum", version = "0.3.0", default-features = false }
+rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.3.0", default-features = false }
 
 [dev-dependencies]
 anyhow = "1.0.25"
