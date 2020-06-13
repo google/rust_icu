@@ -1,0 +1,19 @@
+[package]
+authors = ["Google Inc."]
+default-features = false
+edition = "2018"
+keywords = ["ecma", "ecma402", "icu", "i18n", "l10n"]
+license = "Apache-2.0"
+name = "ecma402_traits"
+readme = "README.md"
+repository = "https://github.com/google/rust_icu"
+version = "0.1.0"
+
+description = """
+Rust implementation of type traits to support ECMA 402 specification in Rust.
+
+"""
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]

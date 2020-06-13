@@ -23,6 +23,7 @@ rust_icu_common = { path = "../rust_icu_common", version = "0.3.0", default-feat
 rust_icu_sys = { path = "../rust_icu_sys", version = "0.3.0", default-features = false }
 rust_icu_uenum = { path = "../rust_icu_uenum", version = "0.3.0", default-features = false }
 rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.3.0", default-features = false }
+ecma402_traits = { path = "../ecma402_traits", version = "0.1.0" }
 
 [dev-dependencies]
 anyhow = "1.0.25"

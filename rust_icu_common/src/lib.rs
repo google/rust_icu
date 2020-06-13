@@ -145,6 +145,14 @@ impl From<std::string::FromUtf8Error> for Error {
     }
 }
 
+impl Into<std::fmt::Error> for Error {
+    fn into(self) -> std::fmt::Error {
+        // It is not possible to transfer any info into std::fmt::Error, so we log instead.
+        eprintln!("error while formatting: {:?}", &self);
+        std::fmt::Error{}
+    }
+}
+
 /// Generates a method to wrap ICU4C `uloc` methods that require a resizable output string buffer.
 ///
 /// The various `uloc` methods of this type have inconsistent signature patterns, with some putting

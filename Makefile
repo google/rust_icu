@@ -30,12 +30,17 @@ CARGO_FEATURE_VERSION :=
 ICU_VERSION ?= $(shell icu-config --version)
 ICU_MAJOR_VERSION ?= $(basename ${ICU_VERSION})
 ICU_LIBDIR := $(shell icu-config --libdir)
+PKG_CONFIG_PATH := "${HOME}/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
+LD_LIBRARY_PATH := "${ICU_LIBDIR}"
 test:
-	@env PKG_CONFIG_PATH="${HOME}/local/lib/pkgconfig" \
-	    LD_LIBRARY_PATH="${ICU_LIBDIR}" \
-		echo "ICU version detected:       ${ICU_VERSION}" && \
-		echo "ICU major version detected: ${ICU_MAJOR_VERSION}"
-		  cargo test && cargo doc
+	echo "ICU version detected: ${ICU_VERSION} ${ICU_LIBDIR}" \
+		&& echo "ICU major version detected: ${ICU_MAJOR_VERSION}" \
+		&& PKG_CONFIG_PATH=${PKG_CONFIG_PATH} \
+				LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+				cargo test \
+		&& PKG_CONFIG_PATH=${PKG_CONFIG_PATH} \
+				LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
+				cargo doc
 .PHONY: test
 
 # Run a test inside a Docker container.  The --volume mounts attach local dirs
