@@ -46,6 +46,7 @@ mod inner {
             "uenum",
             "ulistformatter",
             "umsg",
+            "upluralrules",
             "uset",
             "ustring",
             "utext",
@@ -63,6 +64,7 @@ mod inner {
             "ulistfmt_.*",
             "uloc_.*",
             "umsg_.*",
+            "uplrules_.*",
             "utext_.*",
         ];
 
@@ -85,6 +87,7 @@ mod inner {
             "UListFormatter.*",
             "UMessageFormat",
             "UParseError",
+            "UPlural.*",
             "USet",
             "UText",
         ];
