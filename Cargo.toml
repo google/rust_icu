@@ -14,6 +14,7 @@ members = [
   "rust_icu_ulistformatter",
   "rust_icu_uloc",
   "rust_icu_umsg",
+  "rust_icu_upluralrules",
   "rust_icu_ustring",
   "rust_icu_utext",
 ]

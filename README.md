@@ -48,15 +48,16 @@ coverage in the headers.
 | [rust_icu](https://crates.io/crates/rust_icu)| Top-level crate.  Include this if you just want to have all the functionality available for use. |
 | [rust_icu_common](https://crates.io/crates/rust_icu_common)| Commonly used low-level wrappings of the bindings. |
 | [rust_icu_intl](https://crates.io/crates/rust_icu_intl)| Implements ECMA 402 recommendation APIs. |
-| [rust_icu_ulistformatter](https://crates.io/crates/rust_icu_ulistformatter)| Locale-sensitive list formatting support. Implements [`ulistformatter.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/ulistformatter_8h.html) C API header from the ICU library. |
 | [rust_icu_sys](https://crates.io/crates/rust_icu_sys)| Low-level bindings code |
 | [rust_icu_ucal](https://crates.io/crates/rust_icu_ucal)| ICU Calendar. Implements [`ucal.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/ucal_8h.html) C API header from the ICU library. |
 | [rust_icu_ucol](https://crates.io/crates/rust_icu_ucol)| Collation support. Implements [`ucol.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/ucol_8h.html) C API header from the ICU library. |
 | [rust_icu_udat](https://crates.io/crates/rust_icu_udat)| ICU date and time. Implements [`udat.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/udat_8h.html) C API header from the ICU library. |
 | [rust_icu_udata](https://crates.io/crates/rust_icu_udata)| ICU binary data. Implements [`udata.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/udata_8h.html) C API header from the ICU library. |
 | [rust_icu_uenum](https://crates.io/crates/rust_icu_uenum)| ICU enumerations. Implements [`uenum.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/uenum_8h.html) C API header from the ICU library. Mainly `UEnumeration` and friends. |
+| [rust_icu_ulistformatter](https://crates.io/crates/rust_icu_ulistformatter)| Locale-sensitive list formatting support. Implements [`ulistformatter.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/ulistformatter_8h.html) C API header from the ICU library. |
 | [rust_icu_uloc](https://crates.io/crates/rust_icu_uloc)| Locale support. Implements [`uloc.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/uloc_8h.html) C API header from the ICU library. |
 | [rust_icu_umsg](https://crates.io/crates/rust_icu_umsg)| MessageFormat support. Implements [`umsg.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/umsg_8h.html) C API header from the ICU library. |
+| [rust_icu_upluralrules](https://crates.io/crates/rust_icu_upluralrules)| Locale-sensitive plural rules support. Implements [`upluralrules.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/upluralrules_8h.html) C API header from the ICU library. |
 | [rust_icu_ustring](https://crates.io/crates/rust_icu_ustring)| ICU strings. Implements [`ustring.h`]() C API header from the ICU library. |
 | [rust_icu_utext](https://crates.io/crates/rust_icu_utext)| Text operations. Implements [`utext.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/utext_8h.html) C API header from the ICU library. |
 
