@@ -41,6 +41,7 @@ readonly BINDGEN_SOURCE_MODULES=(
         "uenum"
         "ulistformatter"
         "umsg"
+        "upluralrules"
         "uset"
         "ustring"
         "utext"
@@ -66,6 +67,7 @@ readonly BINDGEN_ALLOWLIST_TYPES=(
         "UListFormatter.*"
         "UMessageFormat"
         "UParseError"
+        "UPlural.*"
         "USet"
         "UText"
 )
@@ -83,6 +85,7 @@ readonly BINDGEN_ALLOWLIST_FUNCTIONS=(
         "ulistfmt_.*"
         "uloc_.*"
         "umsg_.*"
+        "uplrules_.*"
         "utext_.*"
 )
 

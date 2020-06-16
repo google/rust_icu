@@ -3109,6 +3109,73 @@ extern "C" {
         ec: *mut UErrorCode,
     ) -> i32;
 }
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct UFormattedNumber {
+    _unused: [u8; 0],
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd)]
+pub enum UPluralType {
+    UPLURAL_TYPE_CARDINAL = 0,
+    UPLURAL_TYPE_ORDINAL = 1,
+    UPLURAL_TYPE_COUNT = 2,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct UPluralRules {
+    _unused: [u8; 0],
+}
+extern "C" {
+    pub fn uplrules_open_66(
+        locale: *const ::std::os::raw::c_char,
+        status: *mut UErrorCode,
+    ) -> *mut UPluralRules;
+}
+extern "C" {
+    pub fn uplrules_openForType_66(
+        locale: *const ::std::os::raw::c_char,
+        type_: UPluralType,
+        status: *mut UErrorCode,
+    ) -> *mut UPluralRules;
+}
+extern "C" {
+    pub fn uplrules_close_66(uplrules: *mut UPluralRules);
+}
+extern "C" {
+    pub fn uplrules_select_66(
+        uplrules: *const UPluralRules,
+        number: f64,
+        keyword: *mut UChar,
+        capacity: i32,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn uplrules_selectFormatted_66(
+        uplrules: *const UPluralRules,
+        number: *const UFormattedNumber,
+        keyword: *mut UChar,
+        capacity: i32,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn uplrules_selectWithFormat_66(
+        uplrules: *const UPluralRules,
+        number: f64,
+        fmt: *const UNumberFormat,
+        keyword: *mut UChar,
+        capacity: i32,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn uplrules_getKeywords_66(
+        uplrules: *const UPluralRules,
+        status: *mut UErrorCode,
+    ) -> *mut UEnumeration;
+}
 extern "C" {
     pub fn u_getDataDirectory_66() -> *const ::std::os::raw::c_char;
 }

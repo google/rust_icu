@@ -3056,6 +3056,59 @@ extern "C" {
         ec: *mut UErrorCode,
     ) -> i32;
 }
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd)]
+pub enum UPluralType {
+    UPLURAL_TYPE_CARDINAL = 0,
+    UPLURAL_TYPE_ORDINAL = 1,
+    UPLURAL_TYPE_COUNT = 2,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct UPluralRules {
+    _unused: [u8; 0],
+}
+extern "C" {
+    pub fn uplrules_open_63(
+        locale: *const ::std::os::raw::c_char,
+        status: *mut UErrorCode,
+    ) -> *mut UPluralRules;
+}
+extern "C" {
+    pub fn uplrules_openForType_63(
+        locale: *const ::std::os::raw::c_char,
+        type_: UPluralType,
+        status: *mut UErrorCode,
+    ) -> *mut UPluralRules;
+}
+extern "C" {
+    pub fn uplrules_close_63(uplrules: *mut UPluralRules);
+}
+extern "C" {
+    pub fn uplrules_select_63(
+        uplrules: *const UPluralRules,
+        number: f64,
+        keyword: *mut UChar,
+        capacity: i32,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn uplrules_selectWithFormat_63(
+        uplrules: *const UPluralRules,
+        number: f64,
+        fmt: *const UNumberFormat,
+        keyword: *mut UChar,
+        capacity: i32,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn uplrules_getKeywords_63(
+        uplrules: *const UPluralRules,
+        status: *mut UErrorCode,
+    ) -> *mut UEnumeration;
+}
 extern "C" {
     pub fn u_getDataDirectory_63() -> *const ::std::os::raw::c_char;
 }
