@@ -138,8 +138,8 @@ publish:
 # A helper to up-rev the cargo crate versions.
 # NOTE: The cargo crate version number is completely independent of the Docker
 # build environment version number.
-UPREV_OLD_VERSION ?= 0.2.3
-UPREV_NEW_VERSION ?= 0.3.0
+UPREV_OLD_VERSION ?= 0.3.0
+UPREV_NEW_VERSION ?= 0.3.1
 define uprev
 	( \
 		cd $(1) && \
@@ -149,20 +149,21 @@ endef
 
 .PHONY: uprev
 uprev:
-	$(call uprev,rust_icu_sys)
+	$(call uprev,rust_icu)
 	$(call uprev,rust_icu_common)
-	$(call uprev,rust_icu_uenum)
-	$(call uprev,rust_icu_ustring)
-	$(call uprev,rust_icu_utext)
-	$(call uprev,rust_icu_uloc)
+	$(call uprev,rust_icu_intl)
+	$(call uprev,rust_icu_sys)
 	$(call uprev,rust_icu_ucal)
+	$(call uprev,rust_icu_ucol)
 	$(call uprev,rust_icu_udat)
 	$(call uprev,rust_icu_udata)
+	$(call uprev,rust_icu_uenum)
+	$(call uprev,rust_icu_ulistformatter)
+	$(call uprev,rust_icu_uloc)
 	$(call uprev,rust_icu_umsg)
-	$(call uprev,rust_icu_intl)
-	$(call uprev,rust_icu_ucol)
 	$(call uprev,rust_icu_upluralrules)
-	$(call uprev,rust_icu)
+	$(call uprev,rust_icu_ustring)
+	$(call uprev,rust_icu_utext)
 
 cov:
 	./build/showprogress.sh
