@@ -15,3 +15,6 @@
 /// Implements ECMA-402 `Intl.ListFormat`.
 pub mod listformat;
 
+/// Implements ECMA-402 `Intl.PluralRules`.
+pub mod pluralrules;
+
