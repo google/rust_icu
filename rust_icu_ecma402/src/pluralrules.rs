@@ -30,7 +30,7 @@ pub(crate) mod internal {
     use ecma402_traits::pluralrules::options;
     use rust_icu_sys as usys;
 
-    // Converts the trait style option type to an equivalente ICU type.
+    // Converts the trait style option type to an equivalent ICU type.
     pub fn to_icu_type(style: &options::Type) -> usys::UPluralType {
         match style {
             options::Type::Ordinal => usys::UPluralType::UPLURAL_TYPE_ORDINAL,
