@@ -132,8 +132,9 @@ impl Enumeration {
     /// public API.  It worked up to a point for free functions.
     ///
     /// It no longer works on high-level methods that return
-    /// enumerations, since they we'd need to depend on them to
+    /// enumerations, since then we'd need to depend on them to
     /// create an [Enumeration].
+    #[doc(hidden)]
     pub unsafe fn from_raw_parts(
         raw: Option<common::CStringVec>,
         rep: *mut sys::UEnumeration,
