@@ -29,10 +29,9 @@ pub trait Locale: fmt::Display {}
 ///
 pub mod listformat;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
+/// A Rust implementation of ECMA 402 PluralRules API.
+///
+/// The [pluralrules] mod contains all the needed implementation bits for `Intl.PluralRules`.
+///
+pub mod pluralrules;
+

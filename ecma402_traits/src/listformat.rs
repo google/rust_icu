@@ -113,7 +113,7 @@ pub trait Format {
     /// > Note:
     /// > - Should there be a convenience method that prints to string specifically?
     /// > - Do we need `format_into_parts`?
-    fn format<I, L, W>(self, list: L, writer: &mut W) -> fmt::Result
+    fn format<I, L, W>(&self, list: L, writer: &mut W) -> fmt::Result
     where
         I: fmt::Display,
         L: IntoIterator<Item = I>,
