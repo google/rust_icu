@@ -76,7 +76,7 @@ pub trait PluralRules {
     /// The type of error reported, if any.
     type Error: std::error::Error;
 
-    /// Creates a new [Rules].
+    /// Creates a new [PluralRules].
     ///
     /// Creation may fail, for example, if the locale-specific data is not loaded, or if
     /// the supplied options are inconsistent.
@@ -91,7 +91,7 @@ pub trait PluralRules {
     ///
     ///    [plr]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules
     ///    [ecma]: https://www.ecma-international.org/publications/standards/Ecma-402.htm
-    fn select<W>(self, number: f64, writer: &mut W) -> fmt::Result
+    fn select<W>(&self, number: f64, writer: &mut W) -> fmt::Result
     where
         W: fmt::Write;
 }

@@ -81,7 +81,7 @@ impl listformat::Format for Format {
     }
 
     /// Formats the given string.
-    fn format<I, L, W>(self, list: L, f: &mut W) -> fmt::Result
+    fn format<I, L, W>(&self, list: L, f: &mut W) -> fmt::Result
     where
         I: fmt::Display,
         L: IntoIterator<Item = I>,
