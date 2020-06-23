@@ -13,9 +13,11 @@ C_API_HEADER_NAMES=(
   "udat"
   "udata"
   "uenum"
+  "uformattable"
+  "ulistformatter"
   "uloc"
+  "upluralrules"
   "umsg"
-  "ustring"
   "ustring"
   "utext"
 )

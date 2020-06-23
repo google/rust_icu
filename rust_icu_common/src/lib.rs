@@ -169,7 +169,7 @@ impl Into<std::fmt::Error> for Error {
 ///     BUFFER_CAPACITY,
 ///     [before_arg_a: before_type_a, before_arg_b: before_type_b,],
 ///     [after_arg_a: after_type_a, after_arg_b: after_type_b,]
-/// );   
+/// );
 /// ```
 ///
 /// the generated method has a signature of the form

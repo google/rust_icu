@@ -172,6 +172,28 @@ impl crate::UChar {
         crate::UChar::from(rep)
     }
 
+    /// Creates a new [crate::UChar] from its low-level representation, a buffer
+    /// pointer and a buffer size.
+    ///
+    /// Does *not* take ownership of the buffer that was passed in.
+    ///
+    /// **DO NOT USE UNLESS YOU HAVE NO OTHER CHOICE.**
+    #[doc(hidden)]
+    pub unsafe fn clone_from_raw_parts(rep: *const sys::UChar, len: i32) -> crate::UChar {
+        assert!(len >= 0);
+        // Always works for len: i32 >= 0.
+        let cap = len as usize;
+
+        // View the deconstructed buffer as a vector of UChars.  Then make a
+        // copy of it to return.  This is not efficient, but is always safe.
+        let original = Vec::from_raw_parts(rep as *mut sys::UChar, cap, cap);
+        let copy = original.clone();
+        // Don't free the buffer we don't own.
+        std::mem::forget(original);
+        crate::UChar::from(copy)
+    }
+
+
     /// Converts into a zeroed-out string.
     ///
     /// This is a very weird ICU API thing, where there apparently exists a zero-terminated
@@ -204,6 +226,7 @@ impl crate::UChar {
     pub fn resize(&mut self, new_size: usize) {
         self.rep.resize(new_size, 0);
     }
+
 }
 
 #[cfg(test)]

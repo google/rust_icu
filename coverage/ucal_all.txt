@@ -14,6 +14,7 @@ ucal_getDefaultTimeZone
 ucal_getDSTSavings
 ucal_getFieldDifference
 ucal_getGregorianChange
+ucal_getHostTimeZone
 ucal_getKeywordValuesForLocale
 ucal_getLimit
 ucal_getLocaleByType

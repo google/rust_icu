@@ -2,14 +2,16 @@
 
 | Header | Implemented |
 | ------ | ----------- |
-| `ucal.h` | 15 / 45 | 
+| `ucal.h` | 15 / 46 | 
 | `ucol.h` | 2 / 50 | 
 | `udat.h` | 6 / 38 | 
 | `udata.h` | 2 / 8 | 
 | `uenum.h` | 8 / 8 | 
-| `uloc.h` | 19 / 41 | 
+| `uformattable.h` | 7 / 13 | 
+| `ulistformatter.h` | 2 / 8 | 
+| `uloc.h` | 19 / 42 | 
+| `upluralrules.h` | 3 / 7 | 
 | `umsg.h` | 6 / 20 | 
-| `ustring.h` | 3 / 61 | 
 | `ustring.h` | 3 / 61 | 
 | `utext.h` | 3 / 28 | 
 # Unimplemented functions per header
@@ -47,6 +49,7 @@
 | `ucal_getDSTSavings` | |
 | `ucal_getFieldDifference` | |
 | `ucal_getGregorianChange` | |
+| `ucal_getHostTimeZone` | |
 | `ucal_getKeywordValuesForLocale` | |
 | `ucal_getLimit` | |
 | `ucal_getLocaleByType` | |
@@ -196,6 +199,38 @@
 | `uenum_reset` | |
 | `uenum_unext` | |
 
+# Header: `uformattable.h`
+
+| Unimplemented | Implemented |
+| ------------- | ----------- |
+| | `$impl_function_name` |
+| | `ufmt_close` |
+| | `ufmt_getArrayItemByIndex` |
+| | `ufmt_getDecNumChars` |
+| | `ufmt_getUChars` |
+| | `ufmt_isNumeric` |
+| | `ufmt_open` |
+| `ufmt_getArrayLength` | |
+| `ufmt_getDate` | |
+| `ufmt_getDouble` | |
+| `ufmt_getInt64` | |
+| `ufmt_getLong` | |
+| `ufmt_getObject` | |
+| `ufmt_getType` | |
+
+# Header: `ulistformatter.h`
+
+| Unimplemented | Implemented |
+| ------------- | ----------- |
+| | `ulistfmt_format` |
+| | `ulistfmt_openForType` |
+| `ulistfmt_close` | |
+| `ulistfmt_closeResult` | |
+| `ulistfmt_formatStringsToResult` | |
+| `ulistfmt_open` | |
+| `ulistfmt_openResult` | |
+| `ulistfmt_resultAsValue` | |
+
 # Header: `uloc.h`
 
 | Unimplemented | Implemented |
@@ -242,9 +277,22 @@
 | `uloc_getName` | |
 | `uloc_getParent` | |
 | `uloc_isRightToLeft` | |
+| `uloc_openAvailableByType` | |
 | `uloc_openKeywords` | |
 | `uloc_setKeywordValue` | |
 | `uloc_toLegacyType` | |
+
+# Header: `upluralrules.h`
+
+| Unimplemented | Implemented |
+| ------------- | ----------- |
+| | `uplrules_getKeywords` |
+| | `uplrules_openForType` |
+| | `uplrules_select` |
+| `uplrules_close` | |
+| `uplrules_open` | |
+| `uplrules_selectFormatted` | |
+| `uplrules_selectWithFormat` | |
 
 # Header: `umsg.h`
 
@@ -271,73 +319,6 @@
 | `u_vformatMessageWithError` | |
 | `u_vparseMessage` | |
 | `u_vparseMessageWithError` | |
-
-# Header: `ustring.h`
-
-| Unimplemented | Implemented |
-| ------------- | ----------- |
-| | `UChar*` |
-| | `u_strFromUTF8` |
-| | `u_strToUTF8` |
-| `u_austrcpy` | |
-| `u_austrncpy` | |
-| `u_countChar32` | |
-| `u_memcasecmp` | |
-| `u_memchr` | |
-| `u_memchr32` | |
-| `u_memcmp` | |
-| `u_memcmpCodePointOrder` | |
-| `u_memcpy` | |
-| `u_memmove` | |
-| `u_memrchr` | |
-| `u_memrchr32` | |
-| `u_memset` | |
-| `u_strcasecmp` | |
-| `u_strCaseCompare` | |
-| `u_strcat` | |
-| `u_strchr` | |
-| `u_strchr32` | |
-| `u_strcmp` | |
-| `u_strcmpCodePointOrder` | |
-| `u_strCompare` | |
-| `u_strCompareIter` | |
-| `u_strcpy` | |
-| `u_strcspn` | |
-| `u_strFindFirst` | |
-| `u_strFindLast` | |
-| `u_strFoldCase` | |
-| `u_strFromJavaModifiedUTF8WithSub` | |
-| `u_strFromUTF32` | |
-| `u_strFromUTF32WithSub` | |
-| `u_strFromUTF8Lenient` | |
-| `u_strFromUTF8WithSub` | |
-| `u_strFromWCS` | |
-| `u_strHasMoreChar32Than` | |
-| `u_strlen` | |
-| `u_strncasecmp` | |
-| `u_strncat` | |
-| `u_strncmp` | |
-| `u_strncmpCodePointOrder` | |
-| `u_strncpy` | |
-| `u_strpbrk` | |
-| `u_strrchr` | |
-| `u_strrchr32` | |
-| `u_strrstr` | |
-| `u_strspn` | |
-| `u_strstr` | |
-| `u_strToJavaModifiedUTF8` | |
-| `u_strtok_r` | |
-| `u_strToLower` | |
-| `u_strToTitle` | |
-| `u_strToUpper` | |
-| `u_strToUTF32` | |
-| `u_strToUTF32WithSub` | |
-| `u_strToUTF8WithSub` | |
-| `u_strToWCS` | |
-| `u_uastrcpy` | |
-| `u_uastrncpy` | |
-| `u_unescape` | |
-| `u_unescapeAt` | |
 
 # Header: `ustring.h`
 

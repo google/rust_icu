@@ -1,0 +1,7 @@
+$impl_function_name
+ufmt_close
+ufmt_getArrayItemByIndex
+ufmt_getDecNumChars
+ufmt_getUChars
+ufmt_isNumeric
+ufmt_open
