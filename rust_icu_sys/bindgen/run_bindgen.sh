@@ -42,6 +42,7 @@ readonly BINDGEN_SOURCE_MODULES=(
         "uformattable"
         "ulistformatter"
         "umsg"
+        "unum"
         "upluralrules"
         "uset"
         "ustring"
@@ -62,12 +63,15 @@ readonly BINDGEN_ALLOWLIST_TYPES=(
         "UData.*"
         "UDate.*"
         "UDateFormat.*"
+        "UDisplayContext.*"
         "UEnumeration.*"
         "UErrorCode"
-        "UFormattable.*",
+        "UFormat.*"
         "UFormattedList.*"
         "UListFormatter.*"
         "UMessageFormat"
+        "UNUM.*"
+        "UNumber.*",
         "UParseError"
         "UPlural.*"
         "USet"
@@ -84,12 +88,13 @@ readonly BINDGEN_ALLOWLIST_FUNCTIONS=(
         "udat_.*"
         "udata_.*"
         "uenum_.*"
+        "ufmt_.*"
         "ulistfmt_.*"
         "uloc_.*"
         "umsg_.*"
+        "unum_.*"
         "uplrules_.*"
         "utext_.*"
-        "ufmt_.*"
 )
 
 function check_requirements() {
