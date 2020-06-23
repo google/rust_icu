@@ -2387,6 +2387,365 @@ pub struct UFieldPositionIterator {
     _unused: [u8; 0],
 }
 pub type UNumberFormat = *mut ::std::os::raw::c_void;
+impl UNumberFormatStyle {
+    pub const UNUM_DEFAULT: UNumberFormatStyle = UNumberFormatStyle::UNUM_DECIMAL;
+}
+impl UNumberFormatStyle {
+    pub const UNUM_IGNORE: UNumberFormatStyle = UNumberFormatStyle::UNUM_PATTERN_DECIMAL;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd)]
+pub enum UNumberFormatStyle {
+    UNUM_PATTERN_DECIMAL = 0,
+    UNUM_DECIMAL = 1,
+    UNUM_CURRENCY = 2,
+    UNUM_PERCENT = 3,
+    UNUM_SCIENTIFIC = 4,
+    UNUM_SPELLOUT = 5,
+    UNUM_ORDINAL = 6,
+    UNUM_DURATION = 7,
+    UNUM_NUMBERING_SYSTEM = 8,
+    UNUM_PATTERN_RULEBASED = 9,
+    UNUM_CURRENCY_ISO = 10,
+    UNUM_CURRENCY_PLURAL = 11,
+    UNUM_CURRENCY_ACCOUNTING = 12,
+    UNUM_CASH_CURRENCY = 13,
+    UNUM_DECIMAL_COMPACT_SHORT = 14,
+    UNUM_DECIMAL_COMPACT_LONG = 15,
+    UNUM_CURRENCY_STANDARD = 16,
+    UNUM_FORMAT_STYLE_COUNT = 17,
+}
+extern "C" {
+    pub fn unum_open_65(
+        style: UNumberFormatStyle,
+        pattern: *const UChar,
+        patternLength: i32,
+        locale: *const ::std::os::raw::c_char,
+        parseErr: *mut UParseError,
+        status: *mut UErrorCode,
+    ) -> *mut UNumberFormat;
+}
+extern "C" {
+    pub fn unum_close_65(fmt: *mut UNumberFormat);
+}
+extern "C" {
+    pub fn unum_clone_65(fmt: *const UNumberFormat, status: *mut UErrorCode) -> *mut UNumberFormat;
+}
+extern "C" {
+    pub fn unum_format_65(
+        fmt: *const UNumberFormat,
+        number: i32,
+        result: *mut UChar,
+        resultLength: i32,
+        pos: *mut UFieldPosition,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn unum_formatInt64_65(
+        fmt: *const UNumberFormat,
+        number: i64,
+        result: *mut UChar,
+        resultLength: i32,
+        pos: *mut UFieldPosition,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn unum_formatDouble_65(
+        fmt: *const UNumberFormat,
+        number: f64,
+        result: *mut UChar,
+        resultLength: i32,
+        pos: *mut UFieldPosition,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn unum_formatDoubleForFields_65(
+        format: *const UNumberFormat,
+        number: f64,
+        result: *mut UChar,
+        resultLength: i32,
+        fpositer: *mut UFieldPositionIterator,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn unum_formatDecimal_65(
+        fmt: *const UNumberFormat,
+        number: *const ::std::os::raw::c_char,
+        length: i32,
+        result: *mut UChar,
+        resultLength: i32,
+        pos: *mut UFieldPosition,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn unum_formatDoubleCurrency_65(
+        fmt: *const UNumberFormat,
+        number: f64,
+        currency: *mut UChar,
+        result: *mut UChar,
+        resultLength: i32,
+        pos: *mut UFieldPosition,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn unum_formatUFormattable_65(
+        fmt: *const UNumberFormat,
+        number: *const UFormattable,
+        result: *mut UChar,
+        resultLength: i32,
+        pos: *mut UFieldPosition,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn unum_parse_65(
+        fmt: *const UNumberFormat,
+        text: *const UChar,
+        textLength: i32,
+        parsePos: *mut i32,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn unum_parseInt64_65(
+        fmt: *const UNumberFormat,
+        text: *const UChar,
+        textLength: i32,
+        parsePos: *mut i32,
+        status: *mut UErrorCode,
+    ) -> i64;
+}
+extern "C" {
+    pub fn unum_parseDouble_65(
+        fmt: *const UNumberFormat,
+        text: *const UChar,
+        textLength: i32,
+        parsePos: *mut i32,
+        status: *mut UErrorCode,
+    ) -> f64;
+}
+extern "C" {
+    pub fn unum_parseDecimal_65(
+        fmt: *const UNumberFormat,
+        text: *const UChar,
+        textLength: i32,
+        parsePos: *mut i32,
+        outBuf: *mut ::std::os::raw::c_char,
+        outBufLength: i32,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn unum_parseDoubleCurrency_65(
+        fmt: *const UNumberFormat,
+        text: *const UChar,
+        textLength: i32,
+        parsePos: *mut i32,
+        currency: *mut UChar,
+        status: *mut UErrorCode,
+    ) -> f64;
+}
+extern "C" {
+    pub fn unum_parseToUFormattable_65(
+        fmt: *const UNumberFormat,
+        result: *mut UFormattable,
+        text: *const UChar,
+        textLength: i32,
+        parsePos: *mut i32,
+        status: *mut UErrorCode,
+    ) -> *mut UFormattable;
+}
+extern "C" {
+    pub fn unum_applyPattern_65(
+        format: *mut UNumberFormat,
+        localized: UBool,
+        pattern: *const UChar,
+        patternLength: i32,
+        parseError: *mut UParseError,
+        status: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn unum_getAvailable_65(localeIndex: i32) -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn unum_countAvailable_65() -> i32;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd)]
+pub enum UNumberFormatAttribute {
+    UNUM_PARSE_INT_ONLY = 0,
+    UNUM_GROUPING_USED = 1,
+    UNUM_DECIMAL_ALWAYS_SHOWN = 2,
+    UNUM_MAX_INTEGER_DIGITS = 3,
+    UNUM_MIN_INTEGER_DIGITS = 4,
+    UNUM_INTEGER_DIGITS = 5,
+    UNUM_MAX_FRACTION_DIGITS = 6,
+    UNUM_MIN_FRACTION_DIGITS = 7,
+    UNUM_FRACTION_DIGITS = 8,
+    UNUM_MULTIPLIER = 9,
+    UNUM_GROUPING_SIZE = 10,
+    UNUM_ROUNDING_MODE = 11,
+    UNUM_ROUNDING_INCREMENT = 12,
+    UNUM_FORMAT_WIDTH = 13,
+    UNUM_PADDING_POSITION = 14,
+    UNUM_SECONDARY_GROUPING_SIZE = 15,
+    UNUM_SIGNIFICANT_DIGITS_USED = 16,
+    UNUM_MIN_SIGNIFICANT_DIGITS = 17,
+    UNUM_MAX_SIGNIFICANT_DIGITS = 18,
+    UNUM_LENIENT_PARSE = 19,
+    UNUM_PARSE_ALL_INPUT = 20,
+    UNUM_SCALE = 21,
+    UNUM_MINIMUM_GROUPING_DIGITS = 22,
+    UNUM_CURRENCY_USAGE = 23,
+    UNUM_MAX_NONBOOLEAN_ATTRIBUTE = 4095,
+    UNUM_FORMAT_FAIL_IF_MORE_THAN_MAX_DIGITS = 4096,
+    UNUM_PARSE_NO_EXPONENT = 4097,
+    UNUM_PARSE_DECIMAL_MARK_REQUIRED = 4098,
+    UNUM_PARSE_CASE_SENSITIVE = 4099,
+    UNUM_SIGN_ALWAYS_SHOWN = 4100,
+    UNUM_LIMIT_BOOLEAN_ATTRIBUTE = 4101,
+}
+extern "C" {
+    pub fn unum_getAttribute_65(fmt: *const UNumberFormat, attr: UNumberFormatAttribute) -> i32;
+}
+extern "C" {
+    pub fn unum_setAttribute_65(
+        fmt: *mut UNumberFormat,
+        attr: UNumberFormatAttribute,
+        newValue: i32,
+    );
+}
+extern "C" {
+    pub fn unum_getDoubleAttribute_65(
+        fmt: *const UNumberFormat,
+        attr: UNumberFormatAttribute,
+    ) -> f64;
+}
+extern "C" {
+    pub fn unum_setDoubleAttribute_65(
+        fmt: *mut UNumberFormat,
+        attr: UNumberFormatAttribute,
+        newValue: f64,
+    );
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd)]
+pub enum UNumberFormatTextAttribute {
+    UNUM_POSITIVE_PREFIX = 0,
+    UNUM_POSITIVE_SUFFIX = 1,
+    UNUM_NEGATIVE_PREFIX = 2,
+    UNUM_NEGATIVE_SUFFIX = 3,
+    UNUM_PADDING_CHARACTER = 4,
+    UNUM_CURRENCY_CODE = 5,
+    UNUM_DEFAULT_RULESET = 6,
+    UNUM_PUBLIC_RULESETS = 7,
+}
+extern "C" {
+    pub fn unum_getTextAttribute_65(
+        fmt: *const UNumberFormat,
+        tag: UNumberFormatTextAttribute,
+        result: *mut UChar,
+        resultLength: i32,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn unum_setTextAttribute_65(
+        fmt: *mut UNumberFormat,
+        tag: UNumberFormatTextAttribute,
+        newValue: *const UChar,
+        newValueLength: i32,
+        status: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn unum_toPattern_65(
+        fmt: *const UNumberFormat,
+        isPatternLocalized: UBool,
+        result: *mut UChar,
+        resultLength: i32,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd)]
+pub enum UNumberFormatSymbol {
+    UNUM_DECIMAL_SEPARATOR_SYMBOL = 0,
+    UNUM_GROUPING_SEPARATOR_SYMBOL = 1,
+    UNUM_PATTERN_SEPARATOR_SYMBOL = 2,
+    UNUM_PERCENT_SYMBOL = 3,
+    UNUM_ZERO_DIGIT_SYMBOL = 4,
+    UNUM_DIGIT_SYMBOL = 5,
+    UNUM_MINUS_SIGN_SYMBOL = 6,
+    UNUM_PLUS_SIGN_SYMBOL = 7,
+    UNUM_CURRENCY_SYMBOL = 8,
+    UNUM_INTL_CURRENCY_SYMBOL = 9,
+    UNUM_MONETARY_SEPARATOR_SYMBOL = 10,
+    UNUM_EXPONENTIAL_SYMBOL = 11,
+    UNUM_PERMILL_SYMBOL = 12,
+    UNUM_PAD_ESCAPE_SYMBOL = 13,
+    UNUM_INFINITY_SYMBOL = 14,
+    UNUM_NAN_SYMBOL = 15,
+    UNUM_SIGNIFICANT_DIGIT_SYMBOL = 16,
+    UNUM_MONETARY_GROUPING_SEPARATOR_SYMBOL = 17,
+    UNUM_ONE_DIGIT_SYMBOL = 18,
+    UNUM_TWO_DIGIT_SYMBOL = 19,
+    UNUM_THREE_DIGIT_SYMBOL = 20,
+    UNUM_FOUR_DIGIT_SYMBOL = 21,
+    UNUM_FIVE_DIGIT_SYMBOL = 22,
+    UNUM_SIX_DIGIT_SYMBOL = 23,
+    UNUM_SEVEN_DIGIT_SYMBOL = 24,
+    UNUM_EIGHT_DIGIT_SYMBOL = 25,
+    UNUM_NINE_DIGIT_SYMBOL = 26,
+    UNUM_EXPONENT_MULTIPLICATION_SYMBOL = 27,
+    UNUM_FORMAT_SYMBOL_COUNT = 28,
+}
+extern "C" {
+    pub fn unum_getSymbol_65(
+        fmt: *const UNumberFormat,
+        symbol: UNumberFormatSymbol,
+        buffer: *mut UChar,
+        size: i32,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn unum_setSymbol_65(
+        fmt: *mut UNumberFormat,
+        symbol: UNumberFormatSymbol,
+        value: *const UChar,
+        length: i32,
+        status: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn unum_getLocaleByType_65(
+        fmt: *const UNumberFormat,
+        type_: ULocDataLocaleType,
+        status: *mut UErrorCode,
+    ) -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn unum_setContext_65(
+        fmt: *mut UNumberFormat,
+        value: UDisplayContext,
+        status: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn unum_getContext_65(
+        fmt: *const UNumberFormat,
+        type_: UDisplayContextType,
+        status: *mut UErrorCode,
+    ) -> UDisplayContext;
+}
 pub type UDateFormat = *mut ::std::os::raw::c_void;
 impl UDateFormatStyle {
     pub const UDAT_DEFAULT: UDateFormatStyle = UDateFormatStyle::UDAT_MEDIUM;
@@ -2933,6 +3292,19 @@ pub enum UDataFileAccess {
 }
 extern "C" {
     pub fn udata_setFileAccess_65(access: UDataFileAccess, status: *mut UErrorCode);
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd)]
+pub enum UFieldCategory {
+    UFIELD_CATEGORY_UNDEFINED = 0,
+    UFIELD_CATEGORY_DATE = 1,
+    UFIELD_CATEGORY_NUMBER = 2,
+    UFIELD_CATEGORY_LIST = 3,
+    UFIELD_CATEGORY_RELATIVE_DATETIME = 4,
+    UFIELD_CATEGORY_DATE_INTERVAL = 5,
+    UFIELD_CATEGORY_COUNT = 6,
+    UFIELD_CATEGORY_LIST_SPAN = 4099,
+    UFIELD_CATEGORY_DATE_INTERVAL_SPAN = 4101,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

@@ -17,6 +17,7 @@
 //! At the moment, this crate contains the declaration of various errors
 
 use {
+    anyhow::anyhow,
     rust_icu_sys as sys,
     std::{ffi, os},
     thiserror::Error,
@@ -306,6 +307,8 @@ impl CStringVec {
     }
 }
 
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -333,3 +336,24 @@ mod tests {
         let _c_array = CStringVec::new(&values).expect_err("should fail");
     }
 }
+
+/// A zero-value parse error, used to initialize types that get passed into FFI code.
+pub static NO_PARSE_ERROR: sys::UParseError = sys::UParseError {
+    line: 0,
+    offset: 0,
+    preContext: [0; 16usize],
+    postContext: [0; 16usize],
+};
+
+/// Converts a parse error to a Result.
+pub fn parse_ok(e: sys::UParseError) -> Result<(), crate::Error> {
+    if e == NO_PARSE_ERROR {
+        return Ok(());
+    }
+    Err(Error::Wrapper(anyhow!(
+        "parse error: line: {}, offset: {}",
+        e.line,
+        e.offset
+    )))
+}
+

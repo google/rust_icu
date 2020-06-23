@@ -89,29 +89,9 @@
 //! ```
 
 use {
-    anyhow::anyhow, rust_icu_common as common, rust_icu_sys as sys, rust_icu_sys::*,
+    rust_icu_common as common, rust_icu_sys as sys, rust_icu_sys::*,
     rust_icu_uloc as uloc, rust_icu_ustring as ustring, std::convert::TryFrom,
 };
-
-/// A zero-value parse error, used to initialize types that get passed into FFI code.
-static NO_PARSE_ERROR: sys::UParseError = sys::UParseError {
-    line: 0,
-    offset: 0,
-    preContext: [0; 16usize],
-    postContext: [0; 16usize],
-};
-
-/// Converts a parse error to a Result.
-fn parse_ok(e: sys::UParseError) -> Result<(), common::Error> {
-    if e == NO_PARSE_ERROR {
-        return Ok(());
-    }
-    Err(common::Error::Wrapper(anyhow!(
-        "parse error: line: {}, offset: {}",
-        e.line,
-        e.offset
-    )))
-}
 
 /// The implementation of the ICU `UMessageFormat*`.
 ///
@@ -177,7 +157,7 @@ impl UMessageFormat {
         let pstr = pattern.as_c_ptr();
         let loc = locale.as_c_str();
         let mut status = common::Error::OK_CODE;
-        let mut parse_status = NO_PARSE_ERROR.clone();
+        let mut parse_status = common::NO_PARSE_ERROR.clone();
 
         let rep = unsafe {
             assert!(common::Error::is_ok(status));
@@ -190,7 +170,7 @@ impl UMessageFormat {
             )
         };
         common::Error::ok_or_warning(status)?;
-        parse_ok(parse_status)?;
+        common::parse_ok(parse_status)?;
         Ok(UMessageFormat {
             rep: std::rc::Rc::new(Rep { rep }),
         })
