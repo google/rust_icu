@@ -133,6 +133,7 @@ publish:
 	$(call publish,rust_icu_umsg)
 	$(call publish,rust_icu_ulistformatter)
 	$(call publish,rust_icu_upluralrules)
+	$(call publish,rust_icu_uformattable)
 	$(call publish,rust_icu)
 
 # A helper to up-rev the cargo crate versions.
@@ -164,6 +165,7 @@ uprev:
 	$(call uprev,rust_icu_upluralrules)
 	$(call uprev,rust_icu_ustring)
 	$(call uprev,rust_icu_utext)
+	$(call uprev,rust_icu_uformattable)
 
 cov:
 	./build/showprogress.sh

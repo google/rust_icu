@@ -2272,6 +2272,73 @@ fn bindgen_test_layout_UFieldPosition() {
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd)]
+pub enum UFormattableType {
+    UFMT_DATE = 0,
+    UFMT_DOUBLE = 1,
+    UFMT_LONG = 2,
+    UFMT_STRING = 3,
+    UFMT_ARRAY = 4,
+    UFMT_INT64 = 5,
+    UFMT_OBJECT = 6,
+    UFMT_COUNT = 7,
+}
+pub type UFormattable = *mut ::std::os::raw::c_void;
+extern "C" {
+    pub fn ufmt_open_64(status: *mut UErrorCode) -> *mut UFormattable;
+}
+extern "C" {
+    pub fn ufmt_close_64(fmt: *mut UFormattable);
+}
+extern "C" {
+    pub fn ufmt_getType_64(fmt: *const UFormattable, status: *mut UErrorCode) -> UFormattableType;
+}
+extern "C" {
+    pub fn ufmt_isNumeric_64(fmt: *const UFormattable) -> UBool;
+}
+extern "C" {
+    pub fn ufmt_getDate_64(fmt: *const UFormattable, status: *mut UErrorCode) -> UDate;
+}
+extern "C" {
+    pub fn ufmt_getDouble_64(fmt: *mut UFormattable, status: *mut UErrorCode) -> f64;
+}
+extern "C" {
+    pub fn ufmt_getLong_64(fmt: *mut UFormattable, status: *mut UErrorCode) -> i32;
+}
+extern "C" {
+    pub fn ufmt_getInt64_64(fmt: *mut UFormattable, status: *mut UErrorCode) -> i64;
+}
+extern "C" {
+    pub fn ufmt_getObject_64(
+        fmt: *const UFormattable,
+        status: *mut UErrorCode,
+    ) -> *const ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn ufmt_getUChars_64(
+        fmt: *mut UFormattable,
+        len: *mut i32,
+        status: *mut UErrorCode,
+    ) -> *const UChar;
+}
+extern "C" {
+    pub fn ufmt_getArrayLength_64(fmt: *const UFormattable, status: *mut UErrorCode) -> i32;
+}
+extern "C" {
+    pub fn ufmt_getArrayItemByIndex_64(
+        fmt: *mut UFormattable,
+        n: i32,
+        status: *mut UErrorCode,
+    ) -> *mut UFormattable;
+}
+extern "C" {
+    pub fn ufmt_getDecNumChars_64(
+        fmt: *mut UFormattable,
+        len: *mut i32,
+        status: *mut UErrorCode,
+    ) -> *const ::std::os::raw::c_char;
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd)]
 pub enum UDisplayContextType {
     UDISPCTX_TYPE_DIALECT_HANDLING = 0,
     UDISPCTX_TYPE_CAPITALIZATION = 1,
