@@ -38,7 +38,7 @@ pub struct UChar {
     rep: Vec<rust_icu_sys::UChar>,
 }
 
-/// Same as [common::buffered_string_method_with_retry], but for unicode strings.
+/// Same as `rust_icu_common::buffered_string_method_with_retry`, but for unicode strings.
 ///
 /// Example use:
 ///

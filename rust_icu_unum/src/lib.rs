@@ -17,10 +17,11 @@
 //! Since 0.3.1
 
 use {
-    rust_icu_common as common, rust_icu_sys as sys,
+    paste, rust_icu_common as common, rust_icu_sys as sys,
     rust_icu_sys::versioned_function,
     rust_icu_sys::*,
     rust_icu_uloc as uloc, rust_icu_ustring as ustring,
+    rust_icu_ustring::buffered_uchar_method_with_retry,
     std::{convert::TryFrom, convert::TryInto, ptr},
 };
 
@@ -34,6 +35,43 @@ impl Drop for UNumberFormat {
     fn drop(&mut self) {
         unsafe { versioned_function!(unum_close)(self.rep.as_ptr()) };
     }
+}
+
+/// There is a slew of near-identical method calls which differ in the type of
+/// the input argument and the name of the function to invoke.
+macro_rules! format_ustring_for_type{
+    ($method_name:ident, $function_name:ident, $type_decl:ty) => (
+        /// Implements `$function_name`.
+        pub fn $method_name(&self, number: $type_decl) -> Result<String, common::Error> {
+            let result = paste::item! {
+                self. [< $method_name _ustring>] (number)?
+            };
+            String::try_from(&result)
+        }
+
+        // Should be able to use https://github.com/google/rust_icu/pull/144 to
+        // make this even shorter.
+        paste::item! {
+            /// Implements `$function_name`.
+            pub fn [<$method_name _ustring>] (&self, param: $type_decl) -> Result<ustring::UChar, common::Error> {
+                const CAPACITY: usize = 200;
+                buffered_uchar_method_with_retry!(
+                    [< $method_name _ustring_impl >],
+                    CAPACITY,
+                    [ rep: *const sys::UNumberFormat, param: $type_decl, ],
+                    [ field: *mut sys::UFieldPosition, ]
+                    );
+
+                [<$method_name _ustring_impl>](
+                    versioned_function!($function_name),
+                    self.rep.as_ptr(),
+                    param,
+                    // The field position is unused for now.
+                    0 as *mut sys::UFieldPosition,
+                    )
+            }
+        }
+    )
 }
 
 impl UNumberFormat {
@@ -117,56 +155,77 @@ impl UNumberFormat {
         })
     }
 
-    /// Implements `unum_format`
-    pub fn format(&self, number: i32) -> Result<String, common::Error> {
-        let result = self.format_ustring(number)?;
-        String::try_from(&result)
+    // Can we make this into a generic method somehow?
+
+    // Implements `unum_format`
+    format_ustring_for_type!(format, unum_format, i32);
+
+    // Implements `unum_formatInt64`
+    format_ustring_for_type!(format_i64, unum_formatInt64, i64);
+
+    // Implements `unum_formatDouble`
+    format_ustring_for_type!(format_f64, unum_formatDouble, f64);
+}
+
+/// Used to iterate over the field positions.
+pub struct UFieldPositionIterator<'a, T> {
+    rep: ptr::NonNull<sys::UFieldPositionIterator>,
+    // Owner does not own the representation above, but does own the underlying
+    // data.
+    owner: Option<&'a T>,
+}
+
+impl<'a, T> Drop for UFieldPositionIterator<'a, T> {
+    fn drop(&mut self) {
+        unsafe { versioned_function!(ufieldpositer_close)(self.rep.as_ptr()) };
+    }
+}
+
+impl<'a, T> UFieldPositionIterator<'a, T> {
+    pub fn try_new_owned(owner: &'a T) -> Result<UFieldPositionIterator<'a, T>, common::Error> {
+        let mut status = common::Error::OK_CODE;
+        let raw = unsafe {
+            assert!(common::Error::is_ok(status));
+            versioned_function!(ufieldpositer_open)(&mut status)
+        };
+        common::Error::ok_or_warning(status)?;
+        Ok(UFieldPositionIterator {
+            rep: ptr::NonNull::new(raw).expect("raw pointer is not null"),
+            owner: None,
+        })
     }
 
-    /// Implements `unum_format`
-    // TODO: this method call is repetitive, and should probably be pulled out into a macro.
-    pub fn format_ustring(&self, number: i32) -> Result<ustring::UChar, common::Error> {
-        const CAPACITY: usize = 200;
+    pub fn try_new_unowned<'b>() -> Result<UFieldPositionIterator<'b, T>, common::Error> {
         let mut status = common::Error::OK_CODE;
-        let mut buf: Vec<sys::UChar> = vec![0; CAPACITY];
-
-        let full_len: i32 = unsafe {
+        let raw = unsafe {
             assert!(common::Error::is_ok(status));
-            versioned_function!(unum_format)(
-                self.rep.as_ptr(),
-                number,
-                buf.as_mut_ptr(),
-                buf.len() as i32,
-                // Unsure what this field should be for.
-                0 as *mut sys::UFieldPosition,
-                &mut status,
-            )
+            versioned_function!(ufieldpositer_open)(&mut status)
         };
-        if status == sys::UErrorCode::U_BUFFER_OVERFLOW_ERROR
-            || (common::Error::is_ok(status)
-                && full_len > CAPACITY.try_into().map_err(|e| common::Error::wrapper(e))?)
-        {
-            assert!(full_len > 0);
-            let full_len: usize = full_len.try_into().map_err(|e| common::Error::wrapper(e))?;
-            buf.resize(full_len, 0);
-            unsafe {
-                assert!(common::Error::is_ok(status));
-                versioned_function!(unum_format)(
-                    self.rep.as_ptr(),
-                    number,
-                    buf.as_mut_ptr(),
-                    buf.len() as i32,
-                    0 as *mut sys::UFieldPosition,
-                    &mut status,
-                )
-            };
-        }
         common::Error::ok_or_warning(status)?;
-        if full_len >= 0 {
-            let full_len: usize = full_len.try_into().map_err(|e| common::Error::wrapper(e))?;
-            buf.resize(full_len, 0);
+        assert_ne!(raw, 0 as *mut sys::UFieldPositionIterator);
+        Ok(UFieldPositionIterator {
+            rep: ptr::NonNull::new(raw).expect("raw pointer is not null"),
+            owner: None,
+        })
+    }
+}
+
+impl<'a, T> Iterator for UFieldPositionIterator<'a, T> {
+    // TODO: Consider turning this into a range once the range properties
+    // are known.
+    /// The begin of the range and the end of the range index, in that order.
+    type Item = (i32, i32);
+
+    /// Gets the next position iterator pair.
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut begin = 0i32;
+        let mut end = 0i32;
+
+        unsafe { versioned_function!(fieldpositer_next)(self.rep.as_ptr(), &mut begin, &mut end) };
+        if begin < 0 || end < 0 {
+            return None;
         }
-        Ok(ustring::UChar::from(buf))
+        Some((begin, end))
     }
 }
 
