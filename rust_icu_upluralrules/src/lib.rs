@@ -28,6 +28,7 @@ use {
     rust_icu_common as common,
     rust_icu_sys::{self as sys, versioned_function, *},
     rust_icu_uenum as uenum, rust_icu_ustring as ustring,
+    rust_icu_ustring::buffered_uchar_method_with_retry,
     std::{convert::TryFrom, convert::TryInto, ffi, ptr},
 };
 
@@ -88,58 +89,19 @@ impl UPluralRules {
 
     /// Implements `uplrules_select`.
     pub fn select_ustring(&self, number: f64) -> Result<ustring::UChar, common::Error> {
-        // This could have been a macro "buffered_uchar_method_with_retry", but for some
-        // reason the macro expansion is confused about sys::UChar and ustring::UChar types.
         const BUFFER_CAPACITY: usize = 20;
+        buffered_uchar_method_with_retry!(
+            select_impl,
+            BUFFER_CAPACITY,
+            [rep: *const sys::UPluralRules, number: f64,],
+            []
+        );
 
-        let mut status = common::Error::OK_CODE;
-        let mut buf: Vec<sys::UChar> = vec![0; BUFFER_CAPACITY];
-
-        // Requires that any pointers that are passed in are valid.
-        let full_len: i32 = unsafe {
-            assert!(common::Error::is_ok(status));
-            versioned_function!(uplrules_select)(
-                self.rep.as_ptr(),
-                number,
-                buf.as_mut_ptr(),
-                BUFFER_CAPACITY as i32,
-                &mut status,
-            )
-        };
-
-        // ICU methods are inconsistent in whether they silently truncate the output or treat
-        // the overflow as an error, so we need to check both cases.
-        if status == sys::UErrorCode::U_BUFFER_OVERFLOW_ERROR
-            || (common::Error::is_ok(status)
-                && full_len
-                    > BUFFER_CAPACITY
-                        .try_into()
-                        .map_err(|e| common::Error::wrapper(e))?)
-        {
-            assert!(full_len > 0);
-            let full_len: usize = full_len.try_into().map_err(|e| common::Error::wrapper(e))?;
-            buf.resize(full_len, 0);
-
-            // Same unsafe requirements as above, plus full_len must be exactly the output
-            // buffer size.
-            unsafe {
-                assert!(common::Error::is_ok(status));
-                versioned_function!(uplrules_select)(
-                    self.rep.as_ptr(),
-                    number,
-                    buf.as_mut_ptr(),
-                    full_len as i32,
-                    &mut status,
-                )
-            };
-        }
-        common::Error::ok_or_warning(status)?;
-        // Adjust the size of the buffer here.
-        if full_len >= 0 {
-            let full_len: usize = full_len.try_into().map_err(|e| common::Error::wrapper(e))?;
-            buf.resize(full_len, 0);
-        }
-        Ok(ustring::UChar::from(buf))
+        select_impl(
+            versioned_function!(uplrules_select),
+            self.rep.as_ptr(),
+            number,
+        )
     }
 
     /// Implements `uplrules_select`.

@@ -38,6 +38,104 @@ pub struct UChar {
     rep: Vec<rust_icu_sys::UChar>,
 }
 
+/// Same as [common::buffered_string_method_with_retry], but for unicode strings.
+///
+/// Example use:
+///
+/// Declares an internal function `select_impl` with a templatized type signature, which is then
+/// called in subsequent code.
+///
+/// ```rust ignore
+/// pub fn select_ustring(&self, number: f64) -> Result<ustring::UChar, common::Error> {
+///     const BUFFER_CAPACITY: usize = 20;
+///     buffered_uchar_method_with_retry!(
+///         select_impl,
+///         BUFFER_CAPACITY,
+///         [rep: *const sys::UPluralRules, number: f64,],
+///         []
+///     );
+///
+///     select_impl(
+///         versioned_function!(uplrules_select),
+///         self.rep.as_ptr(),
+///         number,
+///     )
+/// }
+/// ```
+#[macro_export]
+macro_rules! buffered_uchar_method_with_retry {
+
+    ($method_name:ident, $buffer_capacity:expr,
+     [$($before_arg:ident: $before_arg_type:ty,)*],
+     [$($after_arg:ident: $after_arg_type:ty,)*]) => {
+        fn $method_name(
+            method_to_call: unsafe extern "C" fn(
+                $($before_arg_type,)*
+                *mut sys::UChar,
+                i32,
+                $($after_arg_type,)*
+                *mut sys::UErrorCode,
+            ) -> i32,
+            $($before_arg: $before_arg_type,)*
+            $($after_arg: $after_arg_type,)*
+        ) -> Result<ustring::UChar, common::Error> {
+            let mut status = common::Error::OK_CODE;
+            let mut buf: Vec<sys::UChar> = vec![0; $buffer_capacity];
+
+            // Requires that any pointers that are passed in are valid.
+            let full_len: i32 = unsafe {
+                assert!(common::Error::is_ok(status));
+                method_to_call(
+                    $($before_arg,)*
+                    buf.as_mut_ptr() as *mut sys::UChar,
+                    $buffer_capacity as i32,
+                    $($after_arg,)*
+                    &mut status,
+                )
+            };
+
+            // ICU methods are inconsistent in whether they silently truncate the output or treat
+            // the overflow as an error, so we need to check both cases.
+            if status == sys::UErrorCode::U_BUFFER_OVERFLOW_ERROR ||
+               (common::Error::is_ok(status) &&
+                    full_len > $buffer_capacity
+                        .try_into()
+                        .map_err(|e| common::Error::wrapper(e))?) {
+
+                assert!(full_len > 0);
+                let full_len: usize = full_len
+                    .try_into()
+                    .map_err(|e| common::Error::wrapper(e))?;
+                buf.resize(full_len, 0);
+
+                // Same unsafe requirements as above, plus full_len must be exactly the output
+                // buffer size.
+                unsafe {
+                    assert!(common::Error::is_ok(status));
+                    method_to_call(
+                        $($before_arg,)*
+                        buf.as_mut_ptr() as *mut sys::UChar,
+                        full_len as i32,
+                        $($after_arg,)*
+                        &mut status,
+                    )
+                };
+            }
+
+            common::Error::ok_or_warning(status)?;
+
+            // Adjust the size of the buffer here.
+            if (full_len >= 0) {
+                let full_len: usize = full_len
+                    .try_into()
+                    .map_err(|e| common::Error::wrapper(e))?;
+                buf.resize(full_len, 0);
+            }
+            Ok(ustring::UChar::from(buf))
+        }
+    }
+}
+
 impl TryFrom<&str> for crate::UChar {
     type Error = common::Error;
 
