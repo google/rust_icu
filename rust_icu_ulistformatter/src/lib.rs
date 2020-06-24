@@ -99,6 +99,8 @@ impl UListFormatter {
     }
 
     /// Implements `ulistfmt_format`.
+    // TODO: this method call is repetitive, and should probably be pulled out into a macro.
+    // TODO: rename this function into format_uchar.
     pub fn format_uchar(&self, list: &[&str]) -> Result<ustring::UChar, common::Error> {
         let list_ustr = UCharArray::try_from(list)?;
         const CAPACITY: usize = 200;
