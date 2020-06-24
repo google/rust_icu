@@ -178,21 +178,19 @@ impl crate::UChar {
     /// Does *not* take ownership of the buffer that was passed in.
     ///
     /// **DO NOT USE UNLESS YOU HAVE NO OTHER CHOICE.**
-    #[doc(hidden)]
-    pub unsafe fn clone_from_raw_parts(rep: *const sys::UChar, len: i32) -> crate::UChar {
+    pub unsafe fn clone_from_raw_parts(rep: *mut sys::UChar, len: i32) -> crate::UChar {
         assert!(len >= 0);
         // Always works for len: i32 >= 0.
         let cap = len as usize;
 
         // View the deconstructed buffer as a vector of UChars.  Then make a
         // copy of it to return.  This is not efficient, but is always safe.
-        let original = Vec::from_raw_parts(rep as *mut sys::UChar, cap, cap);
+        let original = Vec::from_raw_parts(rep, cap, cap);
         let copy = original.clone();
         // Don't free the buffer we don't own.
         std::mem::forget(original);
         crate::UChar::from(copy)
     }
-
 
     /// Converts into a zeroed-out string.
     ///

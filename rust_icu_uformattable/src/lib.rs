@@ -133,14 +133,14 @@ impl<'a> crate::UFormattable<'a> {
     pub fn get_ustring(&self) -> Result<ustring::UChar, common::Error> {
             let mut status = common::Error::OK_CODE;
             let mut ustrlen = 0i32;
-            let raw: *const sys::UChar = unsafe {
+            let raw = unsafe {
                 assert!(common::Error::is_ok(status));
                 versioned_function!(ufmt_getUChars)(
                     self.rep.as_ptr(), &mut ustrlen, &mut status)
-            };
+            } as *mut sys::UChar;
             common::Error::ok_or_warning(status)?;
             let ret = unsafe {
-                assert_ne!(raw, 0 as *const sys::UChar);
+                assert_ne!(raw, 0 as *mut sys::UChar);
                 assert!(ustrlen >= 0);
                 ustring::UChar::clone_from_raw_parts(raw, ustrlen)
             };
