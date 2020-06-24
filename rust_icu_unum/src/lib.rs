@@ -50,7 +50,7 @@ impl UNumberFormat {
     }
 
     /// Implements `unum_open`, with rule-based formatting,
-    pub fn try_new_decimal_rulebased_ustring(
+    pub fn try_new_decimal_rule_based_ustring(
         rule: &ustring::UChar,
         locale: &uloc::ULoc,
     ) -> Result<UNumberFormat, common::Error> {
@@ -179,12 +179,14 @@ mod tests {
     fn format_decimal_pattern_ustring() {
         struct TestCase {
             locale: &'static str,
+            number: i32,
             pattern: &'static str,
             expected: &'static str,
         };
 
         let tests = vec![TestCase {
             locale: "sr-RS",
+            number: 42,
             pattern: "",
             expected: "42",
         }];
@@ -197,7 +199,7 @@ mod tests {
             let result = fmt
                 .try_clone()
                 .expect("clone")
-                .format(42)
+                .format(test.number)
                 .expect("format success");
             assert_eq!(test.expected, result);
         }
@@ -209,25 +211,27 @@ mod tests {
     fn format_decimal_rulebased_ustring() {
         struct TestCase {
             locale: &'static str,
+            number: i32,
             rule: &'static str,
             expected: &'static str,
         };
 
         let tests = vec![TestCase {
             locale: "sr-RS",
+            number: 42,
             rule: "",
             expected: "42",
         }];
         for test in tests {
             let locale = uloc::ULoc::try_from(test.locale).expect("locale exists");
             let pattern = ustring::UChar::try_from(test.rule).expect("pattern is set");
-            let fmt = crate::UNumberFormat::try_new_decimal_rulebased_ustring(&pattern, &locale)
+            let fmt = crate::UNumberFormat::try_new_decimal_rule_based_ustring(&pattern, &locale)
                 .expect("formatter");
 
             let result = fmt
                 .try_clone()
                 .expect("clone")
-                .format(42)
+                .format(test.number)
                 .expect("format success");
             assert_eq!(test.expected, result);
         }
