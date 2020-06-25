@@ -2386,6 +2386,19 @@ pub enum UDisplayContext {
 pub struct UFieldPositionIterator {
     _unused: [u8; 0],
 }
+extern "C" {
+    pub fn ufieldpositer_open_65(status: *mut UErrorCode) -> *mut UFieldPositionIterator;
+}
+extern "C" {
+    pub fn ufieldpositer_close_65(fpositer: *mut UFieldPositionIterator);
+}
+extern "C" {
+    pub fn ufieldpositer_next_65(
+        fpositer: *mut UFieldPositionIterator,
+        beginIndex: *mut i32,
+        endIndex: *mut i32,
+    ) -> i32;
+}
 pub type UNumberFormat = *mut ::std::os::raw::c_void;
 impl UNumberFormatStyle {
     pub const UNUM_DEFAULT: UNumberFormatStyle = UNumberFormatStyle::UNUM_DECIMAL;
