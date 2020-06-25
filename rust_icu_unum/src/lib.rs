@@ -165,13 +165,50 @@ impl UNumberFormat {
 
     // Implements `unum_formatDouble`
     format_ustring_for_type!(format_f64, unum_formatDouble, f64);
+
+    /// Implements `unum_formatDoubleForFields`
+    ///
+    /// Returns a formatted Unicode string, with a field position iterator yielding the ranges of
+    /// each individual formatted field as indexes into the returned string.  An UTF8 version of
+    /// this is not provided because the field position iterator does not give UTF8 compatible
+    /// character indices.
+    pub fn format_double_for_fields_ustring<'a>(
+        &'a self,
+        number: f64,
+    ) -> Result<
+        (
+            ustring::UChar,
+            UFieldPositionIterator<'a, *const sys::UNumberFormat>,
+        ),
+        common::Error,
+    > {
+        let mut iterator = UFieldPositionIterator::try_new_unowned()?;
+        const CAPACITY: usize = 200;
+
+        buffered_uchar_method_with_retry!(
+            format_for_fields_impl,
+            CAPACITY,
+            [format: *const sys::UNumberFormat, number: f64,],
+            [iter: *mut sys::UFieldPositionIterator,]
+        );
+
+        let result = format_for_fields_impl(
+            versioned_function!(unum_formatDoubleForFields),
+            self.rep.as_ptr(),
+            number,
+            iterator.as_mut_ptr(),
+        )?;
+        Ok((result, iterator))
+    }
 }
 
 /// Used to iterate over the field positions.
 pub struct UFieldPositionIterator<'a, T> {
     rep: ptr::NonNull<sys::UFieldPositionIterator>,
     // Owner does not own the representation above, but does own the underlying
-    // data.
+    // data.  That's why we let the owner squat here to ensure proper lifetime
+    // containment.
+    #[allow(dead_code)]
     owner: Option<&'a T>,
 }
 
@@ -181,21 +218,26 @@ impl<'a, T> Drop for UFieldPositionIterator<'a, T> {
     }
 }
 
-impl<'a, T> UFieldPositionIterator<'a, T> {
+impl<'a, T: 'a> UFieldPositionIterator<'a, T> {
+    /// Try creatign a new iterator, based on data supplied by `owner`.
     pub fn try_new_owned(owner: &'a T) -> Result<UFieldPositionIterator<'a, T>, common::Error> {
-        let mut status = common::Error::OK_CODE;
-        let raw = unsafe {
-            assert!(common::Error::is_ok(status));
-            versioned_function!(ufieldpositer_open)(&mut status)
-        };
-        common::Error::ok_or_warning(status)?;
+        let raw = Self::new_raw()?;
+        Ok(UFieldPositionIterator {
+            rep: ptr::NonNull::new(raw).expect("raw pointer is not null"),
+            owner: Some(owner),
+        })
+    }
+
+    /// Try creating a new iterator, based on data with independent lifetime.
+    pub fn try_new_unowned<'b>() -> Result<UFieldPositionIterator<'b, T>, common::Error> {
+        let raw = Self::new_raw()?;
         Ok(UFieldPositionIterator {
             rep: ptr::NonNull::new(raw).expect("raw pointer is not null"),
             owner: None,
         })
     }
 
-    pub fn try_new_unowned<'b>() -> Result<UFieldPositionIterator<'b, T>, common::Error> {
+    fn new_raw() -> Result<*mut sys::UFieldPositionIterator, common::Error> {
         let mut status = common::Error::OK_CODE;
         let raw = unsafe {
             assert!(common::Error::is_ok(status));
@@ -203,29 +245,53 @@ impl<'a, T> UFieldPositionIterator<'a, T> {
         };
         common::Error::ok_or_warning(status)?;
         assert_ne!(raw, 0 as *mut sys::UFieldPositionIterator);
-        Ok(UFieldPositionIterator {
-            rep: ptr::NonNull::new(raw).expect("raw pointer is not null"),
-            owner: None,
-        })
+        Ok(raw)
     }
+
+    /// Returns the interal representation pointer.
+    fn as_mut_ptr(&mut self) -> *mut sys::UFieldPositionIterator {
+        self.rep.as_ptr()
+    }
+}
+
+/// Returned by [UFieldPositionIterator], represents the spans of each type of
+/// the formatting string.
+#[derive(Debug, PartialEq)]
+pub struct UFieldPositionType {
+    /// The field type for the formatting.
+    pub field_type: i32,
+
+    /// The index in the buffer at which the range of interest begins.  For
+    /// example, in a string "42 RSD", the beginning of "42" would be at index 0.
+    pub begin_index: i32,
+
+    /// The index one past the end of the buffer at which the range of interest ends.
+    /// For example, in a string "42 RSD", the end of "42" would be at index 2.
+    pub past_end_index: i32,
 }
 
 impl<'a, T> Iterator for UFieldPositionIterator<'a, T> {
     // TODO: Consider turning this into a range once the range properties
     // are known.
     /// The begin of the range and the end of the range index, in that order.
-    type Item = (i32, i32);
+    type Item = UFieldPositionType;
 
     /// Gets the next position iterator pair.
     fn next(&mut self) -> Option<Self::Item> {
         let mut begin = 0i32;
         let mut end = 0i32;
 
-        unsafe { versioned_function!(fieldpositer_next)(self.rep.as_ptr(), &mut begin, &mut end) };
-        if begin < 0 || end < 0 {
+        let field_type = unsafe {
+            versioned_function!(ufieldpositer_next)(self.rep.as_ptr(), &mut begin, &mut end)
+        };
+        if field_type < 0 {
             return None;
         }
-        Some((begin, end))
+        Some(UFieldPositionType {
+            field_type,
+            begin_index: begin,
+            past_end_index: end,
+        })
     }
 }
 
@@ -331,6 +397,53 @@ mod tests {
                 .format(test.number)
                 .expect("format success");
             assert_eq!(test.expected, result);
+        }
+    }
+
+    #[test]
+    fn format_double_with_fields() {
+        struct TestCase {
+            locale: &'static str,
+            number: f64,
+            style: sys::UNumberFormatStyle,
+            expected: &'static str,
+            expected_iter: Vec<UFieldPositionType>,
+        };
+
+        let tests = vec![TestCase {
+            locale: "sr-RS",
+            number: 42.1,
+            style: sys::UNumberFormatStyle::UNUM_CURRENCY,
+            expected: "42\u{a0}RSD",
+            expected_iter: vec![
+                // "42"
+                UFieldPositionType {
+                    field_type: 0,
+                    begin_index: 0,
+                    past_end_index: 2,
+                },
+                // "RSD"
+                UFieldPositionType {
+                    field_type: 7,
+                    begin_index: 3,
+                    past_end_index: 6,
+                },
+            ],
+        }];
+        for test in tests {
+            let locale = uloc::ULoc::try_from(test.locale).expect("locale exists");
+            let fmt =
+                crate::UNumberFormat::try_new_with_style(test.style, &locale).expect("formatter");
+
+            let (ustring, iter) = fmt
+                .format_double_for_fields_ustring(test.number)
+                .expect("format success");
+
+            let s =
+                String::try_from(ustring).expect(format!("string is convertible to utf8: {:?}", &ustring));
+            assert_eq!(test.expected, s);
+            let iter_values = iter.collect::<Vec<UFieldPositionType>>();
+            assert_eq!(test.expected_iter, iter_values);
         }
     }
 }
