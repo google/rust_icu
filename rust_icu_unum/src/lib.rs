@@ -25,6 +25,7 @@ use {
     std::{convert::TryFrom, convert::TryInto, ptr},
 };
 
+/// The struct for number formatting.
 #[derive(Debug)]
 pub struct UNumberFormat {
     rep: ptr::NonNull<sys::UNumberFormat>,
@@ -75,7 +76,7 @@ macro_rules! format_ustring_for_type{
 }
 
 impl UNumberFormat {
-    /// Implements `unum_open`, with a pattern.
+    /// Implements `unum_open`, with a pattern. Since 0.3.1.
     pub fn try_new_decimal_pattern_ustring(
         pattern: &ustring::UChar,
         locale: &uloc::ULoc,
@@ -87,7 +88,7 @@ impl UNumberFormat {
         )
     }
 
-    /// Implements `unum_open`, with rule-based formatting,
+    /// Implements `unum_open`, with rule-based formatting. Since 0.3.1
     pub fn try_new_decimal_rule_based_ustring(
         rule: &ustring::UChar,
         locale: &uloc::ULoc,
@@ -99,7 +100,7 @@ impl UNumberFormat {
         )
     }
 
-    /// Implements `unum_open`, with style-based formatting.
+    /// Implements `unum_open`, with style-based formatting. Since 0.3.1.
     pub fn try_new_with_style(
         style: sys::UNumberFormatStyle,
         locale: &uloc::ULoc,
@@ -110,7 +111,7 @@ impl UNumberFormat {
         UNumberFormat::try_new_style_pattern_ustring(style, &rule, locale)
     }
 
-    /// Implements `unum_open`
+    /// Implements `unum_open`. Since 0.3.1
     fn try_new_style_pattern_ustring(
         style: sys::UNumberFormatStyle,
         pattern: &ustring::UChar,
@@ -142,7 +143,7 @@ impl UNumberFormat {
         })
     }
 
-    /// Implements `unum_clone`
+    /// Implements `unum_clone`. Since 0.3.1.
     pub fn try_clone(&self) -> Result<UNumberFormat, common::Error> {
         let mut status = common::Error::OK_CODE;
         let rep = unsafe {
@@ -157,16 +158,16 @@ impl UNumberFormat {
 
     // Can we make this into a generic method somehow?
 
-    // Implements `unum_format`
+    // Implements `unum_format`. Since 0.3.1
     format_ustring_for_type!(format, unum_format, i32);
 
-    // Implements `unum_formatInt64`
+    // Implements `unum_formatInt64`. Since 0.3.1
     format_ustring_for_type!(format_i64, unum_formatInt64, i64);
 
-    // Implements `unum_formatDouble`
+    // Implements `unum_formatDouble`. Since 0.3.1
     format_ustring_for_type!(format_f64, unum_formatDouble, f64);
 
-    /// Implements `unum_formatDoubleForFields`
+    /// Implements `unum_formatDoubleForFields`. Since 0.3.1.
     ///
     /// Returns a formatted Unicode string, with a field position iterator yielding the ranges of
     /// each individual formatted field as indexes into the returned string.  An UTF8 version of
@@ -200,6 +201,73 @@ impl UNumberFormat {
         )?;
         Ok((result, iterator))
     }
+
+    /// Implements `unum_formatDecimal`. Since 0.3.1.
+    pub fn format_decimal(&self, decimal: &str) -> Result<String, common::Error> {
+        let result = self.format_decimal_ustring(decimal)?;
+        String::try_from(&result)
+    }
+
+    /// Implements `unum_formatDecimal`. Since 0.3.1.
+    pub fn format_decimal_ustring(&self, decimal: &str) -> Result<ustring::UChar, common::Error> {
+        use std::os::raw;
+        const CAPACITY: usize = 200;
+
+        buffered_uchar_method_with_retry!(
+            format_decimal_impl,
+            CAPACITY,
+            [
+                format: *const sys::UNumberFormat,
+                ptr: *const raw::c_char,
+                len: i32,
+            ],
+            [pos: *mut sys::UFieldPosition,]
+        );
+
+        format_decimal_impl(
+            versioned_function!(unum_formatDecimal),
+            self.rep.as_ptr(),
+            decimal.as_ptr() as *const raw::c_char,
+            decimal.len() as i32,
+            0 as *mut sys::UFieldPosition,
+        )
+    }
+
+    /// Implements `unum_formatDoubleCurrency`. Since 0.3.1.
+    pub fn format_double_currency(&self, number: f64, currency: &str) -> Result<String, common::Error> {
+        let currency = ustring::UChar::try_from(currency)?;
+        let result = self.format_double_currency_ustring(number, &currency)?;
+        String::try_from(&result)
+    }
+
+    /// Implements `unum_formatDoubleCurrency`. Since 0.3.1
+    pub fn format_double_currency_ustring(&self, number: f64, currency: &ustring::UChar) -> Result<ustring::UChar, common::Error> {
+        const CAPACITY: usize = 200;
+        buffered_uchar_method_with_retry!(
+            format_double_currency_impl,
+            CAPACITY,
+            [
+                format: *const sys::UNumberFormat,
+                number: f64, 
+                // NUL terminated!
+                currency: *mut sys::UChar,
+            ],
+            [pos: *mut sys::UFieldPosition,]
+        );
+        // This piece of gymnastics is required because the currency string is
+        // expected to be a NUL-terminated UChar.  What?!
+        let mut currencyz = currency.clone();
+        currencyz.make_z();
+
+        format_double_currency_impl(
+            versioned_function!(unum_formatDoubleCurrency),
+            self.rep.as_ptr(),
+            number, 
+            currencyz.as_mut_c_ptr(),
+            0 as *mut sys::UFieldPosition,
+        )
+    }
+   
 }
 
 /// Used to iterate over the field positions.
@@ -439,11 +507,69 @@ mod tests {
                 .format_double_for_fields_ustring(test.number)
                 .expect("format success");
 
-            let s =
-                String::try_from(ustring).expect(format!("string is convertible to utf8: {:?}", &ustring));
+            let s = String::try_from(&ustring)
+                .expect(&format!("string is convertible to utf8: {:?}", &ustring));
             assert_eq!(test.expected, s);
             let iter_values = iter.collect::<Vec<UFieldPositionType>>();
             assert_eq!(test.expected_iter, iter_values);
+        }
+    }
+
+    #[test]
+    fn format_decimal() {
+        struct TestCase {
+            locale: &'static str,
+            number: &'static str,
+            style: sys::UNumberFormatStyle,
+            expected: &'static str,
+        };
+
+        let tests = vec![TestCase {
+            locale: "sr-RS",
+            number: "1300.55",
+            style: sys::UNumberFormatStyle::UNUM_CURRENCY,
+            expected: "1.301\u{a0}RSD",
+        }];
+        for test in tests {
+            let locale = uloc::ULoc::try_from(test.locale).expect("locale exists");
+            let fmt =
+                crate::UNumberFormat::try_new_with_style(test.style, &locale).expect("formatter");
+
+            let s = fmt
+                .format_decimal(test.number)
+                .expect("format success");
+
+            assert_eq!(test.expected, s);
+        }
+    }
+
+    #[test]
+    fn format_double_currency() {
+        struct TestCase {
+            locale: &'static str,
+            number: f64,
+            currency: &'static str,
+            style: sys::UNumberFormatStyle,
+            expected: &'static str,
+        };
+
+        let tests = vec![TestCase {
+            locale: "sr-RS",
+            number: 1300.55,
+            currency: "usd",
+            style: sys::UNumberFormatStyle::UNUM_CURRENCY,
+            expected: "1.300,55\u{a0}US$",
+        }];
+        for test in tests {
+            let locale = uloc::ULoc::try_from(test.locale).expect("locale exists");
+            let fmt =
+                crate::UNumberFormat::try_new_with_style(test.style, &locale).expect("formatter");
+
+            let s = fmt
+                .format_double_currency(test.number, test.currency)
+                .expect("format success");
+
+            assert_eq!(test.expected, s);
         }
     }
 }
