@@ -33,7 +33,7 @@ use {
 /// for that.
 ///
 /// Implements `UChar*` from ICU.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct UChar {
     rep: Vec<rust_icu_sys::UChar>,
 }
