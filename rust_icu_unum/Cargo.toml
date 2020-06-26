@@ -20,6 +20,7 @@ log = "0.4.6"
 paste = "0.1.5"
 rust_icu_common = { path = "../rust_icu_common", version = "0.3.1", default-features = false }
 rust_icu_sys = { path = "../rust_icu_sys", version = "0.3.1", default-features = false }
+rust_icu_uformattable = { path = "../rust_icu_uformattable", version = "0.3.1", default-features = false }
 rust_icu_uloc = { path = "../rust_icu_uloc", version = "0.3.1", default-features = false }
 rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.3.1", default-features = false }
 anyhow = "1.0.25"
@@ -34,36 +35,42 @@ default = ["use-bindgen", "renaming", "icu_config"]
 use-bindgen = [
   "rust_icu_common/use-bindgen",
   "rust_icu_sys/use-bindgen",
+  "rust_icu_uformattable/use-bindgen",
   "rust_icu_uloc/use-bindgen",
   "rust_icu_ustring/use-bindgen",
 ]
 renaming = [
   "rust_icu_common/renaming",
   "rust_icu_sys/renaming",
+  "rust_icu_uformattable/renaming",
   "rust_icu_uloc/renaming",
   "rust_icu_ustring/renaming",
 ]
 icu_config = [
   "rust_icu_common/icu_config",
   "rust_icu_sys/icu_config",
+  "rust_icu_uformattable/icu_config",
   "rust_icu_uloc/icu_config",
   "rust_icu_ustring/icu_config",
 ]
 icu_version_in_env = [
   "rust_icu_common/icu_version_in_env",
   "rust_icu_sys/icu_version_in_env",
+  "rust_icu_uformattable/icu_version_in_env",
   "rust_icu_uloc/icu_version_in_env",
   "rust_icu_ustring/icu_version_in_env",
 ]
 icu_version_64_plus = [
   "rust_icu_common/icu_version_64_plus",
   "rust_icu_sys/icu_version_64_plus",
+  "rust_icu_uformattable/icu_version_64_plus",
   "rust_icu_uloc/icu_version_64_plus",
   "rust_icu_ustring/icu_version_64_plus",
 ]
 icu_version_67_plus = [
   "rust_icu_common/icu_version_67_plus",
   "rust_icu_sys/icu_version_67_plus",
+  "rust_icu_uformattable/icu_version_67_plus",
   "rust_icu_uloc/icu_version_67_plus",
   "rust_icu_ustring/icu_version_67_plus",
 ]

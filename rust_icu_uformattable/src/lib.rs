@@ -96,6 +96,21 @@ impl<'a> crate::UFormattable<'a> {
         })
     }
 
+    /// Reveals the underlying representation as a mutable pointer.
+    ///
+    /// **DO NOT USE UNLESS YOU HAVE NO OTHER CHOICE**
+    ///
+    /// The intended use of this method is for other crates that need to obtain
+    /// low-level representations of this type.
+    #[doc(hidden)]
+    pub fn as_mut_ptr(&mut self) -> *mut sys::UFormattable {
+        self.rep.as_ptr()
+    }
+
+    pub fn as_ptr(&self) -> *const sys::UFormattable {
+        self.rep.as_ptr()
+    }
+
     /// Returns `true` if this formattable is numeric.
     ///
     /// Implements `ufmt_isNumeric`

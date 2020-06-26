@@ -21,7 +21,7 @@ use {
     paste, rust_icu_common as common, rust_icu_sys as sys,
     rust_icu_sys::versioned_function,
     rust_icu_sys::*,
-    rust_icu_uloc as uloc, rust_icu_ustring as ustring,
+    rust_icu_uformattable as uformattable, rust_icu_uloc as uloc, rust_icu_ustring as ustring,
     rust_icu_ustring::buffered_uchar_method_with_retry,
     std::{convert::TryFrom, convert::TryInto, ptr},
 };
@@ -235,21 +235,29 @@ impl UNumberFormat {
     }
 
     /// Implements `unum_formatDoubleCurrency`. Since 0.3.1.
-    pub fn format_double_currency(&self, number: f64, currency: &str) -> Result<String, common::Error> {
+    pub fn format_double_currency(
+        &self,
+        number: f64,
+        currency: &str,
+    ) -> Result<String, common::Error> {
         let currency = ustring::UChar::try_from(currency)?;
         let result = self.format_double_currency_ustring(number, &currency)?;
         String::try_from(&result)
     }
 
     /// Implements `unum_formatDoubleCurrency`. Since 0.3.1
-    pub fn format_double_currency_ustring(&self, number: f64, currency: &ustring::UChar) -> Result<ustring::UChar, common::Error> {
+    pub fn format_double_currency_ustring(
+        &self,
+        number: f64,
+        currency: &ustring::UChar,
+    ) -> Result<ustring::UChar, common::Error> {
         const CAPACITY: usize = 200;
         buffered_uchar_method_with_retry!(
             format_double_currency_impl,
             CAPACITY,
             [
                 format: *const sys::UNumberFormat,
-                number: f64, 
+                number: f64,
                 // NUL terminated!
                 currency: *mut sys::UChar,
             ],
@@ -263,12 +271,83 @@ impl UNumberFormat {
         format_double_currency_impl(
             versioned_function!(unum_formatDoubleCurrency),
             self.rep.as_ptr(),
-            number, 
+            number,
             currencyz.as_mut_c_ptr(),
             0 as *mut sys::UFieldPosition,
         )
     }
-   
+
+    /// Implements `unum_parseToUFormattable`. Since 0.3.1.
+    ///
+    /// > **WARNING** the `parse_position` parameter is with respect to the number index
+    /// in the `UChar` string.  This won't work exactly for multibyte UTF8 values of
+    /// `text`.  If you think you will have multibyte values, use instead
+    /// [UNumberFormat::parse_to_formattable_ustring].
+    pub fn parse_to_formattable<'a>(
+        &'a self,
+        text: &str,
+        parse_position: Option<i32>,
+    ) -> Result<uformattable::UFormattable<'a>, common::Error> {
+        let ustr = ustring::UChar::try_from(text)?;
+        self.parse_to_formattable_ustring(&ustr, parse_position)
+    }
+
+    /// Implements `unum_parseToUFormattable`. Since 0.3.1.
+    pub fn parse_to_formattable_ustring<'a>(
+        &'a self,
+        text: &ustring::UChar,
+        parse_position: Option<i32>,
+    ) -> Result<uformattable::UFormattable<'a>, common::Error> {
+        let mut fmt = uformattable::UFormattable::try_new()?;
+        let mut status = common::Error::OK_CODE;
+        let mut pos = parse_position.unwrap_or(0);
+        unsafe {
+            assert!(common::Error::is_ok(status));
+            versioned_function!(unum_parseToUFormattable)(
+                self.rep.as_ptr(),
+                fmt.as_mut_ptr(),
+                text.as_c_ptr(),
+                text.len() as i32,
+                &mut pos,
+                &mut status,
+            )
+        };
+        common::Error::ok_or_warning(status)?;
+        Ok(fmt)
+    }
+
+    /// Implements `unum_formatUFormattable`. Since 0.3.1.
+    pub fn format_formattable<'a>(
+        &self,
+        fmt: &uformattable::UFormattable<'a>,
+    ) -> Result<String, common::Error> {
+        let result = self.format_formattable_ustring(fmt)?;
+        String::try_from(&result)
+    }
+
+    /// Implements `unum_formatUFormattable`. Since 0.3.1.
+    pub fn format_formattable_ustring<'a>(
+        &self,
+        fmt: &uformattable::UFormattable<'a>,
+    ) -> Result<ustring::UChar, common::Error> {
+        const CAPACITY: usize = 200;
+        buffered_uchar_method_with_retry!(
+            format_formattable_impl,
+            CAPACITY,
+            [
+                format: *const sys::UNumberFormat,
+                fmt: *const sys::UFormattable,
+            ],
+            [pos: *mut sys::UFieldPosition,]
+        );
+
+        format_formattable_impl(
+            versioned_function!(unum_formatUFormattable),
+            self.rep.as_ptr(),
+            fmt.as_ptr(),
+            0 as *mut sys::UFieldPosition,
+        )
+    }
 }
 
 /// Used to iterate over the field positions.
@@ -536,9 +615,7 @@ mod tests {
             let fmt =
                 crate::UNumberFormat::try_new_with_style(test.style, &locale).expect("formatter");
 
-            let s = fmt
-                .format_decimal(test.number)
-                .expect("format success");
+            let s = fmt.format_decimal(test.number).expect("format success");
 
             assert_eq!(test.expected, s);
         }
@@ -571,6 +648,61 @@ mod tests {
                 .expect("format success");
 
             assert_eq!(test.expected, s);
+        }
+    }
+
+    #[test]
+    fn format_and_parse_uformattable() {
+        #[derive(Debug)]
+        struct TestCase {
+            source_locale: &'static str,
+            number: &'static str,
+            position: Option<i32>,
+            style: sys::UNumberFormatStyle,
+
+            target_locale: &'static str,
+            expected: &'static str,
+        };
+
+        let tests = vec![
+            TestCase {
+            source_locale: "sr-RS",
+            number: "123,44",
+            position: None,
+            style: sys::UNumberFormatStyle::UNUM_DECIMAL,
+
+            target_locale: "en-US",
+            expected: "123.44",
+        },
+
+            TestCase {
+            source_locale: "sr-RS",
+            number: "123,44",
+            position: Some(2),
+            style: sys::UNumberFormatStyle::UNUM_DECIMAL,
+
+            target_locale: "en-US",
+            expected: "3.44",
+        },
+        ];
+        for test in tests {
+            let locale = uloc::ULoc::try_from(test.source_locale).expect("locale exists");
+            let fmt =
+                crate::UNumberFormat::try_new_with_style(test.style, &locale).expect("source_locale formatter");
+
+            let formattable = fmt
+                .parse_to_formattable(test.number, test.position)
+                .expect(&format!("parse_to_formattable: {:?}", &test));
+
+            let locale = uloc::ULoc::try_from(test.target_locale).expect("locale exists");
+            let fmt =
+                crate::UNumberFormat::try_new_with_style(test.style, &locale).expect("target_locale formatter");
+
+            let result = fmt
+                .format_formattable(&formattable)
+                .expect(&format!("format_formattable: {:?}", &test));
+
+            assert_eq!(test.expected, result);
         }
     }
 }
