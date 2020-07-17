@@ -95,6 +95,8 @@ mod inner {
             "UFormat.*",
             "UFormattedList.*",
             "UListFormatter.*",
+            "ULoc.*",
+            "ULOC.*",
             "UMessageFormat",
             "UNUM.*",
             "UNumber.*",
