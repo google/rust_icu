@@ -335,6 +335,10 @@ macro_rules! checkarg {
 }
 
 // TODO: is there a way to *not* expose this function?
+// Has to be declared as extern "C" to allow for variadic args; but since the
+// return type is not C-clean, then we need to suppress the improper type
+// definition.
+#[allow(improper_ctypes_definitions)]
 #[no_mangle]
 #[doc(hidden)]
 pub unsafe extern "C" fn format_varargs(
