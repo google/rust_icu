@@ -76,6 +76,57 @@ macro_rules! format_ustring_for_type{
     )
 }
 
+/// Generates a getter and setter method for a simple attribute.
+macro_rules! attribute{
+    ($method_name:ident, $original_method_name:ident, $type_name:ty) => (
+
+        paste::item! {
+            /// Implements `$original_method_name`. Since 0.3.1.
+            pub fn [< get_ $method_name >](&self, attr: sys::UNumberFormatAttribute) -> $type_name {
+                unsafe {
+                    versioned_function!([< unum_get $original_method_name >])(self.rep.as_ptr(), attr)
+                }
+            }
+            /// Implements `$original_method_name`. Since 0.3.1.
+            pub fn [< set_ $method_name >](&mut self, attr: sys::UNumberFormatAttribute, value: $type_name) {
+                unsafe {
+                    versioned_function!([< unum_set $original_method_name >])(self.rep.as_ptr(), attr, value)
+                }
+            }
+        }
+
+    )
+}
+
+/// Expands into a getter method that forwards all its arguments and returns a fallible value which
+/// is the same as the value returned by the underlying function.
+macro_rules! generalized_fallible_getter{
+    ($top_level_method_name:ident, $impl_name:ident, [ $( $arg:ident: $arg_type:ty ,)* ],  $ret_type:ty) => (
+        /// Implements `$impl_name`.
+        pub fn $top_level_method_name(&self, $( $arg: $arg_type, )* ) -> Result<$ret_type, common::Error> {
+            let mut status = common::Error::OK_CODE;
+            let result: $ret_type = unsafe {
+                assert!(common::Error::is_ok(status));
+                versioned_function!($impl_name)(self.rep.as_ptr(), $( $arg, )* &mut status)
+            };
+            common::Error::ok_or_warning(status)?;
+            Ok(result)
+        }
+    )
+}
+
+/// Expands into a setter methods that forwards all its arguments between []'s and returns a
+/// Result<(), common::Error>.
+macro_rules! generalized_fallible_setter{
+    ($top_level_method_name:ident, $impl_name:ident, [ $( $arg:ident : $arg_type:ty, )* ]) => (
+        generalized_fallible_getter!(
+            $top_level_method_name,
+            $impl_name,
+            [ $( $arg: $arg_type, )* ],
+            ());
+    )
+}
+
 impl UNumberFormat {
     /// Implements `unum_open`, with a pattern. Since 0.3.1.
     pub fn try_new_decimal_pattern_ustring(
@@ -348,6 +399,187 @@ impl UNumberFormat {
             0 as *mut sys::UFieldPosition,
         )
     }
+
+    // Implements `unum_getAttribute`. Since 0.3.1.
+    attribute!(attribute, Attribute, i32);
+
+    // Implements `unum_getDoubleAttribute`. Since 0.3.1.
+    attribute!(double_attribute, DoubleAttribute, f64);
+
+    /// Implements `unum_getTextAttribute`. Since 0.3.1.
+    pub fn get_text_attribute(
+        &self,
+        tag: sys::UNumberFormatTextAttribute,
+    ) -> Result<String, common::Error> {
+        let result = self.get_text_attribute_ustring(tag)?;
+        String::try_from(&result)
+    }
+
+    /// Implements `unum_getTextAttribute`. Since 0.3.1.
+    pub fn get_text_attribute_ustring(
+        &self,
+        tag: sys::UNumberFormatTextAttribute,
+    ) -> Result<ustring::UChar, common::Error> {
+        const CAPACITY: usize = 200;
+        buffered_uchar_method_with_retry!(
+            get_text_attribute_impl,
+            CAPACITY,
+            [
+                rep: *const sys::UNumberFormat,
+                tag: sys::UNumberFormatTextAttribute,
+            ],
+            []
+        );
+        get_text_attribute_impl(
+            versioned_function!(unum_getTextAttribute),
+            self.rep.as_ptr(),
+            tag,
+        )
+    }
+
+    /// Implements `unum_setTextAttribute`. Since 0.3.1.
+    pub fn set_text_attribute(
+        &mut self,
+        tag: sys::UNumberFormatTextAttribute,
+        new_value: &str,
+    ) -> Result<(), common::Error> {
+        let new_value = ustring::UChar::try_from(new_value)?;
+        self.set_text_attribute_ustring(tag, &new_value)?;
+        Ok(())
+    }
+
+    /// Implements `unum_setTextAttribute`. Since 0.3.1.
+    pub fn set_text_attribute_ustring(
+        &mut self,
+        tag: sys::UNumberFormatTextAttribute,
+        new_value: &ustring::UChar,
+    ) -> Result<(), common::Error> {
+        let mut status = common::Error::OK_CODE;
+        unsafe {
+            assert!(common::Error::is_ok(status));
+            versioned_function!(unum_setTextAttribute)(
+                self.rep.as_ptr(),
+                tag,
+                new_value.as_c_ptr(),
+                new_value.len() as i32,
+                &mut status,
+            )
+        };
+        common::Error::ok_or_warning(status)?;
+        Ok(())
+    }
+
+    /// Implements `unum_toPattern`. Since 0.3.1.
+    pub fn get_pattern(&self, is_localized: bool) -> Result<String, common::Error> {
+        let result = self.get_pattern_ustring(is_localized)?;
+        String::try_from(&result)
+    }
+
+    /// Implements `unum_toPattern`. Since 0.3.1.
+    pub fn get_pattern_ustring(&self, is_localized: bool) -> Result<ustring::UChar, common::Error> {
+        const CAPACITY: usize = 200;
+        buffered_uchar_method_with_retry!(
+            get_pattern_ustring_impl,
+            CAPACITY,
+            [rep: *const sys::UNumberFormat, is_localized: sys::UBool,],
+            []
+        );
+        let result = get_pattern_ustring_impl(
+            versioned_function!(unum_toPattern),
+            self.rep.as_ptr(),
+            is_localized as sys::UBool,
+        );
+        result
+    }
+
+    /// Implements `unum_getSymbol`. Since 0.3.1.
+    pub fn get_symbol(&self, symbol: sys::UNumberFormatSymbol) -> Result<String, common::Error> {
+        let result = self.get_symbol_ustring(symbol)?;
+        String::try_from(&result)
+    }
+
+    /// Implements `unum_getSymbol`. Since 0.3.1.
+    pub fn get_symbol_ustring(
+        &self,
+        symbol: sys::UNumberFormatSymbol,
+    ) -> Result<ustring::UChar, common::Error> {
+        const CAPACITY: usize = 200;
+        buffered_uchar_method_with_retry!(
+            get_symbol_impl,
+            CAPACITY,
+            [
+                rep: *const sys::UNumberFormat,
+                symbol: sys::UNumberFormatSymbol,
+            ],
+            []
+        );
+        get_symbol_impl(
+            versioned_function!(unum_getSymbol),
+            self.rep.as_ptr(),
+            symbol,
+        )
+    }
+
+    /// Implements `unum_setSymbol`. Since 0.3.1.
+    pub fn set_symbol(
+        &mut self,
+        symbol: sys::UNumberFormatSymbol,
+        value: &str,
+    ) -> Result<(), common::Error> {
+        let value = ustring::UChar::try_from(value)?;
+        self.set_symbol_ustring(symbol, &value)
+    }
+
+    /// Implements `unum_setSymbol`. Since 0.3.1.
+    pub fn set_symbol_ustring(
+        &mut self,
+        symbol: sys::UNumberFormatSymbol,
+        value: &ustring::UChar,
+    ) -> Result<(), common::Error> {
+        let mut status = common::Error::OK_CODE;
+        unsafe {
+            assert!(common::Error::is_ok(status));
+            versioned_function!(unum_setSymbol)(
+                self.rep.as_ptr(),
+                symbol,
+                value.as_c_ptr(),
+                value.len() as i32,
+                &mut status,
+            );
+        };
+        common::Error::ok_or_warning(status)?;
+        Ok(())
+    }
+
+    /// Implements `unum_getLocaleByType`. Since 0.3.1.
+    pub fn get_locale_by_type<'a>(
+        &'a self,
+        data_loc_type: sys::ULocDataLocaleType,
+    ) -> Result<&'a str, common::Error> {
+        let mut status = common::Error::OK_CODE;
+        let cptr = unsafe {
+            assert!(common::Error::is_ok(status));
+            let raw = versioned_function!(unum_getLocaleByType)(
+                self.rep.as_ptr(),
+                data_loc_type,
+                &mut status,
+            );
+            std::ffi::CStr::from_ptr(raw)
+        };
+        common::Error::ok_or_warning(status)?;
+        cptr.to_str().map_err(|e| e.into())
+    }
+
+    // Implements `unum_getContext`. Since 0.3.1.
+    generalized_fallible_getter!(
+        get_context,
+        unum_getContext,
+        [context_type: sys::UDisplayContextType,],
+        sys::UDisplayContext
+    );
+
+    // Implements `unum_setContext`. Since 0.3.1.
+    generalized_fallible_setter!(set_context, unum_setContext, [value: sys::UDisplayContext,]);
 }
 
 /// Used to iterate over the field positions.
@@ -367,7 +599,7 @@ impl<'a, T> Drop for UFieldPositionIterator<'a, T> {
 }
 
 impl<'a, T: 'a> UFieldPositionIterator<'a, T> {
-    /// Try creatign a new iterator, based on data supplied by `owner`.
+    /// Try creating a new iterator, based on data supplied by `owner`.
     pub fn try_new_owned(owner: &'a T) -> Result<UFieldPositionIterator<'a, T>, common::Error> {
         let raw = Self::new_raw()?;
         Ok(UFieldPositionIterator {
@@ -440,6 +672,42 @@ impl<'a, T> Iterator for UFieldPositionIterator<'a, T> {
             begin_index: begin,
             past_end_index: end,
         })
+    }
+}
+
+/// Gets an iterator over all available formatting locales.
+///
+/// Implements `unum_getAvailable`. Since 0.3.1.
+pub fn available_iter() -> UnumIter {
+    let max = unsafe { versioned_function!(unum_countAvailable)() } as usize;
+    UnumIter { max, next: 0 }
+}
+
+/// An iterator returned by `available_iter()`, containing the string representation of locales for
+/// which formatting is available.
+pub struct UnumIter {
+    /// The total number of elements that this iterator can yield.
+    max: usize,
+    /// The next element index that can be yielded.
+    next: usize,
+}
+
+impl Iterator for UnumIter {
+    type Item = &'static str;
+
+    fn next(&mut self) -> Option<&'static str> {
+        if self.max == 0 {
+            return None;
+        }
+        if self.next >= self.max {
+            return None;
+        }
+        let c = unsafe {
+            let cptr = versioned_function!(unum_getAvailable)(self.next as i32);
+            std::ffi::CStr::from_ptr(cptr)
+        };
+        self.next = self.next + 1;
+        Some(c.to_str().expect("can be converted to str"))
     }
 }
 
@@ -666,43 +934,108 @@ mod tests {
 
         let tests = vec![
             TestCase {
-            source_locale: "sr-RS",
-            number: "123,44",
-            position: None,
-            style: sys::UNumberFormatStyle::UNUM_DECIMAL,
+                source_locale: "sr-RS",
+                number: "123,44",
+                position: None,
+                style: sys::UNumberFormatStyle::UNUM_DECIMAL,
 
-            target_locale: "en-US",
-            expected: "123.44",
-        },
-
+                target_locale: "en-US",
+                expected: "123.44",
+            },
             TestCase {
-            source_locale: "sr-RS",
-            number: "123,44",
-            position: Some(2),
-            style: sys::UNumberFormatStyle::UNUM_DECIMAL,
+                source_locale: "sr-RS",
+                number: "123,44",
+                position: Some(2),
+                style: sys::UNumberFormatStyle::UNUM_DECIMAL,
 
-            target_locale: "en-US",
-            expected: "3.44",
-        },
+                target_locale: "en-US",
+                expected: "3.44",
+            },
         ];
         for test in tests {
             let locale = uloc::ULoc::try_from(test.source_locale).expect("locale exists");
-            let fmt =
-                crate::UNumberFormat::try_new_with_style(test.style, &locale).expect("source_locale formatter");
+            let fmt = crate::UNumberFormat::try_new_with_style(test.style, &locale)
+                .expect("source_locale formatter");
 
             let formattable = fmt
                 .parse_to_formattable(test.number, test.position)
                 .expect(&format!("parse_to_formattable: {:?}", &test));
 
             let locale = uloc::ULoc::try_from(test.target_locale).expect("locale exists");
-            let fmt =
-                crate::UNumberFormat::try_new_with_style(test.style, &locale).expect("target_locale formatter");
+            let fmt = crate::UNumberFormat::try_new_with_style(test.style, &locale)
+                .expect("target_locale formatter");
 
             let result = fmt
                 .format_formattable(&formattable)
                 .expect(&format!("format_formattable: {:?}", &test));
 
             assert_eq!(test.expected, result);
+        }
+    }
+
+    #[test]
+    fn test_available() {
+        // Since the locale list is variable, we can not test for exact locales, but
+        // we count them and make a sample to ensure sanity.
+        let all = super::available_iter().collect::<Vec<&'static str>>();
+        let count = super::available_iter().count();
+        assert_ne!(
+            0, count,
+            "there should be at least some available locales: {:?}",
+            &all
+        );
+        let available = all
+            .into_iter()
+            .filter(|f| *f == "en_US")
+            .collect::<Vec<&'static str>>();
+        assert_eq!(
+            vec!["en_US"],
+            available,
+            "missing a locale that likely should be there"
+        );
+    }
+
+    #[test]
+    fn pattern() {
+        #[derive(Debug)]
+        struct TestCase {
+            source_locale: &'static str,
+            is_localized: bool,
+            style: sys::UNumberFormatStyle,
+
+            expected: &'static str,
+        };
+
+        let tests = vec![
+            TestCase {
+                source_locale: "en-US",
+                is_localized: true,
+                style: sys::UNumberFormatStyle::UNUM_DECIMAL,
+                expected: "#,##0.###",
+            },
+            TestCase {
+                source_locale: "sr-RS",
+                is_localized: true,
+                style: sys::UNumberFormatStyle::UNUM_DECIMAL,
+
+                expected: "#.##0,###",
+            },
+            TestCase {
+                source_locale: "sr-RS",
+                is_localized: false,
+                style: sys::UNumberFormatStyle::UNUM_DECIMAL,
+                expected: "#,##0.###",
+            },
+        ];
+        for test in tests {
+            let locale = uloc::ULoc::try_from(test.source_locale).expect("locale exists");
+            let fmt = crate::UNumberFormat::try_new_with_style(test.style, &locale)
+                .expect("source_locale formatter");
+
+            let pattern = fmt
+                .get_pattern(test.is_localized)
+                .expect(&format!("localized in test: {:?}", test));
+            assert_eq!(test.expected, pattern, "in test: {:?}", test);
         }
     }
 }

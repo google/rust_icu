@@ -146,6 +146,12 @@ impl From<std::string::FromUtf8Error> for Error {
     }
 }
 
+impl From<anyhow::Error> for Error {
+    fn from(e: anyhow::Error) -> Self {
+        Self::wrapper(e)
+    }
+}
+
 impl Into<std::fmt::Error> for Error {
     fn into(self) -> std::fmt::Error {
         // It is not possible to transfer any info into std::fmt::Error, so we log instead.
