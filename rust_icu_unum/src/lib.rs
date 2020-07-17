@@ -1017,7 +1017,6 @@ mod tests {
                 source_locale: "sr-RS",
                 is_localized: true,
                 style: sys::UNumberFormatStyle::UNUM_DECIMAL,
-
                 expected: "#.##0,###",
             },
             TestCase {
