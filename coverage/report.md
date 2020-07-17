@@ -10,8 +10,9 @@
 | `uformattable.h` | 7 / 13 | 
 | `ulistformatter.h` | 2 / 8 | 
 | `uloc.h` | 19 / 42 | 
-| `upluralrules.h` | 3 / 7 | 
 | `umsg.h` | 6 / 20 | 
+| `unum.h` | 17 / 31 | 
+| `upluralrules.h` | 3 / 7 | 
 | `ustring.h` | 3 / 61 | 
 | `utext.h` | 3 / 28 | 
 # Unimplemented functions per header
@@ -282,18 +283,6 @@
 | `uloc_setKeywordValue` | |
 | `uloc_toLegacyType` | |
 
-# Header: `upluralrules.h`
-
-| Unimplemented | Implemented |
-| ------------- | ----------- |
-| | `uplrules_getKeywords` |
-| | `uplrules_openForType` |
-| | `uplrules_select` |
-| `uplrules_close` | |
-| `uplrules_open` | |
-| `uplrules_selectFormatted` | |
-| `uplrules_selectWithFormat` | |
-
 # Header: `umsg.h`
 
 | Unimplemented | Implemented |
@@ -319,6 +308,55 @@
 | `u_vformatMessageWithError` | |
 | `u_vparseMessage` | |
 | `u_vparseMessageWithError` | |
+
+# Header: `unum.h`
+
+| Unimplemented | Implemented |
+| ------------- | ----------- |
+| | `$function_name` |
+| | `unum_clone` |
+| | `unum_close` |
+| | `unum_formatDecimal` |
+| | `unum_formatDoubleCurrency` |
+| | `unum_formatDoubleForFields` |
+| | `unum_formatUFormattable` |
+| | `unum_getAttribute` |
+| | `unum_getAvailable` |
+| | `unum_getSymbol` |
+| | `unum_getTextAttribute` |
+| | `unum_open` |
+| | `unum_parseToUFormattable` |
+| | `unum_setAttribute` |
+| | `unum_setSymbol` |
+| | `unum_setTextAttribute` |
+| | `unum_toPattern` |
+| `unum_applyPattern` | |
+| `unum_countAvailable` | |
+| `unum_format` | |
+| `unum_formatDouble` | |
+| `unum_formatInt64` | |
+| `unum_getContext` | |
+| `unum_getDoubleAttribute` | |
+| `unum_getLocaleByType` | |
+| `unum_parse` | |
+| `unum_parseDecimal` | |
+| `unum_parseDouble` | |
+| `unum_parseDoubleCurrency` | |
+| `unum_parseInt64` | |
+| `unum_setContext` | |
+| `unum_setDoubleAttribute` | |
+
+# Header: `upluralrules.h`
+
+| Unimplemented | Implemented |
+| ------------- | ----------- |
+| | `uplrules_getKeywords` |
+| | `uplrules_openForType` |
+| | `uplrules_select` |
+| `uplrules_close` | |
+| `uplrules_open` | |
+| `uplrules_selectFormatted` | |
+| `uplrules_selectWithFormat` | |
 
 # Header: `ustring.h`
 

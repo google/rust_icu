@@ -71,7 +71,9 @@ readonly BINDGEN_ALLOWLIST_TYPES=(
         "UField.*"
         "UFormat.*"
         "UFormattedList.*"
+        "ULOC.*"
         "UListFormatter.*"
+        "ULoc.*"
         "UMessageFormat"
         "UNUM.*"
         "UNumber.*",

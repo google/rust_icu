@@ -16,8 +16,9 @@ C_API_HEADER_NAMES=(
   "uformattable"
   "ulistformatter"
   "uloc"
-  "upluralrules"
   "umsg"
+  "unum"
+  "upluralrules"
   "ustring"
   "utext"
 )
