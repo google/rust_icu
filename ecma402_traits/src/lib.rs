@@ -32,6 +32,9 @@ pub mod listformat;
 /// A Rust implementation of ECMA 402 PluralRules API.
 ///
 /// The [pluralrules] mod contains all the needed implementation bits for `Intl.PluralRules`.
-///
 pub mod pluralrules;
 
+/// A Rust implementation of ECMA 402 NumberFormat API.
+///
+/// The [numberformat] mod contains all the needed implementation bits for `Intl.NumberFormat`.
+pub mod numberformat;
