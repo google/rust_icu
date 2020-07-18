@@ -12,6 +12,8 @@ version = "0.1.0"
 description = """
 Rust implementation of type traits to support ECMA 402 specification in Rust.
 
+Implementors are welcome to provide their own.
+
 """
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
