@@ -679,8 +679,13 @@ impl<'a, T> Iterator for UFieldPositionIterator<'a, T> {
 ///
 /// Implements `unum_getAvailable`. Since 0.3.1.
 pub fn available_iter() -> UnumIter {
-    let max = unsafe { versioned_function!(unum_countAvailable)() } as usize;
+    let max = get_num_available();
     UnumIter { max, next: 0 }
+}
+
+fn get_num_available() -> usize {
+    let result = unsafe { versioned_function!(unum_countAvailable)() } as usize;
+    result
 }
 
 /// An iterator returned by `available_iter()`, containing the string representation of locales for
@@ -693,21 +698,35 @@ pub struct UnumIter {
 }
 
 impl Iterator for UnumIter {
-    type Item = &'static str;
+    type Item = String;
 
-    fn next(&mut self) -> Option<&'static str> {
+    /// Yields the next available locale identifier per the currently loaded locale data.
+    ///
+    /// Example values: `en_US`, `rs`, `ru_RU`.
+    fn next(&mut self) -> Option<String> {
         if self.max == 0 {
+            return None;
+        }
+        if self.max != get_num_available() {
+            // If the number of available locales changed while we were iterating this list, the
+            // locale set may have been reloaded.  Return early to avoid indexing beyond limits.
+            // This may return weird results, but won't crash the program.
             return None;
         }
         if self.next >= self.max {
             return None;
         }
-        let c = unsafe {
-            let cptr = versioned_function!(unum_getAvailable)(self.next as i32);
+        let cptr: *const std::os::raw::c_char = unsafe {
+            versioned_function!(unum_getAvailable)(self.next as i32)
+        };
+        // This assertion could happen in theory if the locale data is invalidated as this iterator
+        // is being executed.  I am unsure how that can be prevented.
+        assert_ne!(cptr, std::ptr::null(), "unum_getAvailable unexpectedly returned nullptr");
+        let cstr = unsafe {
             std::ffi::CStr::from_ptr(cptr)
         };
         self.next = self.next + 1;
-        Some(c.to_str().expect("can be converted to str"))
+        Some(cstr.to_str().expect("can be converted to str").to_string())
     }
 }
 
@@ -977,7 +996,7 @@ mod tests {
     fn test_available() {
         // Since the locale list is variable, we can not test for exact locales, but
         // we count them and make a sample to ensure sanity.
-        let all = super::available_iter().collect::<Vec<&'static str>>();
+        let all = super::available_iter().collect::<Vec<String>>();
         let count = super::available_iter().count();
         assert_ne!(
             0, count,
@@ -987,7 +1006,7 @@ mod tests {
         let available = all
             .into_iter()
             .filter(|f| *f == "en_US")
-            .collect::<Vec<&'static str>>();
+            .collect::<Vec<String>>();
         assert_eq!(
             vec!["en_US"],
             available,

@@ -41,7 +41,7 @@ pub enum Error {
     /// Errors originating from the wrapper code.  For example when pre-converting input into
     /// UTF8 for input that happens to be malformed.
     #[error(transparent)]
-    Wrapper(anyhow::Error),
+    Wrapper(#[from] anyhow::Error),
 }
 
 impl Error {
@@ -142,12 +142,6 @@ impl From<std::str::Utf8Error> for Error {
 
 impl From<std::string::FromUtf8Error> for Error {
     fn from(e: std::string::FromUtf8Error) -> Self {
-        Self::wrapper(e)
-    }
-}
-
-impl From<anyhow::Error> for Error {
-    fn from(e: anyhow::Error) -> Self {
         Self::wrapper(e)
     }
 }
