@@ -1,0 +1,8 @@
+$impl_function_name
+unumf_formatDecimal
+unumf_openForSkeletonAndLocale
+unumf_openForSkeletonAndLocaleWithError
+unumf_openResult
+unumf_resultGetAllFieldPositions
+unumf_resultNextFieldPosition
+unumf_resultToString
