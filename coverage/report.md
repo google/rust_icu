@@ -11,7 +11,8 @@
 | `ulistformatter.h` | 2 / 8 | 
 | `uloc.h` | 19 / 42 | 
 | `umsg.h` | 6 / 20 | 
-| `unum.h` | 17 / 31 | 
+| `unum.h` | 18 / 31 | 
+| `unumberformatter.h` | 8 / 12 | 
 | `upluralrules.h` | 3 / 7 | 
 | `ustring.h` | 3 / 61 | 
 | `utext.h` | 3 / 28 | 
@@ -314,19 +315,20 @@
 | Unimplemented | Implemented |
 | ------------- | ----------- |
 | | `$function_name` |
+| | `$impl_name` |
+| | `$original_method_name` |
 | | `unum_clone` |
 | | `unum_close` |
 | | `unum_formatDecimal` |
 | | `unum_formatDoubleCurrency` |
 | | `unum_formatDoubleForFields` |
 | | `unum_formatUFormattable` |
-| | `unum_getAttribute` |
 | | `unum_getAvailable` |
+| | `unum_getLocaleByType` |
 | | `unum_getSymbol` |
 | | `unum_getTextAttribute` |
 | | `unum_open` |
 | | `unum_parseToUFormattable` |
-| | `unum_setAttribute` |
 | | `unum_setSymbol` |
 | | `unum_setTextAttribute` |
 | | `unum_toPattern` |
@@ -335,16 +337,35 @@
 | `unum_format` | |
 | `unum_formatDouble` | |
 | `unum_formatInt64` | |
+| `unum_getAttribute` | |
 | `unum_getContext` | |
 | `unum_getDoubleAttribute` | |
-| `unum_getLocaleByType` | |
 | `unum_parse` | |
 | `unum_parseDecimal` | |
 | `unum_parseDouble` | |
 | `unum_parseDoubleCurrency` | |
 | `unum_parseInt64` | |
+| `unum_setAttribute` | |
 | `unum_setContext` | |
 | `unum_setDoubleAttribute` | |
+
+# Header: `unumberformatter.h`
+
+| Unimplemented | Implemented |
+| ------------- | ----------- |
+| | `$impl_function_name` |
+| | `unumf_formatDecimal` |
+| | `unumf_openForSkeletonAndLocale` |
+| | `unumf_openForSkeletonAndLocaleWithError` |
+| | `unumf_openResult` |
+| | `unumf_resultGetAllFieldPositions` |
+| | `unumf_resultNextFieldPosition` |
+| | `unumf_resultToString` |
+| `unumf_close` | |
+| `unumf_closeResult` | |
+| `unumf_formatDouble` | |
+| `unumf_formatInt` | |
+| `unumf_resultAsValue` | |
 
 # Header: `upluralrules.h`
 
