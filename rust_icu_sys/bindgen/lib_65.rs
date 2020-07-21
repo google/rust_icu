@@ -3563,8 +3563,92 @@ extern "C" {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
+pub struct UNumberFormatter {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct UFormattedNumber {
     _unused: [u8; 0],
+}
+extern "C" {
+    pub fn unumf_openForSkeletonAndLocale_65(
+        skeleton: *const UChar,
+        skeletonLen: i32,
+        locale: *const ::std::os::raw::c_char,
+        ec: *mut UErrorCode,
+    ) -> *mut UNumberFormatter;
+}
+extern "C" {
+    pub fn unumf_openForSkeletonAndLocaleWithError_65(
+        skeleton: *const UChar,
+        skeletonLen: i32,
+        locale: *const ::std::os::raw::c_char,
+        perror: *mut UParseError,
+        ec: *mut UErrorCode,
+    ) -> *mut UNumberFormatter;
+}
+extern "C" {
+    pub fn unumf_openResult_65(ec: *mut UErrorCode) -> *mut UFormattedNumber;
+}
+extern "C" {
+    pub fn unumf_formatInt_65(
+        uformatter: *const UNumberFormatter,
+        value: i64,
+        uresult: *mut UFormattedNumber,
+        ec: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn unumf_formatDouble_65(
+        uformatter: *const UNumberFormatter,
+        value: f64,
+        uresult: *mut UFormattedNumber,
+        ec: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn unumf_formatDecimal_65(
+        uformatter: *const UNumberFormatter,
+        value: *const ::std::os::raw::c_char,
+        valueLen: i32,
+        uresult: *mut UFormattedNumber,
+        ec: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn unumf_resultAsValue_65(
+        uresult: *const UFormattedNumber,
+        ec: *mut UErrorCode,
+    ) -> *const UFormattedValue;
+}
+extern "C" {
+    pub fn unumf_resultToString_65(
+        uresult: *const UFormattedNumber,
+        buffer: *mut UChar,
+        bufferCapacity: i32,
+        ec: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn unumf_resultNextFieldPosition_65(
+        uresult: *const UFormattedNumber,
+        ufpos: *mut UFieldPosition,
+        ec: *mut UErrorCode,
+    ) -> UBool;
+}
+extern "C" {
+    pub fn unumf_resultGetAllFieldPositions_65(
+        uresult: *const UFormattedNumber,
+        ufpositer: *mut UFieldPositionIterator,
+        ec: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn unumf_close_65(uformatter: *mut UNumberFormatter);
+}
+extern "C" {
+    pub fn unumf_closeResult_65(uresult: *mut UFormattedNumber);
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd)]

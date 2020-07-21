@@ -45,6 +45,7 @@ readonly BINDGEN_SOURCE_MODULES=(
         "umisc"
         "umsg"
         "unum"
+        "unumberformatter"
         "upluralrules"
         "uset"
         "ustring"
@@ -99,6 +100,7 @@ readonly BINDGEN_ALLOWLIST_FUNCTIONS=(
         "uloc_.*"
         "umsg_.*"
         "unum_.*"
+        "unumf_.*"
         "uplrules_.*"
         "utext_.*"
 )

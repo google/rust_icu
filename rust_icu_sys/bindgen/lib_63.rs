@@ -3495,6 +3495,80 @@ extern "C" {
         ec: *mut UErrorCode,
     ) -> i32;
 }
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct UNumberFormatter {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct UFormattedNumber {
+    _unused: [u8; 0],
+}
+extern "C" {
+    pub fn unumf_openForSkeletonAndLocale_63(
+        skeleton: *const UChar,
+        skeletonLen: i32,
+        locale: *const ::std::os::raw::c_char,
+        ec: *mut UErrorCode,
+    ) -> *mut UNumberFormatter;
+}
+extern "C" {
+    pub fn unumf_openResult_63(ec: *mut UErrorCode) -> *mut UFormattedNumber;
+}
+extern "C" {
+    pub fn unumf_formatInt_63(
+        uformatter: *const UNumberFormatter,
+        value: i64,
+        uresult: *mut UFormattedNumber,
+        ec: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn unumf_formatDouble_63(
+        uformatter: *const UNumberFormatter,
+        value: f64,
+        uresult: *mut UFormattedNumber,
+        ec: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn unumf_formatDecimal_63(
+        uformatter: *const UNumberFormatter,
+        value: *const ::std::os::raw::c_char,
+        valueLen: i32,
+        uresult: *mut UFormattedNumber,
+        ec: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn unumf_resultToString_63(
+        uresult: *const UFormattedNumber,
+        buffer: *mut UChar,
+        bufferCapacity: i32,
+        ec: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn unumf_resultNextFieldPosition_63(
+        uresult: *const UFormattedNumber,
+        ufpos: *mut UFieldPosition,
+        ec: *mut UErrorCode,
+    ) -> UBool;
+}
+extern "C" {
+    pub fn unumf_resultGetAllFieldPositions_63(
+        uresult: *const UFormattedNumber,
+        ufpositer: *mut UFieldPositionIterator,
+        ec: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn unumf_close_63(uformatter: *mut UNumberFormatter);
+}
+extern "C" {
+    pub fn unumf_closeResult_63(uresult: *mut UFormattedNumber);
+}
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd)]
 pub enum UPluralType {
