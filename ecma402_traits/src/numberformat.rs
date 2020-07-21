@@ -38,7 +38,13 @@ pub mod options {
     /// The ISO currency code for a currency, if the currency formatting is being used.
     /// For example "EUR" or "USD".
     #[derive(Eq, PartialEq, Debug, Clone)]
-    pub struct Currency(&'static str);
+    pub struct Currency(pub String);
+
+    impl From<&str> for Currency {
+        fn from(s: &str) -> Self {
+            Self(s.to_string())
+        }
+    }
 
     /// Controls the display of currency information.
     #[derive(Eq, PartialEq, Debug, Clone)]
@@ -81,7 +87,13 @@ pub mod options {
     /// "guru", "hanidec", "khmr", " knda", "laoo", "latn", "limb", "mlym", " mong", "mymr",
     /// "orya", "tamldec", " telu", "thai", "tibt".
     #[derive(Eq, PartialEq, Debug, Clone)]
-    pub struct NumberingSystem(String);
+    pub struct NumberingSystem(pub String);
+
+    impl From<&str> for NumberingSystem {
+        fn from(s: &str) -> Self {
+            Self(s.to_string())
+        }
+    }
 
     impl Default for NumberingSystem {
         fn default() -> Self {
@@ -137,6 +149,7 @@ pub mod options {
     /// of units from the full list was selected for use in ECMAScript. Pairs of simple units can
     /// be concatenated with "-per-" to make a compound unit. There is no default value; if the
     /// style is "unit", the unit property must be provided.
+    #[derive(Debug, Clone)]
     pub struct Unit(String);
 
 }
@@ -148,6 +161,7 @@ pub mod options {
 /// The default values of all the options are prescribed in by the [TC39 report][tc39lf].
 ///
 ///   [tc39lf]: https://tc39.es/proposal-intl-number-format/#sec-Intl.NumberFormat
+#[derive(Debug, Clone)]
 pub struct Options {
     pub compact_display: options::CompactDisplay,
     pub currency: Option<options::Currency>,
@@ -158,6 +172,12 @@ pub struct Options {
     pub sign_display: options::SignDisplay,
     pub style: options::Style,
     pub unit: Option<options::Unit>,
+
+    pub minimum_integer_digits: u8,
+    pub minimum_fraction_digits: u8,
+    pub maximum_fraction_digits: u8,
+    pub minimum_significant_digits: u8,
+    pub maximum_significant_digits: u8,
 }
 
 impl Default for Options {
@@ -176,6 +196,11 @@ impl Default for Options {
             style: options::Style::Decimal,
             unit: None,
             numbering_system: Default::default(),
+            minimum_integer_digits: 1,
+            minimum_fraction_digits: 0,
+            maximum_fraction_digits: 3,
+            minimum_significant_digits: 1,
+            maximum_significant_digits: 21,
         }
     }
 }
