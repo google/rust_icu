@@ -154,6 +154,35 @@ impl Into<std::fmt::Error> for Error {
     }
 }
 
+/// `type_name` is the type to implement drop for.
+/// `impl_function_name` is the name of the function that implements
+/// memory deallocation.  It is assumed that the type has an internal
+/// representation wrapped in a [std::ptr::NonNull].
+///
+/// Example:
+///
+/// ```rust ignore
+/// pub struct UNumberFormatter {
+///   rep: std::ptr::NonNull<Foo>,
+/// }
+/// //...
+/// simple_drop_impl!(UNumberFormatter, unumf_close);
+/// ```
+#[macro_export]
+macro_rules! simple_drop_impl {
+    ($type_name:ty, $impl_function_name:ident) => {
+        impl Drop for $type_name {
+            /// Implements `$impl_function_name`.
+            fn drop(&mut self) {
+                unsafe {
+                    versioned_function!($impl_function_name)(self.rep.as_ptr());
+                }
+            }
+        }
+    };
+}
+
+
 /// Generates a method to wrap ICU4C `uloc` methods that require a resizable output string buffer.
 ///
 /// The various `uloc` methods of this type have inconsistent signature patterns, with some putting

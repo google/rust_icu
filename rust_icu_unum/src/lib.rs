@@ -629,7 +629,10 @@ impl<'a, T: 'a> UFieldPositionIterator<'a, T> {
     }
 
     /// Returns the interal representation pointer.
-    fn as_mut_ptr(&mut self) -> *mut sys::UFieldPositionIterator {
+    ///
+    /// **DO NOT USE UNLESS IMPLEMENTING LOW-LEVEL ICU4C INTERFACE**.
+    #[doc(hidden)]
+    pub fn as_mut_ptr(&mut self) -> *mut sys::UFieldPositionIterator {
         self.rep.as_ptr()
     }
 }

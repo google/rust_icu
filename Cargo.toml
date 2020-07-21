@@ -16,6 +16,7 @@ members = [
   "rust_icu_uloc",
   "rust_icu_umsg",
   "rust_icu_unum",
+  "rust_icu_unumberformatter",
   "rust_icu_upluralrules",
   "rust_icu_ustring",
   "rust_icu_utext",
