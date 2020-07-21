@@ -50,6 +50,7 @@ mod inner {
             "umisc",
             "umsg",
             "unum",
+            "unumberformatter",
             "upluralrules",
             "uset",
             "ustring",
@@ -71,6 +72,7 @@ mod inner {
             "uloc_.*",
             "umsg_.*",
             "unum_.*",
+            "unumf_.*",
             "uplrules_.*",
             "utext_.*",
         ];

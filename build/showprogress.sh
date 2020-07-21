@@ -18,6 +18,7 @@ C_API_HEADER_NAMES=(
   "uloc"
   "umsg"
   "unum"
+  "unumberformatter"
   "upluralrules"
   "ustring"
   "utext"
