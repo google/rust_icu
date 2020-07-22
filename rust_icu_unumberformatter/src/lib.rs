@@ -162,6 +162,7 @@ impl UNumberFormatter {
 /// These objects are produced [UNumberFormatter::format_int], [UNumberFormatter::format_double],
 /// [UNumberFormatter::format_decimal].
 ///
+#[derive(Debug)]
 pub struct UFormattedNumber {
     rep: std::ptr::NonNull<sys::UFormattedNumber>,
 }
@@ -297,6 +298,13 @@ mod testing {
                skeleton: "numbering-system/deva",
                expected: "१२३.४५६,७८९",
            },
+           // TODO: Why is this a syntax error?
+           //TestCase{
+               //locale: "en-IN",
+               //number: 123456.7890,
+               //skeleton: ".###/@@@",
+               //expected: "1,23,000",
+           //},
         ];
 
         for test in tests {

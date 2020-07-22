@@ -24,6 +24,7 @@ rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.3.0", default-fe
 rust_icu_ulistformatter = { path = "../rust_icu_ulistformatter", version = "0.3.0", default-features = false }
 rust_icu_upluralrules = { path = "../rust_icu_upluralrules", version = "0.3.0", default-features = false }
 rust_icu_unum = { path = "../rust_icu_unum", version = "0.3.0", default-features = false }
+rust_icu_unumberformatter = { path = "../rust_icu_unumberformatter", version = "0.3.0", default-features = false }
 
 [dev-dependencies]
 anyhow = "1.0.25"
@@ -38,6 +39,7 @@ use-bindgen = [
   "rust_icu_ulistformatter/use-bindgen",
   "rust_icu_uloc/use-bindgen",
   "rust_icu_unum/use-bindgen",
+  "rust_icu_unumberformatter/use-bindgen",
   "rust_icu_upluralrules/use-bindgen",
   "rust_icu_ustring/use-bindgen",
 ]
@@ -47,6 +49,7 @@ renaming = [
   "rust_icu_ulistformatter/renaming",
   "rust_icu_uloc/renaming",
   "rust_icu_unum/renaming",
+  "rust_icu_unumberformatter/renaming",
   "rust_icu_upluralrules/renaming",
   "rust_icu_ustring/renaming",
 ]
@@ -56,6 +59,7 @@ icu_config = [
   "rust_icu_ulistformatter/icu_config",
   "rust_icu_uloc/icu_config",
   "rust_icu_unum/icu_config",
+  "rust_icu_unumberformatter/icu_config",
   "rust_icu_upluralrules/icu_config",
   "rust_icu_ustring/icu_config",
 ]
@@ -65,6 +69,7 @@ icu_version_in_env = [
   "rust_icu_ulistformatter/icu_version_in_env",
   "rust_icu_uloc/icu_version_in_env",
   "rust_icu_unum/icu_version_in_env",
+  "rust_icu_unumberformatter/icu_version_in_env",
   "rust_icu_upluralrules/icu_version_in_env",
   "rust_icu_ustring/icu_version_in_env",
 ]
@@ -74,6 +79,7 @@ icu_version_64_plus = [
   "rust_icu_ulistformatter/icu_version_64_plus",
   "rust_icu_uloc/icu_version_64_plus",
   "rust_icu_unum/icu_version_64_plus",
+  "rust_icu_unumberformatter/icu_version_64_plus",
   "rust_icu_upluralrules/icu_version_64_plus",
   "rust_icu_ustring/icu_version_64_plus",
 ]
@@ -83,6 +89,7 @@ icu_version_67_plus = [
   "rust_icu_ulistformatter/icu_version_67_plus",
   "rust_icu_uloc/icu_version_67_plus",
   "rust_icu_unum/icu_version_67_plus",
+  "rust_icu_unumberformatter/icu_version_67_plus",
   "rust_icu_upluralrules/icu_version_67_plus",
   "rust_icu_ustring/icu_version_67_plus",
 ]
