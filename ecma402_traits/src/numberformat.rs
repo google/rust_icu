@@ -24,7 +24,7 @@ use std::fmt;
 /// See [Options] for the contents of the options.  See the [NumberFormat::try_new]
 /// for the use of the options.
 pub mod options {
-    
+
     /// Controls whether short or long form display is used.  Short is slightly
     /// more economical with spacing.  Only used when notation is Compact.
     #[derive(Eq, PartialEq, Debug, Clone)]
@@ -150,8 +150,7 @@ pub mod options {
     /// be concatenated with "-per-" to make a compound unit. There is no default value; if the
     /// style is "unit", the unit property must be provided.
     #[derive(Debug, Clone)]
-    pub struct Unit(String);
-
+    pub struct Unit(pub String);
 }
 
 /// The options set by the user at construction time.  See discussion at the top level
@@ -163,21 +162,21 @@ pub mod options {
 ///   [tc39lf]: https://tc39.es/proposal-intl-number-format/#sec-Intl.NumberFormat
 #[derive(Debug, Clone)]
 pub struct Options {
-    pub compact_display: options::CompactDisplay,
+    pub compact_display: Option<options::CompactDisplay>,
     pub currency: Option<options::Currency>,
     pub currency_display: options::CurrencyDisplay,
     pub currency_sign: options::CurrencySign,
     pub notation: options::Notation,
-    pub numbering_system: options::NumberingSystem,
+    pub numbering_system: Option<options::NumberingSystem>,
     pub sign_display: options::SignDisplay,
     pub style: options::Style,
     pub unit: Option<options::Unit>,
 
-    pub minimum_integer_digits: u8,
-    pub minimum_fraction_digits: u8,
-    pub maximum_fraction_digits: u8,
-    pub minimum_significant_digits: u8,
-    pub maximum_significant_digits: u8,
+    pub minimum_integer_digits: Option<u8>,
+    pub minimum_fraction_digits: Option<u8>,
+    pub maximum_fraction_digits: Option<u8>,
+    pub minimum_significant_digits: Option<u8>,
+    pub maximum_significant_digits: Option<u8>,
 }
 
 impl Default for Options {
@@ -187,7 +186,7 @@ impl Default for Options {
     ///   [tc39lf]: https://tc39.es/proposal-intl-list-format/#sec-Intl.ListFormat
     fn default() -> Self {
         Options {
-            compact_display: options::CompactDisplay::Short,
+            compact_display: None,
             currency: None,
             currency_display: options::CurrencyDisplay::Symbol,
             currency_sign: options::CurrencySign::Standard,
@@ -195,12 +194,12 @@ impl Default for Options {
             sign_display: options::SignDisplay::Auto,
             style: options::Style::Decimal,
             unit: None,
-            numbering_system: Default::default(),
-            minimum_integer_digits: 1,
-            minimum_fraction_digits: 0,
-            maximum_fraction_digits: 3,
-            minimum_significant_digits: 1,
-            maximum_significant_digits: 21,
+            numbering_system: None,
+            minimum_integer_digits: None,
+            minimum_fraction_digits: None,
+            maximum_fraction_digits: None,
+            minimum_significant_digits: None,
+            maximum_significant_digits: None,
         }
     }
 }
@@ -229,4 +228,3 @@ pub trait NumberFormat {
     where
         W: fmt::Write;
 }
-
