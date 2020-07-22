@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::fmt;
+
 /// Contains the API configuration as prescribed by [ECMA 402][ecma].
 ///
 ///    [ecma]: https://www.ecma-international.org/publications/standards/Ecma-402.htm
@@ -177,8 +179,6 @@ impl Default for Options {
         }
     }
 }
-
-use std::fmt;
 
 /// Formats number based on the rules configured on initialization.
 pub trait NumberFormat {
