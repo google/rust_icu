@@ -298,13 +298,12 @@ mod testing {
                skeleton: "numbering-system/deva",
                expected: "१२३.४५६,७८९",
            },
-           // TODO: Why is this a syntax error?
-           //TestCase{
-               //locale: "en-IN",
-               //number: 123456.7890,
-               //skeleton: ".###/@@@",
-               //expected: "1,23,000",
-           //},
+           TestCase{
+               locale: "en-IN",
+               number: 123456.7890,
+               skeleton: "@@@",
+               expected: "1,23,000",
+           },
         ];
 
         for test in tests {

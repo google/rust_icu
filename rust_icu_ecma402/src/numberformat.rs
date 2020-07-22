@@ -156,7 +156,7 @@ pub(crate) mod internal {
             options::Style::Currency => std::cmp::max(2, minimum_fraction_digits),
             _ => 3,
         });
-        let minimum_significant_digits = opts.maximum_significant_digits.unwrap_or(1);
+        let minimum_significant_digits = opts.minimum_significant_digits.unwrap_or(1);
         let maximum_significant_digits = opts.maximum_significant_digits.unwrap_or(21);
 
         // TODO: add skeleton items for min and max integer, fraction and significant digits.
