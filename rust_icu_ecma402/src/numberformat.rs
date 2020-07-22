@@ -23,7 +23,6 @@ use {
 pub struct NumberFormat {
     // The internal representation of number formatting.
     rep: unumf::UNumberFormatter,
-    skeleton: String,
 }
 
 pub(crate) mod internal {
@@ -235,7 +234,7 @@ impl ecma402_traits::numberformat::NumberFormat for NumberFormat {
         let locale = format!("{}", l);
         let skeleton: String = internal::skeleton_from(&opts)?;
         let rep = unumf::UNumberFormatter::try_new(&skeleton, &locale)?;
-        Ok(NumberFormat { rep, skeleton })
+        Ok(NumberFormat { rep })
     }
 
     /// Formats the plural class of `number` into the supplied `writer`.
