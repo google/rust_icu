@@ -150,7 +150,7 @@ impl Into<std::fmt::Error> for Error {
     fn into(self) -> std::fmt::Error {
         // It is not possible to transfer any info into std::fmt::Error, so we log instead.
         eprintln!("error while formatting: {:?}", &self);
-        std::fmt::Error{}
+        std::fmt::Error {}
     }
 }
 
@@ -181,7 +181,6 @@ macro_rules! simple_drop_impl {
         }
     };
 }
-
 
 /// Generates a method to wrap ICU4C `uloc` methods that require a resizable output string buffer.
 ///
@@ -336,8 +335,6 @@ impl CStringVec {
     }
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -364,6 +361,68 @@ mod tests {
         let values = vec!["hell\0x00o"];
         let _c_array = CStringVec::new(&values).expect_err("should fail");
     }
+
+    #[test]
+    fn test_parser_error_ok() {
+        let tests = vec![
+            sys::UParseError {
+                line: 0,
+                offset: 0,
+                preContext: [0; 16usize],
+                postContext: [0; 16usize],
+            },
+            sys::UParseError {
+                line: -1,
+                offset: 0,
+                preContext: [0; 16usize],
+                postContext: [0; 16usize],
+            },
+            sys::UParseError {
+                line: 0,
+                offset: -1,
+                preContext: [0; 16usize],
+                postContext: [0; 16usize],
+            },
+        ];
+        for test in tests {
+            assert!(
+                parse_ok(test.clone()).is_ok(),
+                "for test: {:?}",
+                test.clone()
+            );
+        }
+    }
+
+    #[test]
+    fn test_parser_error_not_ok() {
+        let tests = vec![
+            sys::UParseError {
+                line: 1,
+                offset: 0,
+                preContext: [0; 16usize],
+                postContext: [0; 16usize],
+            },
+            sys::UParseError {
+                line: 0,
+                offset: 1,
+                preContext: [0; 16usize],
+                postContext: [0; 16usize],
+            },
+            sys::UParseError {
+                line: -1,
+                offset: 1,
+                preContext: [0; 16usize],
+                postContext: [0; 16usize],
+            },
+        ];
+        for test in tests {
+            assert!(
+                parse_ok(test.clone()).is_err(),
+                "for test: {:?}",
+                test.clone()
+            );
+        }
+    }
 }
 
 /// A zero-value parse error, used to initialize types that get passed into FFI code.
@@ -375,14 +434,15 @@ pub static NO_PARSE_ERROR: sys::UParseError = sys::UParseError {
 };
 
 /// Converts a parse error to a Result.
+///
+/// A parse error is an error if line or offset are positive, apparently.
 pub fn parse_ok(e: sys::UParseError) -> Result<(), crate::Error> {
-    if e == NO_PARSE_ERROR {
-        return Ok(());
+    if e.line > 0 || e.offset > 0 {
+        return Err(Error::Wrapper(anyhow!(
+            "parse error: line: {}, offset: {}",
+            e.line,
+            e.offset
+        )));
     }
-    Err(Error::Wrapper(anyhow!(
-        "parse error: line: {}, offset: {}",
-        e.line,
-        e.offset
-    )))
+    Ok(())
 }
-
