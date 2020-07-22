@@ -53,7 +53,7 @@ CARGO_TARGET_DIR := ${TMP}/rust_icu-${LOGNAME}-target
 # Pass different values for DOCKER_TEST_ENV and DOCKER_TEST_CARGO_TEST_ARGS to
 # test different configurations.  This is useful in Travis CI matrix tests, for
 # example.
-RUST_ICU_MAJOR_VERSION_NUMBER ?= 64
+RUST_ICU_MAJOR_VERSION_NUMBER ?= 67
 DOCKER_TEST_ENV ?= rust_icu_testenv-${RUST_ICU_MAJOR_VERSION_NUMBER}
 DOCKER_TEST_CARGO_TEST_ARGS ?= 
 docker-test:
