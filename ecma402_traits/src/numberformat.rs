@@ -37,6 +37,9 @@ pub mod options {
 
     /// The ISO currency code for a currency, if the currency formatting is being used.
     /// For example "EUR" or "USD".
+    ///
+    /// The value entered as currency is not validated.  This responsibility is
+    /// delegated to the implementor.
     #[derive(Eq, PartialEq, Debug, Clone)]
     pub struct Currency(pub String);
 
@@ -86,6 +89,9 @@ pub mod options {
     /// Possible values include: "arab", "arabext", " bali", "beng", "deva", "fullwide", "gujr",
     /// "guru", "hanidec", "khmr", " knda", "laoo", "latn", "limb", "mlym", " mong", "mymr",
     /// "orya", "tamldec", " telu", "thai", "tibt".
+    ///
+    /// The value entered as currency is not validated.  This responsibility is
+    /// delegated to the implementor.
     #[derive(Eq, PartialEq, Debug, Clone)]
     pub struct NumberingSystem(pub String);
 
