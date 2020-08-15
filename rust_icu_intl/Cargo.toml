@@ -16,7 +16,7 @@ umsg.h
 [dependencies]
 anyhow = "1.0.25"
 log = "0.4.6"
-paste = "0.1.5"
+paste = "1.0"
 rust_icu_common = { path = "../rust_icu_common", version = "0.3.1", default-features = false }
 rust_icu_sys = { path = "../rust_icu_sys", version = "0.3.1", default-features = false }
 rust_icu_uloc = { path = "../rust_icu_uloc", version = "0.3.1", default-features = false }
