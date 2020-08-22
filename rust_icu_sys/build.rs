@@ -55,6 +55,7 @@ mod inner {
             "uset",
             "ustring",
             "utext",
+            "utrans",
         ];
 
         // C functions that will be made available to rust code.  Add more to this list if you want to
@@ -75,6 +76,7 @@ mod inner {
             "unumf_.*",
             "uplrules_.*",
             "utext_.*",
+            "utrans_.*",
         ];
 
         // C types that will be made available to rust code.  Add more to this list if you want to
@@ -106,6 +108,9 @@ mod inner {
             "UPlural.*",
             "USet",
             "UText",
+            "UTransDirection",
+            "UTransPosition",
+            "UTransliterator",
         ];
     }
 

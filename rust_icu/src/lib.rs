@@ -52,3 +52,4 @@ pub use rust_icu_uloc as loc;
 pub use rust_icu_umsg as msg;
 pub use rust_icu_ustring as string;
 pub use rust_icu_utext as text;
+pub use rust_icu_utrans as trans;

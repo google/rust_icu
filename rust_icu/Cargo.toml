@@ -30,6 +30,7 @@ rust_icu_uloc = { path = "../rust_icu_uloc", version = "0.3.1", default-features
 rust_icu_umsg = { path = "../rust_icu_umsg", version = "0.3.1", default-features = false }
 rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.3.1", default-features = false }
 rust_icu_utext = { path = "../rust_icu_utext", version = "0.3.1", default-features = false }
+rust_icu_utrans = { path = "../rust_icu_utrans", version = "0.3.1", default-features = false }
 thiserror = "1.0.9"
 
 # See the feature description in ../rust_icu_sys/Cargo.toml for details.
@@ -49,6 +50,7 @@ use-bindgen = [
   "rust_icu_umsg/use-bindgen",
   "rust_icu_ustring/use-bindgen",
   "rust_icu_utext/use-bindgen",
+  "rust_icu_utrans/use-bindgen",
 ]
 renaming = [
   "rust_icu_common/renaming",
@@ -63,6 +65,7 @@ renaming = [
   "rust_icu_umsg/renaming",
   "rust_icu_ustring/renaming",
   "rust_icu_utext/renaming",
+  "rust_icu_utrans/renaming",
 ]
 icu_config = [
   "rust_icu_common/icu_config",
@@ -77,6 +80,7 @@ icu_config = [
   "rust_icu_umsg/icu_config",
   "rust_icu_ustring/icu_config",
   "rust_icu_utext/icu_config",
+  "rust_icu_utrans/icu_config",
 ]
 icu_version_in_env = [
   "rust_icu_common/icu_version_in_env",
@@ -91,6 +95,7 @@ icu_version_in_env = [
   "rust_icu_umsg/icu_version_in_env",
   "rust_icu_ustring/icu_version_in_env",
   "rust_icu_utext/icu_version_in_env",
+  "rust_icu_utrans/icu_version_in_env",
 ]
 icu_version_64_plus = [
   "rust_icu_common/icu_version_64_plus",
@@ -105,6 +110,7 @@ icu_version_64_plus = [
   "rust_icu_umsg/icu_version_64_plus",
   "rust_icu_ustring/icu_version_64_plus",
   "rust_icu_utext/icu_version_64_plus",
+  "rust_icu_utrans/icu_version_64_plus",
 ]
 icu_version_67_plus = [
   "rust_icu_common/icu_version_67_plus",
@@ -119,6 +125,7 @@ icu_version_67_plus = [
   "rust_icu_umsg/icu_version_67_plus",
   "rust_icu_ustring/icu_version_67_plus",
   "rust_icu_utext/icu_version_67_plus",
+  "rust_icu_utrans/icu_version_67_plus",
 ]
 
 [badges]

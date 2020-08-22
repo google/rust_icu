@@ -63,6 +63,7 @@ coverage in the headers.
 | [rust_icu_upluralrules](https://crates.io/crates/rust_icu_upluralrules)| Locale-sensitive plural rules support. Implements [`upluralrules.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/upluralrules_8h.html) C API header from the ICU library. |
 | [rust_icu_ustring](https://crates.io/crates/rust_icu_ustring)| ICU strings. Implements [`ustring.h`]() C API header from the ICU library. |
 | [rust_icu_utext](https://crates.io/crates/rust_icu_utext)| Text operations. Implements [`utext.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/utext_8h.html) C API header from the ICU library. |
+| [rust_icu_utrans](https://crates.io/crates/rust_icu_utrans)| Transliteration support. Implements [`utrans.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/utrans_8h.html) C API header from the ICU library. |
 
 # Limitations
 
@@ -477,8 +478,9 @@ to include more features.
 
 When adding more ICU wrappers, make sure to do the following:
 
-* Check `build.rs` to add appropriate lines into `bindgen_source_modules`, then
-  `whitelist_types_regexes` and `whitelist_functions_regexes`.
+* Check `rust_icu_sys/build.rs` and `rust_icu_sys/bindgen/run_bindgen.sh` to add
+  appropriate lines into `BINDGEN_SOURCE_MODULES`, then
+  `BINDGEN_ALLOWLIST_FUNCTIONS` and `BINDGEN_ALLOWLIST_TYPES`.
 
 ## Testing with a specific feature set turned on
 
