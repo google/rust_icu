@@ -20,4 +20,5 @@ members = [
   "rust_icu_upluralrules",
   "rust_icu_ustring",
   "rust_icu_utext",
+  "rust_icu_utrans",
 ]

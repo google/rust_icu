@@ -50,6 +50,7 @@ readonly BINDGEN_SOURCE_MODULES=(
         "uset"
         "ustring"
         "utext"
+        "utrans"
 )
 
 # Types for which to generate the bindings.  Expand this list if you need more.
@@ -82,6 +83,9 @@ readonly BINDGEN_ALLOWLIST_TYPES=(
         "UPlural.*"
         "USet"
         "UText"
+        "UTransDirection"
+        "UTransPosition"
+        "UTransliterator"
 )
 
 # Functions for which to generate the bindings.  Expand this list if you need
@@ -103,6 +107,7 @@ readonly BINDGEN_ALLOWLIST_FUNCTIONS=(
         "unumf_.*"
         "uplrules_.*"
         "utext_.*"
+        "utrans_.*"
 )
 
 function check_requirements() {

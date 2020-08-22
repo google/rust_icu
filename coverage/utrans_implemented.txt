@@ -1,0 +1,10 @@
+utrans_clone
+utrans_getUnicodeID
+utrans_openIDs
+utrans_openInverse
+utrans_openU
+utrans_register
+utrans_setFilter
+utrans_toRules
+utrans_transUChars
+utrans_unregisterID
