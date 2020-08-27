@@ -38,3 +38,8 @@ pub mod pluralrules;
 ///
 /// The [numberformat] mod contains all the needed implementation bits for `Intl.NumberFormat`.
 pub mod numberformat;
+
+/// A Rust implementation of the ECMA402 Collator API.
+///
+/// The [collator] mod contains all the needed implementation bits for `Intl.Collator`.
+pub mod collator;
