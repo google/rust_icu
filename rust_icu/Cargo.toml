@@ -20,6 +20,7 @@ log = "0.4.6"
 paste = "1.0"
 rust_icu_common = { path = "../rust_icu_common", version = "0.3.2", default-features = false }
 rust_icu_sys = { path = "../rust_icu_sys", version = "0.3.2", default-features = false }
+rust_icu_ubrk = { path = "../rust_icu_ubrk", version = "0.3.2", default-features = false }
 rust_icu_ucal = { path = "../rust_icu_ucal", version = "0.3.2", default-features = false }
 rust_icu_ucol = { path = "../rust_icu_ucol", version = "0.3.2", default-features = false }
 rust_icu_udat = { path = "../rust_icu_udat", version = "0.3.2", default-features = false }
@@ -40,6 +41,7 @@ default = ["use-bindgen", "renaming", "icu_config"]
 use-bindgen = [
   "rust_icu_common/use-bindgen",
   "rust_icu_sys/use-bindgen",
+  "rust_icu_ubrk/use-bindgen",
   "rust_icu_ucal/use-bindgen",
   "rust_icu_ucol/use-bindgen",
   "rust_icu_udat/use-bindgen",
@@ -55,6 +57,7 @@ use-bindgen = [
 renaming = [
   "rust_icu_common/renaming",
   "rust_icu_sys/renaming",
+  "rust_icu_ubrk/renaming",
   "rust_icu_ucal/renaming",
   "rust_icu_ucol/renaming",
   "rust_icu_udat/renaming",
@@ -70,6 +73,7 @@ renaming = [
 icu_config = [
   "rust_icu_common/icu_config",
   "rust_icu_sys/icu_config",
+  "rust_icu_ubrk/icu_config",
   "rust_icu_ucal/icu_config",
   "rust_icu_ucol/icu_config",
   "rust_icu_udat/icu_config",
@@ -85,6 +89,7 @@ icu_config = [
 icu_version_in_env = [
   "rust_icu_common/icu_version_in_env",
   "rust_icu_sys/icu_version_in_env",
+  "rust_icu_ubrk/icu_version_in_env",
   "rust_icu_ucal/icu_version_in_env",
   "rust_icu_ucol/icu_version_in_env",
   "rust_icu_udat/icu_version_in_env",
@@ -100,6 +105,7 @@ icu_version_in_env = [
 icu_version_64_plus = [
   "rust_icu_common/icu_version_64_plus",
   "rust_icu_sys/icu_version_64_plus",
+  "rust_icu_ubrk/icu_version_64_plus",
   "rust_icu_ucal/icu_version_64_plus",
   "rust_icu_ucol/icu_version_64_plus",
   "rust_icu_udat/icu_version_64_plus",
@@ -115,6 +121,7 @@ icu_version_64_plus = [
 icu_version_67_plus = [
   "rust_icu_common/icu_version_67_plus",
   "rust_icu_sys/icu_version_67_plus",
+  "rust_icu_ubrk/icu_version_67_plus",
   "rust_icu_ucal/icu_version_67_plus",
   "rust_icu_ucol/icu_version_67_plus",
   "rust_icu_udat/icu_version_67_plus",

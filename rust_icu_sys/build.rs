@@ -38,6 +38,7 @@ mod inner {
         // should be topologicaly sorted based on the inclusion relationship between the respective
         // headers.  Any of these will fail if the required binaries are not present in $PATH.
         static ref BINDGEN_SOURCE_MODULES: Vec<&'static str> = vec![
+            "ubrk",
             "ucal",
             "uclean",
             "ucol",
@@ -62,6 +63,7 @@ mod inner {
         // bring in more types.
         static ref BINDGEN_ALLOWLIST_FUNCTIONS: Vec<&'static str> = vec![
             "u_.*",
+            "ubrk_.*",
             "ucal_.*",
             "ucol_.*",
             "udat_.*",
@@ -84,6 +86,8 @@ mod inner {
         static ref BINDGEN_ALLOWLIST_TYPES: Vec<&'static str> = vec![
             "UAcceptResult",
             "UBool",
+            "UBreakIterator",
+            "UBreakIteratorType",
             "UCalendar.*",
             "UChar.*",
             "UCol.*",
@@ -98,6 +102,7 @@ mod inner {
             "UField.*",
             "UFormat.*",
             "UFormattedList.*",
+            "ULineBreakTag",
             "UListFormatter.*",
             "ULoc.*",
             "ULOC.*",
@@ -106,11 +111,13 @@ mod inner {
             "UNumber.*",
             "UParseError",
             "UPlural.*",
+            "USentenceBreakTag",
             "USet",
             "UText",
             "UTransDirection",
             "UTransPosition",
             "UTransliterator",
+            "UWordBreak",
         ];
     }
 

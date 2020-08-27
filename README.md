@@ -49,6 +49,7 @@ coverage in the headers.
 | [rust_icu_common](https://crates.io/crates/rust_icu_common)| Commonly used low-level wrappings of the bindings. |
 | [rust_icu_intl](https://crates.io/crates/rust_icu_intl)| Implements ECMA 402 recommendation APIs. |
 | [rust_icu_sys](https://crates.io/crates/rust_icu_sys)| Low-level bindings code |
+| [rust_icu_ubrk](https://crates.io/crates/rust_icu_ubrk)| Support for text boundary analysis. Implements [`ubrk.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/ubrk_8h.html) C API header from the ICU library. |
 | [rust_icu_ucal](https://crates.io/crates/rust_icu_ucal)| ICU Calendar. Implements [`ucal.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/ucal_8h.html) C API header from the ICU library. |
 | [rust_icu_ucol](https://crates.io/crates/rust_icu_ucol)| Collation support. Implements [`ucol.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/ucol_8h.html) C API header from the ICU library. |
 | [rust_icu_udat](https://crates.io/crates/rust_icu_udat)| ICU date and time. Implements [`udat.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/udat_8h.html) C API header from the ICU library. |

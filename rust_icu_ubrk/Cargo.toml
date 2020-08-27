@@ -1,0 +1,67 @@
+[package]
+authors = ["Google Inc."]
+default-features = false
+edition = "2018"
+keywords = ["icu", "unicode", "i18n", "l10n"]
+license = "Apache-2.0"
+name = "rust_icu_ubrk"
+readme = "README.md"
+repository = "https://github.com/google/rust_icu"
+version = "0.3.2"
+
+description = """
+Native bindings to the ICU4C library from Unicode.
+
+- ubrk.h: Support for text boundary analysis
+"""
+
+[dependencies]
+log = "0.4.6"
+paste = "1.0"
+rust_icu_common = { path = "../rust_icu_common", version = "0.3.2", default-features = false }
+rust_icu_sys = { path = "../rust_icu_sys", version = "0.3.2", default-features = false }
+rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.3.2", default-features = false }
+
+[dev-dependencies]
+anyhow = "1.0.25"
+
+# See the feature description in ../rust_icu_sys/Cargo.toml for details.
+[features]
+default = ["use-bindgen", "renaming", "icu_config"]
+
+icu_config = [
+  "rust_icu_common/icu_config",
+  "rust_icu_sys/icu_config",
+  "rust_icu_ustring/icu_config",
+]
+icu_version_64_plus = [
+  "rust_icu_common/icu_version_64_plus",
+  "rust_icu_sys/icu_version_64_plus",
+  "rust_icu_ustring/icu_version_64_plus",
+]
+icu_version_67_plus = [
+  "rust_icu_common/icu_version_67_plus",
+  "rust_icu_sys/icu_version_67_plus",
+  "rust_icu_ustring/icu_version_67_plus",
+]
+icu_version_in_env = [
+  "rust_icu_common/icu_version_in_env",
+  "rust_icu_sys/icu_version_in_env",
+  "rust_icu_ustring/icu_version_in_env",
+]
+renaming = [
+  "rust_icu_common/renaming",
+  "rust_icu_sys/renaming",
+  "rust_icu_ustring/renaming",
+]
+use-bindgen = [
+  "rust_icu_common/use-bindgen",
+  "rust_icu_sys/use-bindgen",
+  "rust_icu_ustring/use-bindgen",
+]
+
+[badges]
+is-it-maintained-issue-resolution = { repository = "google/rust_icu" }
+is-it-maintained-open-issues = { repository = "google/rust_icu" }
+maintenance = { status = "actively-developed" }
+travis-ci = { repository = "google/rust_icu", branch = "master" }
