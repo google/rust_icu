@@ -17,9 +17,9 @@ else
 endif
 
 # The buildenv version that will be used to build and test.  This allows us to
-# update the buildenv code but not use it immediately.  You can modify the 
+# update the buildenv code but not use it immediately.  You can modify the
 # buildenv version by passing its value through env variables like so:
-# 
+#
 #   make USED_BUILDENV_VERSION=whatever-you-want docker-test
 #
 # NOTE: This version number is completely independent of the crate version.
@@ -55,7 +55,7 @@ CARGO_TARGET_DIR := ${TMP}/rust_icu-${LOGNAME}-target
 # example.
 RUST_ICU_MAJOR_VERSION_NUMBER ?= 67
 DOCKER_TEST_ENV ?= rust_icu_testenv-${RUST_ICU_MAJOR_VERSION_NUMBER}
-DOCKER_TEST_CARGO_TEST_ARGS ?= 
+DOCKER_TEST_CARGO_TEST_ARGS ?=
 docker-test:
 	mkdir -p ${CARGO_TARGET_DIR}
 	echo top_dir: ${TOP_DIR}
@@ -121,6 +121,7 @@ endef
 .PHONY: publish
 publish:
 	$(call publish,rust_icu_sys)
+	$(call publish,rust_icu_ubrk)
 	$(call publish,rust_icu_common)
 	$(call publish,rust_icu_uenum)
 	$(call publish,rust_icu_ustring)
@@ -156,6 +157,7 @@ uprev:
 	$(call uprev,rust_icu_common)
 	$(call uprev,rust_icu_intl)
 	$(call uprev,rust_icu_sys)
+	$(call uprev,rust_icu_ubrk)
 	$(call uprev,rust_icu_ucal)
 	$(call uprev,rust_icu_ucol)
 	$(call uprev,rust_icu_udat)

@@ -8,6 +8,7 @@ TOP_DIR="${TOP_DIR:-${DIR}/..}"
 cd $TOP_DIR
 
 C_API_HEADER_NAMES=(
+  "ubrk"
   "ucal"
   "ucol"
   "udat"

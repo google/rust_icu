@@ -2,6 +2,7 @@
 
 | Header | Implemented |
 | ------ | ----------- |
+| `ubrk.h` | 20 / 22 | 
 | `ucal.h` | 15 / 46 | 
 | `ucol.h` | 7 / 50 | 
 | `udat.h` | 6 / 38 | 
@@ -19,6 +20,33 @@
 | `utrans.h` | 10 / 20 | 
 # Unimplemented functions per header
 
+
+# Header: `ubrk.h`
+
+| Unimplemented | Implemented |
+| ------------- | ----------- |
+| | `ubrk_close` |
+| | `ubrk_countAvailable` |
+| | `ubrk_current` |
+| | `ubrk_first` |
+| | `ubrk_following` |
+| | `ubrk_getAvailable` |
+| | `ubrk_getBinaryRules` |
+| | `ubrk_getLocaleByType` |
+| | `ubrk_getRuleStatus` |
+| | `ubrk_getRuleStatusVec` |
+| | `ubrk_isBoundary` |
+| | `ubrk_last` |
+| | `ubrk_next` |
+| | `ubrk_open` |
+| | `ubrk_openBinaryRules` |
+| | `ubrk_openRules` |
+| | `ubrk_preceding` |
+| | `ubrk_previous` |
+| | `ubrk_safeClone` |
+| | `ubrk_setText` |
+| `ubrk_refreshUText` | |
+| `ubrk_setUText` | |
 
 # Header: `ucal.h`
 
