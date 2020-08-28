@@ -43,3 +43,8 @@ pub mod numberformat;
 ///
 /// The [collator] mod contains all the needed implementation bits for `Intl.Collator`.
 pub mod collator;
+
+/// A Rust implementation of ECMA 402 DateTimeFormat API.
+///
+/// The [datetimeformat] mod contains all the needed implementation bits for `Intl.DateTimeFormat`.
+pub mod datetimeformat;
