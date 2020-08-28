@@ -18,7 +18,12 @@
 //! Since 0.3.1
 
 use {
-    paste, rust_icu_common as common, rust_icu_sys as sys,
+    paste, rust_icu_common as common,
+    rust_icu_common::format_ustring_for_type,
+    rust_icu_common::generalized_fallible_getter,
+    rust_icu_common::generalized_fallible_setter,
+    rust_icu_common::simple_drop_impl,
+    rust_icu_sys as sys,
     rust_icu_sys::versioned_function,
     rust_icu_sys::*,
     rust_icu_uformattable as uformattable, rust_icu_uloc as uloc, rust_icu_ustring as ustring,
@@ -26,57 +31,33 @@ use {
     std::{convert::TryFrom, convert::TryInto, ptr},
 };
 
-/// The struct for number formatting.
-#[derive(Debug)]
-pub struct UNumberFormat {
-    rep: ptr::NonNull<sys::UNumberFormat>,
-}
-
-impl Drop for UNumberFormat {
-    /// Implements `unum_close`
-    fn drop(&mut self) {
-        unsafe { versioned_function!(unum_close)(self.rep.as_ptr()) };
-    }
-}
-
-/// There is a slew of near-identical method calls which differ in the type of
-/// the input argument and the name of the function to invoke.
-macro_rules! format_ustring_for_type{
-    ($method_name:ident, $function_name:ident, $type_decl:ty) => (
-        /// Implements `$function_name`.
-        pub fn $method_name(&self, number: $type_decl) -> Result<String, common::Error> {
-            let result = paste::item! {
-                self. [< $method_name _ustring>] (number)?
-            };
-            String::try_from(&result)
-        }
-
-        // Should be able to use https://github.com/google/rust_icu/pull/144 to
-        // make this even shorter.
-        paste::item! {
-            /// Implements `$function_name`.
-            pub fn [<$method_name _ustring>] (&self, param: $type_decl) -> Result<ustring::UChar, common::Error> {
-                const CAPACITY: usize = 200;
-                buffered_uchar_method_with_retry!(
-                    [< $method_name _ustring_impl >],
-                    CAPACITY,
-                    [ rep: *const sys::UNumberFormat, param: $type_decl, ],
-                    [ field: *mut sys::UFieldPosition, ]
-                    );
-
-                [<$method_name _ustring_impl>](
-                    versioned_function!($function_name),
-                    self.rep.as_ptr(),
-                    param,
-                    // The field position is unused for now.
-                    0 as *mut sys::UFieldPosition,
-                    )
-            }
-        }
-    )
-}
-
-/// Generates a getter and setter method for a simple attribute.
+/// Generates a getter and setter method for a simple attribute with a value
+/// of the specified type.
+///
+/// ```rust ignore
+/// impl _ {
+///   attribute!(attribute, Attribute, i32, get_prefix, set_prefix)
+/// }
+/// ```
+///
+/// generates:
+///
+/// ```rust ignore
+/// impl _ {
+///   get_attribute(&self, key: Attribute) -> i32;
+///   set_attribute(&self, key: Attribute, value: i32);
+/// }
+/// ```
+///
+/// out of functions:
+///
+/// ```c++ ignore
+/// unum_getAttribute(const UNumberFormat* fmt, UNumberFormatAttribute attr);
+/// unum_setAttribute(
+///     const UNumberFormat* fmt,
+///     UNumberFormatAttribute attr,
+///     double newValue);
+/// ```
 macro_rules! attribute{
     ($method_name:ident, $original_method_name:ident, $type_name:ty) => (
 
@@ -98,34 +79,13 @@ macro_rules! attribute{
     )
 }
 
-/// Expands into a getter method that forwards all its arguments and returns a fallible value which
-/// is the same as the value returned by the underlying function.
-macro_rules! generalized_fallible_getter{
-    ($top_level_method_name:ident, $impl_name:ident, [ $( $arg:ident: $arg_type:ty ,)* ],  $ret_type:ty) => (
-        /// Implements `$impl_name`.
-        pub fn $top_level_method_name(&self, $( $arg: $arg_type, )* ) -> Result<$ret_type, common::Error> {
-            let mut status = common::Error::OK_CODE;
-            let result: $ret_type = unsafe {
-                assert!(common::Error::is_ok(status));
-                versioned_function!($impl_name)(self.rep.as_ptr(), $( $arg, )* &mut status)
-            };
-            common::Error::ok_or_warning(status)?;
-            Ok(result)
-        }
-    )
+/// The struct for number formatting.
+#[derive(Debug)]
+pub struct UNumberFormat {
+    rep: ptr::NonNull<sys::UNumberFormat>,
 }
 
-/// Expands into a setter methods that forwards all its arguments between []'s and returns a
-/// Result<(), common::Error>.
-macro_rules! generalized_fallible_setter{
-    ($top_level_method_name:ident, $impl_name:ident, [ $( $arg:ident : $arg_type:ty, )* ]) => (
-        generalized_fallible_getter!(
-            $top_level_method_name,
-            $impl_name,
-            [ $( $arg: $arg_type, )* ],
-            ());
-    )
-}
+simple_drop_impl!(UNumberFormat, unum_close);
 
 impl UNumberFormat {
     /// Implements `unum_open`, with a pattern. Since 0.3.1.
@@ -719,15 +679,16 @@ impl Iterator for UnumIter {
         if self.next >= self.max {
             return None;
         }
-        let cptr: *const std::os::raw::c_char = unsafe {
-            versioned_function!(unum_getAvailable)(self.next as i32)
-        };
+        let cptr: *const std::os::raw::c_char =
+            unsafe { versioned_function!(unum_getAvailable)(self.next as i32) };
         // This assertion could happen in theory if the locale data is invalidated as this iterator
         // is being executed.  I am unsure how that can be prevented.
-        assert_ne!(cptr, std::ptr::null(), "unum_getAvailable unexpectedly returned nullptr");
-        let cstr = unsafe {
-            std::ffi::CStr::from_ptr(cptr)
-        };
+        assert_ne!(
+            cptr,
+            std::ptr::null(),
+            "unum_getAvailable unexpectedly returned nullptr"
+        );
+        let cstr = unsafe { std::ffi::CStr::from_ptr(cptr) };
         self.next = self.next + 1;
         Some(cstr.to_str().expect("can be converted to str").to_string())
     }
