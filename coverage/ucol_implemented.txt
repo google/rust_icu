@@ -1,2 +1,7 @@
-ucol_close
+ucol_countAvailable
+ucol_getAvailable
+ucol_getStrength
+ucol_openAvailableLocales
+ucol_setStrength
 ucol_strcoll
+ucol_strcollUTF8

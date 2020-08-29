@@ -1,8 +1,5 @@
-$function_name
-$impl_name
 $original_method_name
 unum_clone
-unum_close
 unum_formatDecimal
 unum_formatDoubleCurrency
 unum_formatDoubleForFields

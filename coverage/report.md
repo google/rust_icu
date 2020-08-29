@@ -3,7 +3,7 @@
 | Header | Implemented |
 | ------ | ----------- |
 | `ucal.h` | 15 / 46 | 
-| `ucol.h` | 2 / 50 | 
+| `ucol.h` | 7 / 50 | 
 | `udat.h` | 6 / 38 | 
 | `udata.h` | 2 / 8 | 
 | `uenum.h` | 8 / 8 | 
@@ -11,7 +11,7 @@
 | `ulistformatter.h` | 2 / 8 | 
 | `uloc.h` | 19 / 42 | 
 | `umsg.h` | 6 / 20 | 
-| `unum.h` | 18 / 31 | 
+| `unum.h` | 15 / 31 | 
 | `unumberformatter.h` | 8 / 12 | 
 | `upluralrules.h` | 3 / 7 | 
 | `ustring.h` | 3 / 61 | 
@@ -75,13 +75,17 @@
 
 | Unimplemented | Implemented |
 | ------------- | ----------- |
-| | `ucol_close` |
+| | `ucol_countAvailable` |
+| | `ucol_getAvailable` |
+| | `ucol_getStrength` |
+| | `ucol_openAvailableLocales` |
+| | `ucol_setStrength` |
 | | `ucol_strcoll` |
+| | `ucol_strcollUTF8` |
 | `ucol_cloneBinary` | |
-| `ucol_countAvailable` | |
+| `ucol_close` | |
 | `ucol_equal` | |
 | `ucol_getAttribute` | |
-| `ucol_getAvailable` | |
 | `ucol_getBound` | |
 | `ucol_getContractions` | |
 | `ucol_getContractionsAndExpansions` | |
@@ -99,7 +103,6 @@
 | `ucol_getRulesEx` | |
 | `ucol_getShortDefinitionString` | |
 | `ucol_getSortKey` | |
-| `ucol_getStrength` | |
 | `ucol_getTailoredSet` | |
 | `ucol_getUCAVersion` | |
 | `ucol_getUnsafeSet` | |
@@ -111,7 +114,6 @@
 | `ucol_nextSortKeyPart` | |
 | `ucol_normalizeShortDefinitionString` | |
 | `ucol_open` | |
-| `ucol_openAvailableLocales` | |
 | `ucol_openBinary` | |
 | `ucol_openFromShortString` | |
 | `ucol_openRules` | |
@@ -121,10 +123,8 @@
 | `ucol_setAttribute` | |
 | `ucol_setMaxVariable` | |
 | `ucol_setReorderCodes` | |
-| `ucol_setStrength` | |
 | `ucol_setVariableTop` | |
 | `ucol_strcollIter` | |
-| `ucol_strcollUTF8` | |
 
 # Header: `udat.h`
 
@@ -315,11 +315,8 @@
 
 | Unimplemented | Implemented |
 | ------------- | ----------- |
-| | `$function_name` |
-| | `$impl_name` |
 | | `$original_method_name` |
 | | `unum_clone` |
-| | `unum_close` |
 | | `unum_formatDecimal` |
 | | `unum_formatDoubleCurrency` |
 | | `unum_formatDoubleForFields` |
@@ -334,6 +331,7 @@
 | | `unum_setTextAttribute` |
 | | `unum_toPattern` |
 | `unum_applyPattern` | |
+| `unum_close` | |
 | `unum_countAvailable` | |
 | `unum_format` | |
 | `unum_formatDouble` | |
