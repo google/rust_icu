@@ -65,10 +65,14 @@
 //! assert_eq!(alphabet, mixed_up);
 //! ```
 use {
-    rust_icu_common as common, rust_icu_sys as sys,
+    rust_icu_common as common,
+    rust_icu_common::generalized_fallible_getter,
+    rust_icu_common::generalized_fallible_setter,
+    rust_icu_common::simple_drop_impl,
+    rust_icu_sys as sys,
     rust_icu_sys::versioned_function,
     rust_icu_sys::*,
-    rust_icu_ustring as ustring,
+    rust_icu_uenum as uenum, rust_icu_ustring as ustring,
     std::{cmp::Ordering, convert::TryFrom, ffi, ptr},
 };
 
@@ -77,14 +81,8 @@ pub struct UCollator {
     rep: ptr::NonNull<sys::UCollator>,
 }
 
-impl Drop for UCollator {
-    /// Releases the resources taken up by a single collator.
-    ///
-    /// Implements `ucol_close`
-    fn drop(&mut self) {
-        unsafe { versioned_function!(ucol_close)(self.rep.as_ptr()) };
-    }
-}
+// Implements `ucol_close`
+simple_drop_impl!(UCollator, ucol_close);
 
 impl TryFrom<&str> for UCollator {
     type Error = common::Error;
@@ -144,6 +142,7 @@ impl UCollator {
     /// compare two rust strings.
     ///
     /// Implements `ucol_strcoll`
+    /// Implements `ucol_strcollUTF8`
     pub fn strcoll_utf8(
         &self,
         first: impl AsRef<str>,
@@ -176,6 +175,48 @@ impl UCollator {
             sys::UCollationResult::UCOL_EQUAL => Ordering::Equal,
         }
     }
+
+    /// Implements `ucol_getStrength`.
+    pub fn get_strength(&self) -> sys::UCollationStrength {
+        let result = unsafe { versioned_function!(ucol_getStrength)(self.rep.as_ptr()) };
+        result
+    }
+
+    /// Implements `ucol_setStrength`
+    pub fn set_strength(&mut self, strength: sys::UCollationStrength) {
+        unsafe { versioned_function!(ucol_setStrength)(self.rep.as_ptr(), strength) };
+    }
+
+    // Implement `ucol_setAttribute`
+    generalized_fallible_setter!(
+        set_attribute,
+        ucol_setAttribute,
+        [attr: sys::UColAttribute, value: sys::UColAttributeValue,]
+    );
+
+    // Implement `ucol_getAttribute`
+    generalized_fallible_getter!(
+        get_attribute,
+        ucol_getAttribute,
+        [attr: sys::UColAttribute,],
+        sys::UColAttributeValue
+    );
+}
+
+/// Creates an enumeration of all available locales supporting collation.
+///
+/// Implements `ucol_openAvailableLocales`
+/// Implements `ucol_countAvailable`
+/// Implements `ucol_getAvailable`
+pub fn get_available_locales() -> Result<uenum::Enumeration, common::Error> {
+    let mut status = common::Error::OK_CODE;
+    let rep = unsafe {
+        assert!(common::Error::is_ok(status));
+        versioned_function!(ucol_openAvailableLocales)(&mut status)
+    };
+    common::Error::ok_or_warning(status)?;
+    let result = unsafe { uenum::Enumeration::from_raw_parts(None, rep) };
+    Ok(result)
 }
 
 #[cfg(test)]
@@ -185,6 +226,16 @@ mod tests {
     #[test]
     fn basic() {
         let _ = crate::UCollator::try_from("de@collation=phonebook").expect("collator created");
+    }
+
+    #[test]
+    fn test_available() {
+        let available = crate::get_available_locales()
+            .expect("available")
+            .filter(|e| e.is_ok() /* retain known good */)
+            .map(|e| e.unwrap() /* known good */)
+            .collect::<Vec<String>>();
+        assert_ne!(0, available.iter().count());
     }
 
     #[test]
@@ -211,5 +262,16 @@ mod tests {
         let alphabet = vec!["a", "b", "c", "č", "ć", "d", "dž", "đ"];
         assert_eq!(alphabet, mixed_up);
         Ok(())
+    }
+
+    #[test]
+    fn attribute_setter() {
+        let collator = crate::UCollator::try_from("sr-Latn").unwrap();
+        collator.set_attribute(sys::UColAttribute::UCOL_CASE_FIRST, sys::UColAttributeValue::UCOL_OFF).unwrap();
+        let attr = collator.get_attribute(sys::UColAttribute::UCOL_CASE_FIRST).unwrap();
+        assert_eq!(sys::UColAttributeValue::UCOL_OFF, attr);
+        collator.set_attribute(sys::UColAttribute::UCOL_CASE_FIRST, sys::UColAttributeValue::UCOL_LOWER_FIRST).unwrap();
+        let attr = collator.get_attribute(sys::UColAttribute::UCOL_CASE_FIRST).unwrap();
+        assert_eq!(sys::UColAttributeValue::UCOL_LOWER_FIRST, attr);
     }
 }
