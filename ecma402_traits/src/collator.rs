@@ -55,7 +55,7 @@ pub mod options {
     pub enum Punctuation {
         /// Ignore punctuation.
         Ignore,
-        /// Honor punctyation.
+        /// Honor punctuation.
         Honor,
     }
 
@@ -106,9 +106,9 @@ pub struct Options {
 
 impl Default for Options {
     /// Gets the default values of [Options] if omitted at setup.  The
-    /// default values are prescribed in by the [TC39 report][tc39].
+    /// default values are prescribed by the TC39.  See [Collator][tc39c].
     ///
-    /// [tc39]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator/Collator
+    /// [tc39c]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator/Collator
     fn default() -> Self {
         Options {
             usage: options::Usage::Sort,
