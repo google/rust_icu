@@ -17,7 +17,7 @@
 | `upluralrules.h` | 3 / 7 | 
 | `ustring.h` | 3 / 61 | 
 | `utext.h` | 3 / 28 | 
-| `utrans.h` | 10 / 20 | 
+| `utrans.h` | 11 / 20 | 
 # Unimplemented functions per header
 
 
@@ -512,6 +512,7 @@
 | Unimplemented | Implemented |
 | ------------- | ----------- |
 | | `utrans_clone` |
+| | `utrans_close` |
 | | `utrans_getUnicodeID` |
 | | `utrans_openIDs` |
 | | `utrans_openInverse` |
@@ -521,7 +522,6 @@
 | | `utrans_toRules` |
 | | `utrans_transUChars` |
 | | `utrans_unregisterID` |
-| `utrans_close` | |
 | `utrans_countAvailableIDs` | |
 | `utrans_getAvailableID` | |
 | `utrans_getID` | |
