@@ -67,6 +67,7 @@ pub struct UTransliterator {
     rep: ptr::NonNull<sys::UTransliterator>,
 }
 
+/// Implements `utrans_close`.
 simple_drop_impl!(UTransliterator, utrans_close);
 
 impl Clone for UTransliterator {
@@ -160,7 +161,7 @@ impl UTransliterator {
         common::parse_ok(parse_status)?;
         assert_ne!(rep, 0 as *mut sys::UTransliterator);
         Ok(Self {
-            rep: std::ptr::NonNull::new(rep).unwrap(),
+            rep: ptr::NonNull::new(rep).unwrap(),
         })
     }
 
@@ -383,7 +384,7 @@ mod tests {
         // "цäfé" (6) -> "cafe" (4)
         let text = "\u{0446}a\u{0308}fe\u{0301}";
         assert_eq!(text.chars().count(), 6);
-        assert_eq!(trans.transliterate(text).unwrap().as_str(), "cafe");
+        assert_eq!(trans.transliterate(text).unwrap(), "cafe");
     }
 
     #[test]
