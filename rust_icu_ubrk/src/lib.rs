@@ -92,7 +92,7 @@ pub struct UBreakIterator {
     binary_rules: Option<Rc<Vec<u8>>>,
 }
 
-/// Implements `ubrk_close`.
+// Implements `ubrk_close`.
 simple_drop_impl!(UBreakIterator, ubrk_close);
 
 impl Iterator for UBreakIterator {

@@ -67,7 +67,7 @@ pub struct UTransliterator {
     rep: ptr::NonNull<sys::UTransliterator>,
 }
 
-/// Implements `utrans_close`.
+// Implements `utrans_close`.
 simple_drop_impl!(UTransliterator, utrans_close);
 
 impl Clone for UTransliterator {
