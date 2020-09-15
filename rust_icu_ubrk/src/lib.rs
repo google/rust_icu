@@ -106,15 +106,15 @@ impl Iterator for UBreakIterator {
     /// the first invocation of `next` will return the _next_ boundary, not `0`.
     /// If the caller requires the first boundary, it should utilize [`first`].
     ///
-    /// Also note that interleaving calls to [`first`], [`last`], [`previous`],
+    /// Also note that interleaving calls to [`first`], [`last_boundary`], [`previous`],
     /// [`preceding`], or [`following`] may change the break iterator's internal
     /// position, thereby affecting the next value returned by `next`.
     ///
     /// Implements `ubrk_next`.
     ///
-    /// [`first`]: #method.new
+    /// [`first`]: #method.first
     /// [`following`]: #method.following
-    /// [`last`]: #method.last
+    /// [`last_boundary`]: #method.last_boundary
     /// [`preceding`]: #method.preceding
     /// [`previous`]: #method.previous
     fn next(&mut self) -> Option<Self::Item> {
