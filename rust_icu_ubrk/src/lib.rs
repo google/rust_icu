@@ -164,18 +164,19 @@ impl UBreakIterator {
         text: &str,
     ) -> Result<Self, common::Error> {
         let text = ustring::UChar::try_from(text)?;
+        let locale = uloc::ULoc::try_from(locale)?;
         Self::try_new_ustring(type_, &locale, &text)
     }
 
     /// Implements `ubrk_open`.
     pub fn try_new_ustring(
         type_: sys::UBreakIteratorType,
-        locale: &str,
+        locale: &uloc::ULoc,
         text: &ustring::UChar,
     ) -> Result<Self, common::Error> {
         let mut status = common::Error::OK_CODE;
-        let locale = ffi::CString::new(locale)?;
-        // Clone text for break iterator to own.
+        // Clone text and get locale as a CString for break iterator to own.
+        let locale = locale.as_c_str();
         let text = text.clone();
         let rep = unsafe {
             assert!(common::Error::is_ok(status));
