@@ -121,7 +121,6 @@ endef
 .PHONY: publish
 publish:
 	$(call publish,rust_icu_sys)
-	$(call publish,rust_icu_ubrk)
 	$(call publish,rust_icu_common)
 	$(call publish,rust_icu_uenum)
 	$(call publish,rust_icu_ustring)
@@ -136,6 +135,7 @@ publish:
 	$(call publish,rust_icu_upluralrules)
 	$(call publish,rust_icu_uformattable)
 	$(call publish,rust_icu_unum)
+	$(call publish,rust_icu_ubrk)
 	$(call publish,rust_icu_utrans)
 	$(call publish,rust_icu)
 
@@ -157,7 +157,6 @@ uprev:
 	$(call uprev,rust_icu_common)
 	$(call uprev,rust_icu_intl)
 	$(call uprev,rust_icu_sys)
-	$(call uprev,rust_icu_ubrk)
 	$(call uprev,rust_icu_ucal)
 	$(call uprev,rust_icu_ucol)
 	$(call uprev,rust_icu_udat)
@@ -171,6 +170,7 @@ uprev:
 	$(call uprev,rust_icu_utext)
 	$(call uprev,rust_icu_uformattable)
 	$(call uprev,rust_icu_unum)
+	$(call uprev,rust_icu_ubrk)
 	$(call uprev,rust_icu_utrans)
 
 cov:
