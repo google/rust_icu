@@ -27,25 +27,39 @@
 //! use rust_icu_ubrk as ubrk;
 //!
 //! let text = "The lazy dog jumped over the fox.";
-//! let mut iter = ubrk::UBreakIterator::try_new(
-//!     sys::UBreakIteratorType::UBRK_WORD, "en", text).unwrap();
+//! let mut iter =
+//!     ubrk::UBreakIterator::try_new(sys::UBreakIteratorType::UBRK_WORD, "en", text)
+//!         .unwrap();
 //!
-//! assert_eq!(iter.last_boundary(), 33);
-//! assert_eq!(iter.current(), 33);
-//! assert!(iter.is_boundary(13));
-//! assert!(iter.is_boundary(19));
-//! assert!(!iter.is_boundary(15));
-//! assert_eq!(iter.following(15), 19);
-//! assert_eq!(iter.current(), 19);
-//! assert_eq!(iter.preceding(15), 13);
-//! assert_eq!(iter.current(), 13);
-//! assert_eq!(iter.previous(), Some(12));
-//! assert_eq!(iter.current(), 12);
+//! assert!(iter.is_boundary(0));
+//! assert_eq!(0, iter.first());
+//! assert_eq!(None, iter.previous());
+//! assert_eq!(0, iter.current());
+//!
+//! let text_len = text.len() as i32;
+//! assert!(iter.is_boundary(text_len));
+//! assert_eq!(iter.last_boundary(), text_len);
+//! assert_eq!(None, iter.next());
+//! assert_eq!(iter.current(), text_len);
+//!
+//! let word_start = text.find("jumped").unwrap() as i32;
+//! let word_end = word_start + 6;
+//! assert!(iter.is_boundary(word_start));
+//! assert!(iter.is_boundary(word_end));
+//! assert!(!iter.is_boundary(word_start + 3));
+//! assert_eq!(word_end, iter.following(word_start + 3));
+//! assert_eq!(word_end, iter.current());
+//! assert_eq!(Some(word_start), iter.previous());
+//! assert_eq!(word_start, iter.current());
+//! assert_eq!(Some(word_end), iter.next());
+//! assert_eq!(word_end, iter.current());
+//! assert_eq!(word_start, iter.preceding(word_start + 3));
+//! assert_eq!(word_start, iter.current());
 //!
 //! // Reset to first boundary and consume `iter`.
-//! assert_eq!(iter.first(), 0);
-//! let breaks: Vec<i32> = iter.collect();
-//! assert_eq!(breaks, vec![3, 4, 8, 9, 12, 13, 19, 20, 24, 25, 28, 29, 32, 33]);
+//! iter.first();
+//! let boundaries: Vec<i32> = iter.collect();
+//! assert_eq!(vec![3, 4, 8, 9, 12, 13, 19, 20, 24, 25, 28, 29, 32, 33], boundaries);
 //! ```
 //!
 //! See the [ICU user guide](https://unicode-org.github.io/icu/userguide/boundaryanalysis/)
@@ -56,8 +70,7 @@
 use {
     rust_icu_common::{self as common, simple_drop_impl},
     rust_icu_sys::{self as sys, *},
-    rust_icu_uloc as uloc,
-    rust_icu_ustring as ustring,
+    rust_icu_uloc as uloc, rust_icu_ustring as ustring,
     std::{convert::TryFrom, ffi, os::raw, ptr, rc::Rc},
 };
 
@@ -563,64 +576,125 @@ impl ExactSizeIterator for Locales {
 mod tests {
     use super::UBreakIterator;
     use log::trace;
-    use rust_icu_sys::{UBreakIteratorType::*, ULocDataLocaleType::*};
+    use rust_icu_sys::{self as sys, UBreakIteratorType::*, ULocDataLocaleType::*};
     use std::{convert::TryFrom, rc::Rc};
+
+    // Wraps a `UBreakIterator` to emit Strings formed by pairs of word boundaries.
+    struct Words<'a> {
+        iter: &'a mut UBreakIterator,
+        chars: Vec<sys::UChar>,
+    }
+
+    impl<'a> Words<'a> {
+        fn new(iter: &'a mut UBreakIterator) -> Self {
+            let text = String::try_from(&*iter.text).unwrap();
+            Self {
+                iter,
+                chars: text.as_str().encode_utf16().collect::<Vec<_>>(),
+            }
+        }
+    }
+
+    impl<'a> Iterator for Words<'a> {
+        type Item = String;
+
+        fn next(&mut self) -> Option<Self::Item> {
+            let start = self.iter.current();
+            self.iter.next().and_then(|end| {
+                String::from_utf16(
+                    &self.chars[(start as usize)..(end as usize)],
+                )
+                .ok()
+            })
+        }
+    }
 
     const TEXT: &str =
         r#""It wasn't the wine," murmured Mr. Snodgrass. "It was the salmon.""#;
 
-    const WORD_BOUNDARIES: [i32; 30] = [
-        0, 1, 3, 4, 10, 11, 14, 15, 19, 20, 21, 22, 30, 31, 33, 34, 35, 44, 45,
-        46, 47, 49, 50, 53, 54, 57, 58, 64, 65, 66,
-    ];
-
     #[test]
     fn test_iteration() {
-        let mut iter = UBreakIterator::try_new(UBRK_WORD, "en", TEXT).unwrap();
+        let mut break_iter =
+            UBreakIterator::try_new(UBRK_WORD, "en", TEXT).unwrap();
 
-        assert_eq!(iter.first(), 0);
-        assert_eq!(iter.current(), 0);
-        assert!(iter.is_boundary(0));
-        assert_eq!(iter.previous(), None);
-        assert_eq!(iter.current(), 0);
+        assert!(break_iter.is_boundary(0));
+        assert_eq!(0, break_iter.first());
+        assert_eq!(None, break_iter.previous());
+        assert_eq!(0, break_iter.current());
 
-        assert!(iter.is_boundary(22));
-        assert!(!iter.is_boundary(25));
-        assert_eq!(iter.preceding(25), 22);
-        assert_eq!(iter.current(), 22);
-        assert_eq!(iter.previous(), Some(21));
-        assert_eq!(iter.current(), 21);
-        assert_eq!(iter.next(), Some(22));
-        assert_eq!(iter.current(), 22);
+        let word_start = TEXT.find("murmured").unwrap() as i32;
+        let word_end = word_start + 8;
+        assert!(break_iter.is_boundary(word_start));
+        assert!(break_iter.is_boundary(word_end));
+        assert!(!break_iter.is_boundary(word_start + 3));
+        assert_eq!(word_end, break_iter.following(word_start + 3));
+        assert_eq!(word_end, break_iter.current());
+        assert_eq!(Some(word_start), break_iter.previous());
+        assert_eq!(word_start, break_iter.current());
+        assert_eq!(Some(word_end), break_iter.next());
+        assert_eq!(word_end, break_iter.current());
+        assert_eq!(word_start, break_iter.preceding(word_start + 3));
+        assert_eq!(word_start, break_iter.current());
 
-        assert!(!iter.is_boundary(55));
-        assert!(iter.is_boundary(57));
-        assert_eq!(iter.following(55), 57);
-        assert_eq!(iter.current(), 57);
-        assert_eq!(iter.next(), Some(58));
-        assert_eq!(iter.current(), 58);
-        assert_eq!(iter.preceding(58), 57);
-        assert_eq!(iter.current(), 57);
+        let text_len = TEXT.len() as i32;
+        assert!(break_iter.is_boundary(text_len));
+        assert_eq!(text_len, break_iter.last_boundary());
+        assert_eq!(None, break_iter.next());
+        assert_eq!(text_len, break_iter.current());
 
-        assert_eq!(iter.last_boundary(), 66);
-        assert_eq!(iter.current(), 66);
-        assert!(iter.is_boundary(66));
-        assert_eq!(iter.next(), None);
+        break_iter.first();
+        let word_iter = Words::new(&mut break_iter);
+        assert_eq!(
+            vec![
+                "\"",
+                "It",
+                " ",
+                "wasn't",
+                " ",
+                "the",
+                " ",
+                "wine",
+                ",",
+                "\"",
+                " ",
+                "murmured",
+                " ",
+                "Mr",
+                ".",
+                " ",
+                "Snodgrass",
+                ".",
+                " ",
+                "\"",
+                "It",
+                " ",
+                "was",
+                " ",
+                "the",
+                " ",
+                "salmon",
+                ".",
+                "\"",
+            ]
+            .into_iter()
+            .map(String::from)
+            .collect::<Vec<_>>(),
+            word_iter.collect::<Vec<_>>()
+        );
     }
 
     #[test]
     fn test_binary_rules() {
         let iter1 = UBreakIterator::try_new(UBRK_WORD, "en", TEXT).unwrap();
-        let iter1_rules = iter1.get_binary_rules().unwrap();
-        iter1.first();
+        let iter1_binary_rules = iter1.get_binary_rules().unwrap();
         let iter1_boundaries: Vec<i32> = iter1.collect();
 
         let iter2 =
-            UBreakIterator::try_new_binary_rules(&iter1_rules, TEXT).unwrap();
-        iter2.first();
+            UBreakIterator::try_new_binary_rules(&iter1_binary_rules, TEXT)
+                .unwrap();
         let iter2_boundaries: Vec<i32> = iter2.collect();
 
-        assert_eq!(WORD_BOUNDARIES[1..].to_vec(), iter1_boundaries);
+        assert!(!iter2_boundaries.is_empty());
         assert_eq!(iter1_boundaries, iter2_boundaries);
     }
 
@@ -638,93 +712,126 @@ $not_w = [^w];
 $not_w+;  # No breaks between code points other than `w`.
 $w+ {99}; # Break on `w`s with custom rule status of `99`.
 "#;
+        let mut break_iter =
+            UBreakIterator::try_new_rules(rules, TEXT).unwrap();
 
-        let _w_boundaries: [i32; 8] = [0, 4, 5, 15, 16, 50, 51, 66];
+        #[derive(Debug)]
+        struct TestCase {
+            boundary: Option<i32>,
+            rule_status: i32,
+        }
+        let tests = vec![
+            TestCase {
+                boundary: Some(4),
+                rule_status: 0,
+            },
+            TestCase {
+                boundary: Some(5),
+                rule_status: 99,
+            },
+            TestCase {
+                boundary: Some(15),
+                rule_status: 0,
+            },
+            TestCase {
+                boundary: Some(16),
+                rule_status: 99,
+            },
+            TestCase {
+                boundary: Some(50),
+                rule_status: 0,
+            },
+            TestCase {
+                boundary: Some(51),
+                rule_status: 99,
+            },
+            TestCase {
+                boundary: Some(66),
+                rule_status: 0,
+            },
+            TestCase {
+                boundary: None,
+                rule_status: 0,
+            },
+        ];
+        for test in tests {
+            assert_eq!(test.boundary, break_iter.next());
+            assert_eq!(test.rule_status, break_iter.get_rule_status());
+            assert_eq!(
+                vec![test.rule_status],
+                break_iter.get_rule_status_vec().unwrap()
+            );
+        }
 
-        let mut iter = UBreakIterator::try_new_rules(rules, TEXT).unwrap();
-
-        assert_eq!(iter.first(), 0);
-
-        assert_eq!(iter.next(), Some(4));
-        assert_eq!(iter.get_rule_status(), 0);
-        assert_eq!(iter.get_rule_status_vec().unwrap(), vec![0]);
-
-        assert_eq!(iter.next(), Some(5));
-        assert_eq!(iter.get_rule_status(), 99);
-        assert_eq!(iter.get_rule_status_vec().unwrap(), vec![99]);
-
-        assert_eq!(iter.next(), Some(15));
-        assert_eq!(iter.get_rule_status(), 0);
-        assert_eq!(iter.get_rule_status_vec().unwrap(), vec![0]);
-
-        assert_eq!(iter.next(), Some(16));
-        assert_eq!(iter.get_rule_status(), 99);
-        assert_eq!(iter.get_rule_status_vec().unwrap(), vec![99]);
-
-        assert_eq!(iter.next(), Some(50));
-        assert_eq!(iter.get_rule_status(), 0);
-        assert_eq!(iter.get_rule_status_vec().unwrap(), vec![0]);
-
-        assert_eq!(iter.next(), Some(51));
-        assert_eq!(iter.get_rule_status(), 99);
-        assert_eq!(iter.get_rule_status_vec().unwrap(), vec![99]);
-
-        assert_eq!(iter.next(), Some(66));
-        assert_eq!(iter.get_rule_status(), 0);
-        assert_eq!(iter.get_rule_status_vec().unwrap(), vec![0]);
-
-        assert_eq!(iter.next(), None);
+        break_iter.first();
+        let word_iter = Words::new(&mut break_iter);
+        assert_eq!(
+            vec![
+                "\"It ",
+                "w",
+                "asn't the ",
+                "w",
+                "ine,\" murmured Mr. Snodgrass. \"It ",
+                "w",
+                "as the salmon.\"",
+            ]
+            .into_iter()
+            .map(String::from)
+            .collect::<Vec<_>>(),
+            word_iter.collect::<Vec<_>>(),
+        );
     }
 
     #[test]
     fn test_clone() {
-        let mut original =
-            UBreakIterator::try_new(UBRK_WORD, "en", TEXT).unwrap();
-        original.first();
+        let mut iter1 = UBreakIterator::try_new(UBRK_WORD, "en", TEXT).unwrap();
+        iter1.first();
 
-        assert_eq!(Rc::strong_count(&original.text), 1);
-        assert_eq!(Rc::strong_count(original.locale.as_ref().unwrap()), 1);
+        assert_eq!(1, Rc::strong_count(&iter1.text));
+        assert_eq!(1, Rc::strong_count(iter1.locale.as_ref().unwrap()));
 
-        assert_eq!(original.next(), Some(1));
-        assert_eq!(original.next(), Some(3));
-        assert_eq!(original.current(), 3);
+        assert_eq!(Some(1), iter1.next());
+        assert_eq!(Some(3), iter1.next());
+        assert_eq!(3, iter1.current());
 
         // Clone in a new scope.
         {
-            let mut clone = original.safe_clone().unwrap();
+            let mut iter2 = iter1.safe_clone().unwrap();
 
-            assert_eq!(Rc::strong_count(&original.text), 2);
-            assert_eq!(Rc::strong_count(original.locale.as_ref().unwrap()), 2);
+            assert_eq!(2, Rc::strong_count(&iter1.text));
+            assert_eq!(2, Rc::strong_count(iter1.locale.as_ref().unwrap()));
 
-            assert_eq!(clone.current(), 3);
-            assert_eq!(clone.first(), 0);
-            assert_eq!(clone.next(), Some(1));
+            assert_eq!(3, iter2.current());
+            assert_eq!(0, iter2.first());
+            assert_eq!(Some(1), iter2.next());
 
-            assert_eq!(original.next(), Some(4));
+            assert_eq!(Some(4), iter1.next());
         }
 
-        assert_eq!(Rc::strong_count(&original.text), 1);
-        assert_eq!(Rc::strong_count(original.locale.as_ref().unwrap()), 1);
+        assert_eq!(1, Rc::strong_count(&iter1.text));
+        assert_eq!(1, Rc::strong_count(iter1.locale.as_ref().unwrap()));
 
-        assert_eq!(original.current(), 4);
-        assert_eq!(original.next(), Some(10));
+        assert_eq!(4, iter1.current());
+        assert_eq!(Some(10), iter1.next());
     }
 
     #[test]
     fn test_set_text() {
         let mut iter = UBreakIterator::try_new(UBRK_WORD, "en", TEXT).unwrap();
-        let original_iter_text = iter.text.clone();
 
-        assert_eq!(Rc::strong_count(&original_iter_text), 2);
-        assert_eq!(iter.preceding(59), 58);
-        assert_eq!(iter.current(), 58);
+        let iter_text_rc = iter.text.clone();
+        assert_eq!(2, Rc::strong_count(&iter_text_rc));
 
-        iter.set_text("The lazy dog.").unwrap();
+        let pos = TEXT.find("murmured").unwrap() as i32;
+        assert_eq!(pos, iter.preceding(pos + 3));
+        assert_eq!(pos, iter.current());
 
-        assert_eq!(Rc::strong_count(&original_iter_text), 1);
-        assert_eq!(String::try_from(&*iter.text).unwrap(), "The lazy dog.");
-        assert_eq!(iter.current(), 0);
-        assert_eq!(iter.last_boundary(), 13);
+        let new_str = "The lazy dog.";
+        iter.set_text(new_str).unwrap();
+        assert_eq!(1, Rc::strong_count(&iter_text_rc));
+        assert_eq!(new_str, String::try_from(&*iter.text).unwrap());
+        assert_eq!(0, iter.current());
+        assert_eq!(new_str.len() as i32, iter.last_boundary());
     }
 
     #[test]
@@ -736,15 +843,15 @@ $w+ {99}; # Break on `w`s with custom rule status of `99`.
         // The "valid locale" is the most specific locale supported by ICU, given
         // what was requested.
         assert_eq!(
+            "en_US",
             iter.get_locale_by_type(ULOC_VALID_LOCALE).unwrap(),
-            "en_US"
         );
 
         // The "actual locale" is the locale that breaking information actually comes from.
         // In most cases this will be "root".
         assert_eq!(
+            "root",
             iter.get_locale_by_type(ULOC_ACTUAL_LOCALE).unwrap(),
-            "root"
         );
     }
 
