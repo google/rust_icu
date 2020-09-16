@@ -29,6 +29,7 @@
 //! | -------- | -------- |
 //! | rust_icu_common | icu::common |
 //! | rust_icu_sys | icu::sys |
+//! | rust_icu_ubrk | brk |
 //! | rust_icu_ucal | icu::cal |
 //! | rust_icu_ucol | icu::col |
 //! | rust_icu_udat | icu::dat |
@@ -39,9 +40,11 @@
 //! | rust_icu_umsg | icu::msg |
 //! | rust_icu_ustring | icu::string |
 //! | rust_icu_utext | text |
+//! | rust_icu_utrans | trans |
 
 pub use rust_icu_common as common;
 pub use rust_icu_sys as sys;
+pub use rust_icu_ubrk as brk;
 pub use rust_icu_ucal as cal;
 pub use rust_icu_ucol as col;
 pub use rust_icu_udat as dat;
