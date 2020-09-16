@@ -21,7 +21,7 @@
 //! ## Examples
 //!
 //! Sample code use is given below.
-//! 
+//!
 //! ```rust
 //! use rust_icu_sys as sys;
 //! use rust_icu_ubrk as ubrk;
@@ -41,7 +41,7 @@
 //! assert_eq!(iter.current(), 13);
 //! assert_eq!(iter.previous(), Some(12));
 //! assert_eq!(iter.current(), 12);
-//! 
+//!
 //! // Reset to first boundary and consume `iter`.
 //! assert_eq!(iter.first(), 0);
 //! let breaks: Vec<i32> = iter.collect();
@@ -56,6 +56,7 @@
 use {
     rust_icu_common::{self as common, simple_drop_impl},
     rust_icu_sys::{self as sys, *},
+    rust_icu_uloc as uloc,
     rust_icu_ustring as ustring,
     std::{convert::TryFrom, ffi, os::raw, ptr, rc::Rc},
 };
@@ -129,29 +130,14 @@ impl Iterator for UBreakIterator {
 }
 
 impl UBreakIterator {
-    /// Reports the number of locales for which text breaking information is
-    /// available.
+    /// Returns an iterator over the locales for which text breaking information
+    /// is available.
     ///
     /// Implements `ubrk_countAvailable`.
-    pub fn count_available_locales() -> i32 {
-        unsafe { versioned_function!(ubrk_countAvailable)() }
-    }
-
-    /// Returns the locale for which line breaking information is available
-    /// at the specified index.
-    ///
-    /// Implements `ubrk_getAvailable`.
-    pub fn get_available_locale_at(
-        index: i32,
-    ) -> Result<Option<String>, common::Error> {
-        let locale_ptr =
-            unsafe { versioned_function!(ubrk_getAvailable)(index) };
-        if locale_ptr == 0 as *const raw::c_char {
-            Ok(None)
-        } else {
-            let c_str = unsafe { ffi::CStr::from_ptr(locale_ptr) };
-            let s = c_str.to_str().map(|s| s.to_owned())?;
-            Ok(Some(s))
+    pub fn available_locales() -> Locales {
+        Locales {
+            index: 0,
+            upper: unsafe { versioned_function!(ubrk_countAvailable)() },
         }
     }
 
@@ -531,6 +517,48 @@ impl UBreakIterator {
     }
 }
 
+/// Iterator over the locales for which text breaking information is available.
+pub struct Locales {
+    // The index to be passed to `ubrk_getAvailable` on the next call to `next`.
+    index: i32,
+    // The number of available locales; the result of `ubrk_countAvailable`.
+    upper: i32,
+}
+
+impl Iterator for Locales {
+    type Item = uloc::ULoc;
+
+    /// Returns the next locale for which text breaking information is available.
+    ///
+    /// Implements `ubrk_getAvailable`.
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.index >= self.upper {
+            return None;
+        }
+        let loc_ptr =
+            unsafe { versioned_function!(ubrk_getAvailable)(self.index) };
+        assert_ne!(loc_ptr, 0 as *const raw::c_char);
+        let c_str = unsafe { ffi::CStr::from_ptr(loc_ptr) };
+        let loc = uloc::ULoc::try_from(c_str);
+        match loc {
+            Ok(loc) => {
+                self.index += 1;
+                Some(loc)
+            }
+            _ => None,
+        }
+    }
+}
+
+impl ExactSizeIterator for Locales {
+    /// Reports the number of locales for which text breaking information is available.
+    ///
+    /// Implements `ubrk_countAvailable`.
+    fn len(&self) -> usize {
+        self.upper as usize
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::UBreakIterator;
@@ -723,13 +751,8 @@ $w+ {99}; # Break on `w`s with custom rule status of `99`.
     #[test]
     fn test_available_locales() {
         trace!("Available locales");
-        let count = UBreakIterator::count_available_locales();
-        for i in 0..count {
-            let locale = UBreakIterator::get_available_locale_at(i).unwrap();
-            match locale {
-                Some(loc) => trace!("  {}", loc),
-                None => (),
-            }
+        for loc in UBreakIterator::available_locales() {
+            trace!("  {}", loc);
         }
     }
 }
