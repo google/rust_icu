@@ -81,6 +81,14 @@ icu_version_67_plus = [
   "rust_icu_unum/icu_version_67_plus",
   "rust_icu_ustring/icu_version_67_plus",
 ]
+use_ecma402 = [
+  "rust_icu_common/use_ecma402",
+  "rust_icu_sys/use_ecma402",
+  "rust_icu_uformattable/use_ecma402",
+  "rust_icu_uloc/use_ecma402",
+  "rust_icu_unum/use_ecma402",
+  "rust_icu_ustring/use_ecma402",
+]
 
 [badges]
 maintenance = { status = "actively-developed" }
