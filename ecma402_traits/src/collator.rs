@@ -92,9 +92,9 @@ pub mod options {
 /// about the name choice.  Provides as a "bag of options" since we don't expect any
 /// implementations to be attached to this struct.
 ///
-/// The default values of all the options are prescribed in by the [TC39 report][tc39lf].
+/// The default values of all the options are prescribed in by the [TC39 report][tc39].
 ///
-/// [tc39lf] https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator/Collator
+/// [tc39]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator/Collator
 #[derive(Eq, PartialEq, Debug, Clone)]
 pub struct Options {
     pub usage: options::Usage,
@@ -124,7 +124,7 @@ pub trait Collator {
     /// The type of error reported, if any.
     type Error: std::error::Error;
 
-    /// Creates a new [Format].
+    /// Creates a new [Collator].
     ///
     /// Creation may fail, for example, if the locale-specific data is not loaded, or if
     /// the supplied options are inconsistent.
