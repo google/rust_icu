@@ -40,6 +40,7 @@ icu_config = []
 icu_version_in_env = []
 icu_version_64_plus = []
 icu_version_67_plus = []
+use_ecma402 = []
 
 
 [badges]

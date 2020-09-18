@@ -26,9 +26,10 @@ use {
         os::raw,
         fmt,
     },
-
-    ecma402_traits,
 };
+
+#[cfg(feature="use_ecma402")]
+use ecma402_traits;
 
 /// Maximum length of locale supported by uloc.h.
 /// See `ULOC_FULLNAME_CAPACITY`.
@@ -55,6 +56,7 @@ impl fmt::Display for ULoc {
     }
 }
 /// Marker implementation for ULoc.
+#[cfg(feature="use_ecma402")]
 impl ecma402_traits::Locale for ULoc {}
 
 impl TryFrom<&str> for ULoc {
