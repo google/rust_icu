@@ -67,11 +67,14 @@ pub mod options {
         }
     }
 
-    /// The way day periods should be expressed.
+    /// The way day periods (morning, afternoon) should be expressed.
     #[derive(Eq, PartialEq, Debug, Clone)]
     pub enum DayPeriod {
+        /// "AM", "PM"
         Narrow,
+        /// "A.M.", "P.M".
         Short,
+        /// "Morning", "Afternoon".
         Long,
     }
 
@@ -81,8 +84,7 @@ pub mod options {
     /// "guru", "hanidec", "khmr", " knda", "laoo", "latn", "limb", "mlym", " mong", "mymr",
     /// "orya", "tamldec", " telu", "thai", "tibt".
     ///
-    /// The value entered as currency is not validated.  This responsibility is
-    /// delegated to the implementor.
+    /// The value entered is not validated.  This responsibility is delegated to the implementor.
     #[derive(Eq, PartialEq, Debug, Clone)]
     pub struct NumberingSystem(pub String);
 
@@ -100,8 +102,7 @@ pub mod options {
 
     /// Controls the time zone formatting.
     ///
-    /// The value entered as currency is not validated.  This responsibility is
-    /// delegated to the implementor.
+    /// The value entered is not validated.  This responsibility is delegated to the implementor.
     #[derive(Eq, PartialEq, Debug, Clone)]
     pub struct TimeZone(pub String);
 
@@ -172,8 +173,13 @@ pub mod options {
         Narrow,
     }
 
+    /// The time zone name styling to use.
     #[derive(Eq, PartialEq, Debug, Clone)]
     pub enum TimeZoneStyle {
+        /// "British Summer Time"
+        Long,
+        /// "GMT+1"
+        Short,
     }
 }
 
