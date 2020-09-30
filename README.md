@@ -100,28 +100,15 @@ The limitations we know of today are as follows:
 
 # Compatibility
 
-The table below shows the support matrix that has been verified so far. Any
-versions not mentioned explicitly have not been tested. No guarantees are made
-for those versions.
+Up to 3 minor releases of `rust_icu` are tested for each major release, and
+automated tests are executed for all ICU library versions of interest, in all
+feature combinations of interest.
 
-## Feature sets
-
-For an explanation of features, see the [Features section](#features) below.
-
-*   1: default
-*   2: "renaming"
-*   3: "icu_version_in_env"
-
-## Compatibility matrix
-
-Each cell in the table shows which feature set combination has been tested for
-this particular ICU library and `rust_icu` version combination.
-
-`rust_icu` version | ICU 63.x | ICU 64.2 | ICU 65.1 | ICU 66.0.1 | ICU 67.1
+`rust_icu` version   | ICU 63.x | ICU 64.2 | ICU 65.1 | ICU 66.0.1 | ICU 67.1
 ------------------ | -------- | -------- | -------- | ---------- | --------
-0.1                | 1        | 1        | 1;2;2+3  | 1          | 1
-0.2                | 1;2;2+3  | 1;2;2+3  | 1;2;2+3  | 1;2;2+3    | 1;2;2+3
-0.3                | 1;2;2+3  | 1;2;2+3  | 1;2;2+3  | 1;2;2+3    | 1;2;2+3
+0.2                |    ✅    |    ✅    |    ✅    |    ✅      |    ✅
+0.3                |    ✅    |    ✅    |    ✅    |    ✅      |    ✅
+0.4                |    ✅    |    ✅    |    ✅    |    ✅      |    ✅
 
 > Prior to a 1.0.0 release, API versions that only differ in the patch version
 > number (0.x.**y**) only should be compatible.
