@@ -66,12 +66,6 @@ use-bindgen = [
   "rust_icu_uloc/use-bindgen",
   "rust_icu_ustring/use-bindgen",
 ]
-use_ecma402 = [
-  "rust_icu_common/use_ecma402",
-  "rust_icu_sys/use_ecma402",
-  "rust_icu_uloc/use_ecma402",
-  "rust_icu_ustring/use_ecma402",
-]
 
 [badges]
 is-it-maintained-issue-resolution = { repository = "google/rust_icu" }

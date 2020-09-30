@@ -29,8 +29,8 @@ pub struct Format {
 // Full support for styled formatting is available since v67.
 #[cfg(feature = "icu_version_67_plus")]
 pub(crate) mod internal {
-    use rust_icu_sys as usys;
     use ecma402_traits::listformat::options;
+    use rust_icu_sys as usys;
 
     // Converts the param types from ECMA-402 into ICU.
     pub fn to_icu_width(style: &options::Style) -> usys::UListFormatterWidth {
@@ -216,9 +216,10 @@ mod testing {
         ];
 
         for test in tests {
-            let locale = uloc::ULoc::try_from(test.locale).expect("locale exists");
+            let locale =
+                crate::Locale::FromULoc(uloc::ULoc::try_from(test.locale).expect("locale exists"));
             let formatter =
-                super::Format::try_new(locale.clone(), test.opts.clone()).expect("has list format");
+                super::Format::try_new(locale, test.opts.clone()).expect("has list format");
 
             let mut result = String::new();
             formatter
