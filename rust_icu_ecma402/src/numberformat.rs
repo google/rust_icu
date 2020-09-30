@@ -199,10 +199,7 @@ pub(crate) mod internal {
         let ats: String = std::iter::repeat("@").take(min_sig).collect();
         let hashes_sig: String = std::iter::repeat("#").take(max_sig - min_sig).collect();
 
-        return format!(
-            ".{}{}/{}{}",
-            zeroes, hashes, ats, hashes_sig, 
-        );
+        return format!(".{}{}/{}{}", zeroes, hashes, ats, hashes_sig,);
     }
 
     #[cfg(test)]
@@ -316,18 +313,19 @@ mod testing {
             },
             // TODO: This ends up being a syntax error, why?
             //TestCase {
-                //locale: "en-IN",
-                //opts: numberformat::Options {
-                    //maximum_significant_digits: Some(3),
-                    //..Default::default()
-                //},
-                //numbers: vec![123456.789],
-                //expected: vec!["1,23,000"],
+            //locale: "en-IN",
+            //opts: numberformat::Options {
+            //maximum_significant_digits: Some(3),
+            //..Default::default()
+            //},
+            //numbers: vec![123456.789],
+            //expected: vec!["1,23,000"],
             //},
         ];
         for test in tests {
-            let locale =
-                uloc::ULoc::try_from(test.locale).expect(&format!("locale exists: {:?}", &test));
+            let locale = crate::Locale::FromULoc(
+                uloc::ULoc::try_from(test.locale).expect(&format!("locale exists: {:?}", &test)),
+            );
             let format = crate::numberformat::NumberFormat::try_new(locale, test.clone().opts)
                 .expect(&format!("try_from should succeed: {:?}", &test));
             let actual = test

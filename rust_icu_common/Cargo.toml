@@ -35,9 +35,6 @@ icu_version_64_plus = [
 icu_version_67_plus = [
   "rust_icu_sys/icu_version_67_plus",
 ]
-use_ecma402 = [
-  "rust_icu_sys/use_ecma402",
-]
 
 [badges]
 maintenance = { status = "actively-developed" }

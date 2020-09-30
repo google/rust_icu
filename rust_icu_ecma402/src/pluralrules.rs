@@ -102,7 +102,7 @@ mod testing {
                 locale: "ar_EG",
                 opts: pluralrules::Options {
                     in_type: pluralrules::options::Type::Ordinal,
-                    .. Default::default()
+                    ..Default::default()
                 },
                 numbers: vec![0 as f64, 1 as f64, 2 as f64, 6 as f64, 18 as f64],
                 expected: vec!["other", "other", "other", "other", "other"],
@@ -117,14 +117,15 @@ mod testing {
                 locale: "sr_RS",
                 opts: pluralrules::Options {
                     in_type: pluralrules::options::Type::Ordinal,
-                    .. Default::default()
+                    ..Default::default()
                 },
                 numbers: vec![0 as f64, 1 as f64, 2 as f64, 4 as f64, 6 as f64, 18 as f64],
                 expected: vec!["other", "other", "other", "other", "other", "other"],
             },
         ];
         for test in tests {
-            let locale = uloc::ULoc::try_from(test.locale).expect("locale exists");
+            let locale =
+                crate::Locale::FromULoc(uloc::ULoc::try_from(test.locale).expect("locale exists"));
             let plr = super::PluralRules::try_new(locale, test.clone().opts)?;
             let actual = test
                 .numbers
