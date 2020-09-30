@@ -138,12 +138,14 @@ publish:
 	$(call publish,rust_icu_ubrk)
 	$(call publish,rust_icu_utrans)
 	$(call publish,rust_icu)
+	$(call publish,rust_icu_ecma402)
+	$(call publish,rust_icu_unumberformatter)
 
 # A helper to up-rev the cargo crate versions.
 # NOTE: The cargo crate version number is completely independent of the Docker
 # build environment version number.
-UPREV_OLD_VERSION ?= 0.3.2
-UPREV_NEW_VERSION ?= 0.3.3
+UPREV_OLD_VERSION ?= 0.4.0
+UPREV_NEW_VERSION ?= 0.4.1
 define uprev
 	( \
 		cd $(1) && \
@@ -170,8 +172,10 @@ uprev:
 	$(call uprev,rust_icu_utext)
 	$(call uprev,rust_icu_uformattable)
 	$(call uprev,rust_icu_unum)
+	$(call uprev,rust_icu_unumberformatter)
 	$(call uprev,rust_icu_ubrk)
 	$(call uprev,rust_icu_utrans)
+	$(call uprev,rust_icu_ecma402)
 
 cov:
 	./build/showprogress.sh

@@ -21,7 +21,7 @@ jobs:
       matrix:
         icu_version: [63]
         feature_set: 
-          - "renaming,icu_version_in_env,use_ecma402"
+          - "renaming,icu_version_in_env"
     steps:
       - uses: actions/checkout@v2
       - name: Test ICU version ${{ matrix.icu_version }}
@@ -32,8 +32,8 @@ jobs:
       matrix:
         icu_version: [64, 65]
         feature_set: 
-          - "renaming,icu_version_in_env,icu_version_64_plus,use_ecma402"
-          - "renaming,icu_version_64_plus,icu_config,use-bindgen,use_ecma402"
+          - "renaming,icu_version_in_env,icu_version_64_plus"
+          - "renaming,icu_version_64_plus,icu_config,use-bindgen"
     steps:
       - uses: actions/checkout@v2
       - name: Test ICU version ${{ matrix.icu_version }}
@@ -44,8 +44,8 @@ jobs:
       matrix:
         icu_version: [67]
         feature_set: 
-          - "renaming,icu_version_in_env,icu_version_64_plus,icu_version_67_plus,use_ecma402"
-          - "renaming,icu_version_64_plus,icu_version_67_plus,icu_config,use-bindgen,use_ecma402"
+          - "renaming,icu_version_in_env,icu_version_64_plus,icu_version_67_plus"
+          - "renaming,icu_version_64_plus,icu_version_67_plus,icu_config,use-bindgen"
     steps:
       - uses: actions/checkout@v2
       - name: Test ICU version ${{ matrix.icu_version }}
