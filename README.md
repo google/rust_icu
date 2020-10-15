@@ -34,7 +34,7 @@ https://github.com/google/rust_icu.
     without taking on more dependencies.
 
 *   Cooperation on the interface with projects such as the
-    [I18N concept](https://github.com/unicode-org/rust-discuss) could allow
+    [ICU4X](https://github.com/unicode-org/icu4x) could allow
     seamless transition to an all-rust implementation in the future.
 
 # Structure of the repository
