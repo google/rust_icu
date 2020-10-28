@@ -104,11 +104,11 @@ Up to 3 minor releases of `rust_icu` are tested for each major release, and
 automated tests are executed for all ICU library versions of interest, in all
 feature combinations of interest.
 
-`rust_icu` version   | ICU 63.x | ICU 64.2 | ICU 65.1 | ICU 66.0.1 | ICU 67.1
------------------- | -------- | -------- | -------- | ---------- | --------
-0.2                |    ✅    |    ✅    |    ✅    |    ✅      |    ✅
-0.3                |    ✅    |    ✅    |    ✅    |    ✅      |    ✅
-0.4                |    ✅    |    ✅    |    ✅    |    ✅      |    ✅
+`rust_icu` version   | ICU 63.x | ICU 64.2 | ICU 65.1 | ICU 66.0.1 | ICU 67.1 | ICU 68.1
+------------------ | -------- | -------- | -------- | ---------- | -------- | --------
+0.2                |    ✅    |    ✅    |    ✅    |    ✅      |    ✅    |    ✅
+0.3                |    ✅    |    ✅    |    ✅    |    ✅      |    ✅    |    ✅
+0.4                |    ✅    |    ✅    |    ✅    |    ✅      |    ✅    |    ✅
 
 > Prior to a 1.0.0 release, API versions that only differ in the patch version
 > number (0.x.**y**) only should be compatible.
