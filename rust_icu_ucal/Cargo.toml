@@ -25,7 +25,7 @@ rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.4.0", default-fe
 
 [dev-dependencies]
 regex = "1"
-
+anyhow = "1.0"
 
 # See the feature description in ../rust_icu_sys/Cargo.toml for details.
 [features]
@@ -66,6 +66,12 @@ icu_version_67_plus = [
   "rust_icu_sys/icu_version_67_plus",
   "rust_icu_uenum/icu_version_67_plus",
   "rust_icu_ustring/icu_version_67_plus",
+]
+icu_version_68_plus = [
+  "rust_icu_common/icu_version_68_plus",
+  "rust_icu_sys/icu_version_68_plus",
+  "rust_icu_uenum/icu_version_68_plus",
+  "rust_icu_ustring/icu_version_68_plus",
 ]
 
 [badges]

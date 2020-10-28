@@ -1,5 +1,7 @@
 [package]
+anyhow = "1.0"
 authors = ["Google Inc."]
+build = "build.rs"
 edition = "2018"
 license = "Apache-2.0"
 name = "rust_icu_udat"
@@ -24,6 +26,12 @@ rust_icu_ucal = { path = "../rust_icu_ucal", version = "0.4.0", default-features
 rust_icu_uenum = { path = "../rust_icu_uenum", version = "0.4.0", default-features = false }
 rust_icu_uloc = { path = "../rust_icu_uloc", version = "0.4.0", default-features = false }
 rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.4.0", default-features = false }
+
+[dev-dependencies]
+regex = "1"
+
+[build-dependencies]
+anyhow = "1.0"
 
 # See the feature description in ../rust_icu_sys/Cargo.toml for details.
 [features]
@@ -76,6 +84,14 @@ icu_version_67_plus = [
   "rust_icu_uenum/icu_version_67_plus",
   "rust_icu_uloc/icu_version_67_plus",
   "rust_icu_ustring/icu_version_67_plus",
+]
+icu_version_68_plus = [
+  "rust_icu_common/icu_version_68_plus",
+  "rust_icu_sys/icu_version_68_plus",
+  "rust_icu_ucal/icu_version_68_plus",
+  "rust_icu_uenum/icu_version_68_plus",
+  "rust_icu_uloc/icu_version_68_plus",
+  "rust_icu_ustring/icu_version_68_plus",
 ]
 
 [badges]
