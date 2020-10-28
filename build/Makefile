@@ -46,6 +46,8 @@ all: \
 	push-testenv-66 \
 	push-maint-67 \
 	push-testenv-67 \
+	push-maint-68 \
+	push-testenv-68 \
 	push-testenv \
 	push-hermetic
 	echo "buildenv-version: ${VERSION}"
