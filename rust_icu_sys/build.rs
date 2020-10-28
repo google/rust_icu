@@ -404,11 +404,16 @@ macro_rules! versioned_function {{
         if let Some(_) = env::var_os("CARGO_FEATURE_ICU_VERSION_IN_ENV") {
             println!("cargo:rustc-cfg=feature=\"icu_version_in_env\"");
         }
-        if ICUConfig::version_major_int()? >= 67 {
+        let version_major = ICUConfig::version_major_int()?;
+        println!("icu-version-major: {}", version_major);
+        if version_major >= 64 {
+            println!("cargo:rustc-cfg=feature=\"icu_version_64_plus\"");
+        }
+        if version_major >= 67 {
             println!("cargo:rustc-cfg=feature=\"icu_version_67_plus\"");
         }
-        if ICUConfig::version_major_int()? >= 67 {
-            println!("cargo:rustc-cfg=feature=\"icu_version_67_plus\"");
+        if version_major >= 68 {
+            println!("cargo:rustc-cfg=feature=\"icu_version_68_plus\"");
         }
         Ok(())
     }

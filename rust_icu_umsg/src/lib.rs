@@ -37,7 +37,7 @@
 //! The example below shows how to format values into an English text.  For more detail about
 //! formatting specifics see [message_format!].
 //!
-//! ```
+//! ```ignore
 //! use rust_icu_sys as sys;
 //! use rust_icu_common as common;
 //! use rust_icu_ustring as ustring;

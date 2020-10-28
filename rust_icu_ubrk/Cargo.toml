@@ -66,6 +66,12 @@ use-bindgen = [
   "rust_icu_uloc/use-bindgen",
   "rust_icu_ustring/use-bindgen",
 ]
+icu_version_68_plus = [
+  "rust_icu_common/icu_version_68_plus",
+  "rust_icu_sys/icu_version_68_plus",
+  "rust_icu_uloc/icu_version_68_plus",
+  "rust_icu_ustring/icu_version_68_plus",
+]
 
 [badges]
 is-it-maintained-issue-resolution = { repository = "google/rust_icu" }
