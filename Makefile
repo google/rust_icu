@@ -53,7 +53,7 @@ CARGO_TARGET_DIR := ${TMP}/rust_icu-${LOGNAME}-target
 # Pass different values for DOCKER_TEST_ENV and DOCKER_TEST_CARGO_TEST_ARGS to
 # test different configurations.  This is useful in Travis CI matrix tests, for
 # example.
-RUST_ICU_MAJOR_VERSION_NUMBER ?= 67
+RUST_ICU_MAJOR_VERSION_NUMBER ?= 68
 DOCKER_TEST_ENV ?= rust_icu_testenv-${RUST_ICU_MAJOR_VERSION_NUMBER}
 DOCKER_TEST_CARGO_TEST_ARGS ?=
 docker-test:
@@ -91,11 +91,12 @@ static-bindgen-%:
 			  ./rust_icu/rust_icu_sys/bindgen/run_bindgen.sh"
 
 static-bindgen: \
-		static-bindgen-63 \
-		static-bindgen-64 \
-		static-bindgen-65 \
+		static-bindgen-68 \
+		static-bindgen-67 \
 		static-bindgen-66 \
-		static-bindgen-67
+		static-bindgen-65 \
+		static-bindgen-64 \
+		static-bindgen-63
 .PHONY: static-bindgen
 
 # Builds and pushes the build environment containers.  You would not normally

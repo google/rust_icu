@@ -36,18 +36,18 @@ push-%: tag-%
 
 all: \
 	push-buildenv \
-	push-maint-63 \
-	push-testenv-63 \
-	push-maint-64 \
-	push-testenv-64 \
-	push-maint-65 \
-	push-testenv-65 \
-	push-maint-66 \
-	push-testenv-66 \
-	push-maint-67 \
-	push-testenv-67 \
 	push-maint-68 \
 	push-testenv-68 \
+	push-maint-67 \
+	push-testenv-67 \
+	push-maint-66 \
+	push-testenv-66 \
+	push-maint-65 \
+	push-testenv-65 \
+	push-maint-64 \
+	push-testenv-64 \
+	push-maint-63 \
+	push-testenv-63 \
 	push-testenv \
 	push-hermetic
 	echo "buildenv-version: ${VERSION}"
