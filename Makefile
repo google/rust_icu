@@ -23,7 +23,7 @@ endif
 #   make USED_BUILDENV_VERSION=whatever-you-want docker-test
 #
 # NOTE: This version number is completely independent of the crate version.
-USED_BUILDENV_VERSION ?= 1.3.0
+USED_BUILDENV_VERSION ?= 1.4.0
 
 CARGO_FEATURE_VERSION :=
 
@@ -138,8 +138,8 @@ publish:
 	$(call publish,rust_icu_ubrk)
 	$(call publish,rust_icu_utrans)
 	$(call publish,rust_icu)
-	$(call publish,rust_icu_ecma402)
 	$(call publish,rust_icu_unumberformatter)
+	$(call publish,rust_icu_ecma402)
 
 # A helper to up-rev the cargo crate versions.
 # NOTE: The cargo crate version number is completely independent of the Docker
