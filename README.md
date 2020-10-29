@@ -2,7 +2,7 @@
 
 Item       | Description
 ---------- | -----------
-ICU 64..68 | [![Test status](https://github.com/google/rust_icu/workflows/Test/badge.svg)](https://github.com/google/rust_icu/workflows/Test/badge.svg)
+ICU 63..68 | [![Test status](https://github.com/google/rust_icu/workflows/Test/badge.svg)](https://github.com/google/rust_icu/workflows/Test/badge.svg)
 Source     | https://github.com/google/rust_icu
 README     | https://github.com/google/rust_icu/blob/master/README.md
 Coverage   | [View report](/coverage/report.md)
