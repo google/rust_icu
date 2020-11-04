@@ -54,3 +54,9 @@ pub mod datetimeformat;
 /// The [relativetime] mod contains all the needed implementation bits for
 /// `Intl.RelativeTimeFormat`.
 pub mod relativetime;
+
+/// A Rust implementation of ECMA 402 DisplayNames API.
+///
+/// The [displaynames] mod contains all the needed implementation bits for `Intl.DisplayNames`.
+pub mod displaynames;
+
