@@ -48,3 +48,9 @@ pub mod collator;
 ///
 /// The [datetimeformat] mod contains all the needed implementation bits for `Intl.DateTimeFormat`.
 pub mod datetimeformat;
+
+/// A Rust implementation of ECMA 402 RelativeTimeFormat API.
+///
+/// The [relativetime] mod contains all the needed implementation bits for
+/// `Intl.RelativeTimeFormat`.
+pub mod relativetime;
