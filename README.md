@@ -154,18 +154,9 @@ Feature              | Default? | Description
     Install from https://rustup.rs. Used to set toolchain defaults. This will
     install `cargo` as well.
 
-*   `rust` nightly toolchain
+* Clang
 
-    Two options exist here:
-
-    1.  Set the global default: `rustup toolchain set nightly`
-
-    2.  Set the default toolchain just for `rust_icu`. Go to the directory you
-        cloned `rust_icu` into, then issue:
-
-    ```
-    rustup override set nightly
-    ```
+    You must have [Clang](https://clang.llvm.org/) installed to access the right headers.
 
 *   The ICU library development environmnet
 
