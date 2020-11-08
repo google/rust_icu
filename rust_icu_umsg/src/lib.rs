@@ -13,7 +13,6 @@
 // limitations under the License.
 
 // The message format C api is variadic.
-#![feature(c_variadic)]
 
 //! # Locale-aware message formatting.
 //!
@@ -68,10 +67,10 @@
 //!     let hello = ustring::UChar::try_from("Hello! Добар дан!")?;
 //!     let result = umsg::message_format!(
 //!       fmt,
-//!       { 43.4 => Double },
-//!       { 31337 => Integer},
-//!       { hello => String},
-//!       { 0.0 => Date }
+//!       43.4,
+//!       31337,
+//!       hello,
+//!       0.0,
 //!     )?;
 //!
 //!     assert_eq!(
@@ -92,6 +91,11 @@ use {
     rust_icu_common as common, rust_icu_sys as sys, rust_icu_sys::*, rust_icu_uloc as uloc,
     rust_icu_ustring as ustring, std::convert::TryFrom,
 };
+
+use sealed::Sealed;
+
+#[doc(hidden)]
+pub use {rust_icu_sys as __sys, rust_icu_ustring as __ustring, std as __std};
 
 /// The implementation of the ICU `UMessageFormat*`.
 ///
@@ -157,7 +161,7 @@ impl UMessageFormat {
         let pstr = pattern.as_c_ptr();
         let loc = locale.as_c_str();
         let mut status = common::Error::OK_CODE;
-        let mut parse_status = common::NO_PARSE_ERROR.clone();
+        let mut parse_status = common::NO_PARSE_ERROR;
 
         let rep = unsafe {
             assert!(common::Error::is_ok(status));
@@ -185,16 +189,16 @@ impl UMessageFormat {
 /// ``` ignore
 /// use rust_icu_umsg as umsg;
 /// // let result = umsg::message_format!(
-/// //     formatter, [{ value => <type_assertion> }, ...]);
-/// let result = umsg::message_format!(formatter, { 31337 => Integer });
+/// //     formatter, [value, ...]);
+/// let result = umsg::message_format!(formatter, 31337);
 /// ```
 ///
-/// Each fragment `{ value => <type_assertion> }` represents a single positional parameter binding
-/// for the pattern in `formatter`.  The first fragment corresponds to the positional parameter `0`
-/// (which, if an integer, would be referred to as `{0,number,integer}` in a MessageFormat
-/// pattern).  Since the original C API that this rust library is generated for uses variadic
-/// functions for parameter passing, it is very important that the programmer matches the actual
-/// parameter types to the types that are expected in the pattern.
+/// Each fragment represents a single positional parameter binding for the pattern in `formatter`.
+/// The first fragment corresponds to the positional parameter `0` (which, if an integer, would be
+/// referred to as `{0,number,integer}` in a MessageFormat pattern). Since the original C API that
+/// this rust library is generated for uses variadic functions for parameter passing, it is very
+/// important that the programmer matches the actual parameter types to the types that are expected
+/// in the pattern.
 ///
 /// > **Note:** If the types of parameter bindings do not match the expectations in the pattern,
 /// > memory corruption may occur, so tread lightly here.
@@ -204,15 +208,23 @@ impl UMessageFormat {
 /// binding tries to make the API use a bit more palatable by requiring that the programmer
 /// explicitly specifies a type for each of the parameters to be passed into the formatter.
 ///
-/// The supported types are not those of a full rust system, but rather a very restricted subset
-/// of types that MessageFormat supports:
+/// This function supports passing in the types `f64`, [rust_icu_ustring::UChar], `i32` and `i64`.
+/// Any numeric parameter not specifically designated as different type, is always a `f64`. See
+/// section below on Doubles. Dates are passed in as `f64`s - depending on the date format requested
+/// in the pattern used in [UMessageFormat], the end result of date formatting could be one of a
+/// wide variety of [date formats](http://userguide.icu-project.org/formatparse/datetime).
 ///
-/// | Type | Description |
+/// # Explicit Types
+///
+/// You can also explicitly specify the types used by writing `{ value => <type> }` instead of a
+/// plain expression.
+///
+/// | Type | Rust Type |
 /// | ---- | ----------- |
-/// | Double | This is effectively rust type `f64`.  Any numeric parameter not specifically designated as different type, is always a double. See section below on Doubles. |
-/// | String | This is effectively [rust_icu_ustring::UChar].|
-/// | Integer | This is effectively `i32`, and is used |
-/// | Date | This is effectively [rust_icu_sys::UDate], and is used to format dates.  Depending on the date format requested in the pattern used in [UMessageFormat], the end result of date formatting could be one of a wide variety of [date formats](http://userguide.icu-project.org/formatparse/datetime).|
+/// | Double | `f64`.   |
+/// | String | [rust_icu_ustring::UChar] |
+/// | Integer | `i32` |
+/// | Date | [rust_icu_sys::UDate]; alias for `f64` |
 ///
 /// ## Double as numeric parameter
 ///
@@ -260,10 +272,10 @@ impl UMessageFormat {
 ///   let hello = ustring::UChar::try_from("Hello! Добар дан!")?;
 ///   let result = umsg::message_format!(
 ///     fmt,
-///     { 43.4 => Double },
-///     { 31337 => Integer},
-///     { hello => String},
-///     { 0.0 => Date }
+///     43.4,
+///     31337,
+///     hello,
+///     0.0,
 ///   )?;
 ///
 ///   assert_eq!(
@@ -284,110 +296,186 @@ impl UMessageFormat {
 /// Implements `umsg_vformat`.
 #[macro_export]
 macro_rules! message_format {
-    ($dest:expr) => {
-        panic!("you should not format a message without parameters")
+    ($dest:expr $(,)?) => {
+        $crate::__std::compile_error!("you should not format a message without parameters")
     };
-    ($dest:expr, $( {$arg:expr => $t:ident}),* ) => {
+    ($dest:expr, $( {$arg:expr => $t:ident} ),+ $(,)?) => {
+        $crate::message_format!($dest, $($crate::checkarg!($arg, $t),)*)
+    };
+    ($dest:expr, $($arg:expr),+ $(,)?) => {
         unsafe {
-            $crate::format_varargs(
-                &$dest,
-                $(
-                    $crate::checkarg!($arg, $t)
-                ),*
-            )
+            $crate::format_args(&$dest, ($($arg,)*),)
         }
-    };
+    }
 }
 
 #[doc(hidden)]
 #[macro_export]
 macro_rules! checkarg {
     ($e:expr, Double) => {{
-        {
-            let _: f64 = $e;
-            $e
-        }
+        let x: $crate::__std::primitive::f64 = $e;
+        x
     }};
     ($e:expr, String) => {{
-        {
-            let _: &ustring::UChar = &$e;
-            $e.as_c_ptr()
-        }
+        let x: $crate::__ustring::UChar = $e;
+        x
     }};
     ($e:expr, Integer) => {{
-        {
-            let _: i32 = $e;
-            $e
-        }
+        let x: $crate::__std::primitive::i32 = $e;
+        x
     }};
     ($e:expr, Long) => {{
-        {
-            let _: i64 = $e;
-            $e
-        }
+        let x: $crate::__std::primitive::i64 = $e;
+        x
     }};
     ($e:expr, Date) => {{
-        {
-            let _: sys::UDate = $e;
-            $e
-        }
+        let x: $crate::__sys::UDate = $e;
+        x
     }};
 }
 
-// TODO: is there a way to *not* expose this function?
-// Has to be declared as extern "C" to allow for variadic args; but since the
-// return type is not C-clean, then we need to suppress the improper type
-// definition.
-#[allow(improper_ctypes_definitions)]
-#[no_mangle]
 #[doc(hidden)]
-pub unsafe extern "C" fn format_varargs(
+pub unsafe fn format_args(
     fmt: &UMessageFormat,
-    args: ...
+    args: impl FormatArgs,
 ) -> Result<String, common::Error> {
     const CAP: usize = 1024;
     let mut status = common::Error::OK_CODE;
     let mut result = ustring::UChar::new_with_capacity(CAP);
 
-    let total_size = {
-        args.with_copy(|va_list| {
-            // Overlay a __va_list_tag on top of our va_list.
-            //
-            // This is terribly unsafe, and hinges on the assumption that the memory layout of
-            // `va_list` type above (which is a rust type) is exactly the same as the memory layout
-            // of `__va_list_tag` (which is a type generated by bindgen). This *should* be true for
-            // each architecture that the rust compiler supports, but is apparently not tested well
-            // today.
-            let valist: *mut __va_list_tag = std::mem::transmute(va_list);
-
-            assert!(common::Error::is_ok(status));
-            versioned_function!(umsg_vformat)(
-                fmt.rep.rep,
-                result.as_mut_c_ptr(),
-                CAP as i32,
-                valist,
-                &mut status,
-            )
-        })
-    } as usize;
+    let total_size =
+        args.format(fmt.rep.rep, result.as_mut_c_ptr(), CAP as i32, &mut status) as usize;
     common::Error::ok_or_warning(status)?;
-    result.resize(total_size as usize);
+
+    result.resize(total_size);
+
     if total_size > CAP {
-        args.with_copy(|va_list| {
-            // See the safety note in the similar call above.
-            let valist: *mut __va_list_tag = std::mem::transmute(va_list);
-            assert!(common::Error::is_ok(status));
-            versioned_function!(umsg_vformat)(
-                fmt.rep.rep,
-                result.as_mut_c_ptr(),
-                total_size as i32,
-                valist,
-                &mut status,
-            );
-        });
+        args.format(
+            fmt.rep.rep,
+            result.as_mut_c_ptr(),
+            total_size as i32,
+            &mut status,
+        );
         common::Error::ok_or_warning(status)?;
     }
     String::try_from(&result)
+}
+
+mod sealed {
+    pub trait Sealed {}
+}
+
+/// Traits for types that can be passed to the umsg_format variadic function.
+#[doc(hidden)]
+pub trait FormatArg: Sealed {
+    type Raw;
+    fn to_raw(&self) -> Self::Raw;
+}
+
+impl Sealed for f64 {}
+impl FormatArg for f64 {
+    type Raw = f64;
+    fn to_raw(&self) -> Self::Raw {
+        *self
+    }
+}
+
+impl Sealed for ustring::UChar {}
+impl FormatArg for ustring::UChar {
+    type Raw = *const UChar;
+    fn to_raw(&self) -> Self::Raw {
+        self.as_c_ptr()
+    }
+}
+
+impl Sealed for i32 {}
+impl FormatArg for i32 {
+    type Raw = i32;
+    fn to_raw(&self) -> Self::Raw {
+        *self
+    }
+}
+
+impl Sealed for i64 {}
+impl FormatArg for i64 {
+    type Raw = i64;
+    fn to_raw(&self) -> Self::Raw {
+        *self
+    }
+}
+
+/// Trait for tuples of elements implementing `FormatArg`.
+#[doc(hidden)]
+pub trait FormatArgs: Sealed {
+    #[doc(hidden)]
+    unsafe fn format(
+        &self,
+        fmt: *const sys::UMessageFormat,
+        result: *mut UChar,
+        result_length: i32,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+
+macro_rules! impl_format_args_for_tuples {
+    ($(($($param:ident),*),)*) => {
+        $(
+            impl<$($param: FormatArg,)*> Sealed for ($($param,)*) {}
+            impl<$($param: FormatArg,)*> FormatArgs for ($($param,)*) {
+                unsafe fn format(
+                    &self,
+                    fmt: *const sys::UMessageFormat,
+                    result: *mut UChar,
+                    result_length: i32,
+                    status: *mut UErrorCode,
+                ) -> i32 {
+                    #[allow(non_snake_case)]
+                    let ($($param,)*) = self;
+                    $(
+                        #[allow(non_snake_case)]
+                        let $param = $crate::FormatArg::to_raw($param);
+                    )*
+
+                    versioned_function!(umsg_format)(
+                        fmt,
+                        result,
+                        result_length,
+                        status,
+                        $($param,)*
+                    )
+                }
+            }
+        )*
+    }
+}
+
+impl_format_args_for_tuples! {
+    (A),
+    (A, B),
+    (A, B, C),
+    (A, B, C, D),
+    (A, B, C, D, E),
+    (A, B, C, D, E, F),
+    (A, B, C, D, E, F, G),
+    (A, B, C, D, E, F, G, H),
+    (A, B, C, D, E, F, G, H, I),
+    (A, B, C, D, E, F, G, H, I, J),
+    (A, B, C, D, E, F, G, H, I, J, K),
+    (A, B, C, D, E, F, G, H, I, J, K, L),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y),
+    (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z),
 }
 
 #[cfg(test)]
@@ -430,10 +518,11 @@ mod tests {
         let result = message_format!(
             fmt,
             { 43.4 => Double },
-            { value => Integer},
-            { hello => String},
+            { value => Integer },
+            { hello.clone() => String },
             { 0.0 => Date }
         )?;
+        let result_2 = message_format!(fmt, 43.4, value, hello, 0.0,)?;
 
         assert_eq!(
             r"Formatted double: 43.4,
@@ -442,27 +531,8 @@ mod tests {
               Date: Thursday, January 1, 1970",
             result
         );
+        assert_eq!(result, result_2);
         Ok(())
-    }
-
-    #[test]
-    #[should_panic]
-    fn empty_args_in_format() {
-        let _ = TzSave(ucal::get_default_time_zone().unwrap());
-        ucal::set_default_time_zone("Europe/Amsterdam").unwrap();
-
-        let loc = uloc::ULoc::try_from("en-US").unwrap();
-        let msg = ustring::UChar::try_from(
-            r"Formatted double: {0,number,##.#},
-              Formatted integer: {1,number,integer},
-              Formatted string: {2},
-              Date: {3,date,full}",
-        )
-        .unwrap();
-        let _fmt = crate::UMessageFormat::try_from(&msg, &loc).unwrap();
-
-        // This is not allowed!
-        let _ = message_format!(&_fmt);
     }
 
     #[test]
@@ -471,7 +541,7 @@ mod tests {
         let msg = ustring::UChar::try_from(r"Formatted double: {0,number,##.#}")?;
 
         let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
-        let result = message_format!(fmt.clone(), { 43.43 => Double })?;
+        let result = message_format!(fmt, 43.43)?;
         assert_eq!(r"Formatted double: 43.4", result);
         Ok(())
     }

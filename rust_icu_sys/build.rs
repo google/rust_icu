@@ -434,8 +434,7 @@ macro_rules! versioned_function {{
 
         let header_file =
             generate_wrapper_header(&out_dir_path, &BINDGEN_SOURCE_MODULES, &include_dir_path);
-        run_bindgen(&header_file, out_dir_path)
-            .with_context(|| "while running bindgen")?;
+        run_bindgen(&header_file, out_dir_path).with_context(|| "while running bindgen")?;
         run_renamegen(out_dir_path).with_context(|| "while running renamegen")?;
 
         println!("cargo:install-dir={}", ICUConfig::new().install_dir()?);
