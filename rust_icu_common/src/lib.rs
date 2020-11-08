@@ -494,6 +494,11 @@ impl CStringVec {
     pub fn len(&self) -> usize {
         self.rep.len()
     }
+
+    /// Returns whether the vector is empty.
+    pub fn is_empty(&self) -> bool {
+        self.rep.is_empty()
+    }
 }
 
 #[cfg(test)]
@@ -546,11 +551,7 @@ mod tests {
             },
         ];
         for test in tests {
-            assert!(
-                parse_ok(test.clone()).is_ok(),
-                "for test: {:?}",
-                test.clone()
-            );
+            assert!(parse_ok(test).is_ok(), "for test: {:?}", test.clone());
         }
     }
 
@@ -577,11 +578,7 @@ mod tests {
             },
         ];
         for test in tests {
-            assert!(
-                parse_ok(test.clone()).is_err(),
-                "for test: {:?}",
-                test.clone()
-            );
+            assert!(parse_ok(test).is_err(), "for test: {:?}", test.clone());
         }
     }
 }
