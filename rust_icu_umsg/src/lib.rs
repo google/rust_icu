@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// The message format C api is variadic.
-
 //! # Locale-aware message formatting.
 //!
 //! Implementation of the text formatting code from the ICU4C
@@ -67,10 +65,10 @@
 //!     let hello = ustring::UChar::try_from("Hello! Добар дан!")?;
 //!     let result = umsg::message_format!(
 //!       fmt,
-//!       43.4,
-//!       31337,
-//!       hello,
-//!       0.0,
+//!       { 43.4 => Double },
+//!       { 31337 => Integer },
+//!       { hello => String },
+//!       { 0.0 => Date },
 //!     )?;
 //!
 //!     assert_eq!(
@@ -189,16 +187,16 @@ impl UMessageFormat {
 /// ``` ignore
 /// use rust_icu_umsg as umsg;
 /// // let result = umsg::message_format!(
-/// //     formatter, [value, ...]);
-/// let result = umsg::message_format!(formatter, 31337);
+/// //     formatter, [{ value => <type_assertion> }, ...]);
+/// let result = umsg::message_format!(formatter, { 31337 => Double });
 /// ```
 ///
-/// Each fragment represents a single positional parameter binding for the pattern in `formatter`.
-/// The first fragment corresponds to the positional parameter `0` (which, if an integer, would be
-/// referred to as `{0,number,integer}` in a MessageFormat pattern). Since the original C API that
-/// this rust library is generated for uses variadic functions for parameter passing, it is very
-/// important that the programmer matches the actual parameter types to the types that are expected
-/// in the pattern.
+/// Each fragment `{ value => <type_assertion> }` represents a single positional parameter binding
+/// for the pattern in `formatter`.  The first fragment corresponds to the positional parameter `0`
+/// (which, if an integer, would be referred to as `{0,number,integer}` in a MessageFormat
+/// pattern).  Since the original C API that this rust library is generated for uses variadic
+/// functions for parameter passing, it is very important that the programmer matches the actual
+/// parameter types to the types that are expected in the pattern.
 ///
 /// > **Note:** If the types of parameter bindings do not match the expectations in the pattern,
 /// > memory corruption may occur, so tread lightly here.
@@ -208,23 +206,15 @@ impl UMessageFormat {
 /// binding tries to make the API use a bit more palatable by requiring that the programmer
 /// explicitly specifies a type for each of the parameters to be passed into the formatter.
 ///
-/// This function supports passing in the types `f64`, [rust_icu_ustring::UChar], `i32` and `i64`.
-/// Any numeric parameter not specifically designated as different type, is always a `f64`. See
-/// section below on Doubles. Dates are passed in as `f64`s - depending on the date format requested
-/// in the pattern used in [UMessageFormat], the end result of date formatting could be one of a
-/// wide variety of [date formats](http://userguide.icu-project.org/formatparse/datetime).
+/// The supported types are not those of a full rust system, but rather a very restricted subset
+/// of types that MessageFormat supports:
 ///
-/// # Explicit Types
-///
-/// You can also explicitly specify the types used by writing `{ value => <type> }` instead of a
-/// plain expression.
-///
-/// | Type | Rust Type |
-/// | ---- | ----------- |
-/// | Double | `f64`.   |
-/// | String | [rust_icu_ustring::UChar] |
-/// | Integer | `i32` |
-/// | Date | [rust_icu_sys::UDate]; alias for `f64` |
+/// | Type | Rust Type | Notes |
+/// | ---- | --------- | ----------- |
+/// | Double | `f64` | Any numeric parameter not specifically designated as different type, is always a double. See section below on Doubles. |
+/// | String | [rust_icu_ustring::UChar] | |
+/// | Integer | `i32` | |
+/// | Date | [rust_icu_sys::UDate] (alias for `f64`) | Is used to format dates.  Depending on the date format requested in the pattern used in [UMessageFormat], the end result of date formatting could be one of a wide variety of [date formats](http://userguide.icu-project.org/formatparse/datetime).|
 ///
 /// ## Double as numeric parameter
 ///
@@ -272,10 +262,10 @@ impl UMessageFormat {
 ///   let hello = ustring::UChar::try_from("Hello! Добар дан!")?;
 ///   let result = umsg::message_format!(
 ///     fmt,
-///     43.4,
-///     31337,
-///     hello,
-///     0.0,
+///     { 43.4 => Double },
+///     { 31337 => Integer },
+///     { hello => String },
+///     { 0.0 => Date },
 ///   )?;
 ///
 ///   assert_eq!(
@@ -300,13 +290,10 @@ macro_rules! message_format {
         $crate::__std::compile_error!("you should not format a message without parameters")
     };
     ($dest:expr, $( {$arg:expr => $t:ident} ),+ $(,)?) => {
-        $crate::message_format!($dest, $($crate::checkarg!($arg, $t),)*)
-    };
-    ($dest:expr, $($arg:expr),+ $(,)?) => {
         unsafe {
-            $crate::format_args(&$dest, ($($arg,)*),)
+            $crate::format_args(&$dest, ($($crate::checkarg!($arg, $t),)*))
         }
-    }
+    };
 }
 
 #[doc(hidden)]
@@ -519,10 +506,9 @@ mod tests {
             fmt,
             { 43.4 => Double },
             { value => Integer },
-            { hello.clone() => String },
+            { hello => String },
             { 0.0 => Date }
         )?;
-        let result_2 = message_format!(fmt, 43.4, value, hello, 0.0,)?;
 
         assert_eq!(
             r"Formatted double: 43.4,
@@ -531,7 +517,6 @@ mod tests {
               Date: Thursday, January 1, 1970",
             result
         );
-        assert_eq!(result, result_2);
         Ok(())
     }
 
@@ -541,7 +526,8 @@ mod tests {
         let msg = ustring::UChar::try_from(r"Formatted double: {0,number,##.#}")?;
 
         let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
-        let result = message_format!(fmt, 43.43)?;
+        #[allow(clippy::redundant_clone)]
+        let result = message_format!(fmt.clone(), { 43.43 => Double })?;
         assert_eq!(r"Formatted double: 43.4", result);
         Ok(())
     }
