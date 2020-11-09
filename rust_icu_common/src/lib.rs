@@ -310,10 +310,10 @@ macro_rules! buffered_string_method_with_retry {
 ///
 /// ```c++ ignore
 /// int32_t unum_formatDouble(
-///     const UNumberFormat* fmt, 
-///     double number, 
-///     UChar* result, 
-///     int32_t result_length, 
+///     const UNumberFormat* fmt,
+///     double number,
+///     UChar* result,
+///     int32_t result_length,
 ///     UFieldPosition* pos,
 ///     UErrorCode *status)
 /// ```
@@ -387,7 +387,7 @@ macro_rules! format_ustring_for_type{
 /// );
 /// ```
 ///
-/// which then becomes: 
+/// which then becomes:
 ///
 /// ```rust ignore
 /// impl _ {
@@ -436,7 +436,7 @@ macro_rules! generalized_fallible_getter{
 /// );
 /// ```
 ///
-/// which then becomes: 
+/// which then becomes:
 ///
 /// ```rust ignore
 /// impl _ {

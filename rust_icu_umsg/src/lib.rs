@@ -89,8 +89,8 @@
 //! ```
 
 use {
-    rust_icu_common as common, rust_icu_sys as sys, rust_icu_sys::*,
-    rust_icu_uloc as uloc, rust_icu_ustring as ustring, std::convert::TryFrom,
+    rust_icu_common as common, rust_icu_sys as sys, rust_icu_sys::*, rust_icu_uloc as uloc,
+    rust_icu_ustring as ustring, std::convert::TryFrom,
 };
 
 /// The implementation of the ICU `UMessageFormat*`.
@@ -457,7 +457,8 @@ mod tests {
               Formatted integer: {1,number,integer},
               Formatted string: {2},
               Date: {3,date,full}",
-        ).unwrap();
+        )
+        .unwrap();
         let _fmt = crate::UMessageFormat::try_from(&msg, &loc).unwrap();
 
         // This is not allowed!

@@ -322,7 +322,6 @@ impl crate::UChar {
     pub fn resize(&mut self, new_size: usize) {
         self.rep.resize(new_size, 0);
     }
-
 }
 
 #[cfg(test)]

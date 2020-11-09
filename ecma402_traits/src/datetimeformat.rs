@@ -128,7 +128,7 @@ pub mod options {
         /// 4 hour cycle, 0..23.
         H23,
         /// 4 hour cycle, 1..24.
-        H24
+        H24,
     }
 
     #[derive(Eq, PartialEq, Debug, Clone)]
@@ -224,7 +224,7 @@ pub struct DateTimeFormatOptions {
 
 impl Default for DateTimeFormatOptions {
     fn default() -> Self {
-        Self{
+        Self {
             date_style: options::Style::Long,
             time_style: options::Style::Long,
             fractional_second_digits: 2,

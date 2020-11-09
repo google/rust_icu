@@ -19,7 +19,7 @@ use {
     rust_icu_sys::versioned_function,
     rust_icu_sys::*,
     rust_icu_ustring as ustring,
-    std::{convert::TryFrom, os::raw, ffi, ptr},
+    std::{convert::TryFrom, ffi, os::raw, ptr},
 };
 
 // Implements the ICU type [`UFormattable`][ufmt].
@@ -44,7 +44,7 @@ impl<'a> Drop for crate::UFormattable<'a> {
     /// Implements `ufmt_close`.
     fn drop(&mut self) {
         if let None = self.owner {
-              unsafe { versioned_function!(ufmt_close)(self.rep.as_ptr()) };
+            unsafe { versioned_function!(ufmt_close)(self.rep.as_ptr()) };
         }
     }
 }
@@ -58,7 +58,7 @@ impl<'a> Drop for crate::UFormattable<'a> {
 /// simple_getter!(get_array_length, ufmt_getArrayLength, i32);
 /// ```
 ///
-/// * `$method_name` is an identifier 
+/// * `$method_name` is an identifier
 macro_rules! simple_getter {
     ($method_name:ident, $impl_function_name:ident, $return_type:ty) => {
         /// Implements `$impl_function_name`
@@ -67,13 +67,12 @@ macro_rules! simple_getter {
             let mut status = common::Error::OK_CODE;
             let ret = unsafe {
                 assert!(common::Error::is_ok(status));
-                versioned_function!($impl_function_name)(
-                    self.rep.as_ptr(), &mut status)
+                versioned_function!($impl_function_name)(self.rep.as_ptr(), &mut status)
             };
             common::Error::ok_or_warning(status)?;
             Ok(ret)
         }
-    }
+    };
 }
 
 impl<'a> crate::UFormattable<'a> {
@@ -146,20 +145,19 @@ impl<'a> crate::UFormattable<'a> {
 
     // Implements `ufmt_getUChars`
     pub fn get_ustring(&self) -> Result<ustring::UChar, common::Error> {
-            let mut status = common::Error::OK_CODE;
-            let mut ustrlen = 0i32;
-            let raw = unsafe {
-                assert!(common::Error::is_ok(status));
-                versioned_function!(ufmt_getUChars)(
-                    self.rep.as_ptr(), &mut ustrlen, &mut status)
-            } as *mut sys::UChar;
-            common::Error::ok_or_warning(status)?;
-            let ret = unsafe {
-                assert_ne!(raw, 0 as *mut sys::UChar);
-                assert!(ustrlen >= 0);
-                ustring::UChar::clone_from_raw_parts(raw, ustrlen)
-            };
-            Ok(ret)
+        let mut status = common::Error::OK_CODE;
+        let mut ustrlen = 0i32;
+        let raw = unsafe {
+            assert!(common::Error::is_ok(status));
+            versioned_function!(ufmt_getUChars)(self.rep.as_ptr(), &mut ustrlen, &mut status)
+        } as *mut sys::UChar;
+        common::Error::ok_or_warning(status)?;
+        let ret = unsafe {
+            assert_ne!(raw, 0 as *mut sys::UChar);
+            assert!(ustrlen >= 0);
+            ustring::UChar::clone_from_raw_parts(raw, ustrlen)
+        };
+        Ok(ret)
     }
 
     /// Implements `ufmt_getUChars`
@@ -173,34 +171,41 @@ impl<'a> crate::UFormattable<'a> {
     /// to this one.
     ///
     /// Implements `ufmt_getArrayItemByIndex`
-    pub fn get_array_item_by_index(&'a self, index: i32) -> Result<crate::UFormattable<'a>, common::Error> {
-            let mut status = common::Error::OK_CODE;
-            let raw: *mut sys::UFormattable = unsafe {
-                assert!(common::Error::is_ok(status));
-                versioned_function!(ufmt_getArrayItemByIndex)(
-                    self.rep.as_ptr(), index, &mut status)
-            };
-            common::Error::ok_or_warning(status)?;
-            assert_ne!(raw, 0 as *mut sys::UFormattable);
-            Ok(UFormattable{ rep: ptr::NonNull::new(raw).unwrap(), owner: Some(&self) })
+    pub fn get_array_item_by_index(
+        &'a self,
+        index: i32,
+    ) -> Result<crate::UFormattable<'a>, common::Error> {
+        let mut status = common::Error::OK_CODE;
+        let raw: *mut sys::UFormattable = unsafe {
+            assert!(common::Error::is_ok(status));
+            versioned_function!(ufmt_getArrayItemByIndex)(self.rep.as_ptr(), index, &mut status)
+        };
+        common::Error::ok_or_warning(status)?;
+        assert_ne!(raw, 0 as *mut sys::UFormattable);
+        Ok(UFormattable {
+            rep: ptr::NonNull::new(raw).unwrap(),
+            owner: Some(&self),
+        })
     }
 
     /// Implements `ufmt_getDecNumChars`
     pub fn get_dec_num_chars(&self) -> Result<String, common::Error> {
-            let mut status = common::Error::OK_CODE;
-            let mut cstrlen = 0i32;
-            let raw: *const raw::c_char = unsafe {
-                assert!(common::Error::is_ok(status));
-                versioned_function!(ufmt_getDecNumChars)(
-                    self.rep.as_ptr(), &mut cstrlen, &mut status)
-            };
-            common::Error::ok_or_warning(status)?;
-            let ret = unsafe {
-                assert_ne!(raw, 0 as *const raw::c_char);
-                assert!(cstrlen >= 0);
-                ffi::CStr::from_ptr(raw)
-            };
-            Ok(ret.to_str().map_err(|e: std::str::Utf8Error| common::Error::from(e))?.to_string())
+        let mut status = common::Error::OK_CODE;
+        let mut cstrlen = 0i32;
+        let raw: *const raw::c_char = unsafe {
+            assert!(common::Error::is_ok(status));
+            versioned_function!(ufmt_getDecNumChars)(self.rep.as_ptr(), &mut cstrlen, &mut status)
+        };
+        common::Error::ok_or_warning(status)?;
+        let ret = unsafe {
+            assert_ne!(raw, 0 as *const raw::c_char);
+            assert!(cstrlen >= 0);
+            ffi::CStr::from_ptr(raw)
+        };
+        Ok(ret
+            .to_str()
+            .map_err(|e: std::str::Utf8Error| common::Error::from(e))?
+            .to_string())
     }
 }
 
@@ -215,7 +220,10 @@ mod tests {
     #[test]
     fn basic() {
         let n = crate::UFormattable::try_new().expect("try_new");
-        assert_eq!(sys::UFormattableType::UFMT_LONG, n.get_type().expect("get_type"));
+        assert_eq!(
+            sys::UFormattableType::UFMT_LONG,
+            n.get_type().expect("get_type")
+        );
         assert_eq!(0, n.get_i32().expect("get_i32"));
         assert_eq!("0", n.get_dec_num_chars().expect("get_dec_num_chars"));
     }
