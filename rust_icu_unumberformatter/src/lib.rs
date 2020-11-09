@@ -23,8 +23,7 @@ use {
     rust_icu_sys as sys,
     rust_icu_sys::versioned_function,
     rust_icu_sys::*,
-    rust_icu_uloc as uloc, rust_icu_unum as unum,
-    rust_icu_ustring as ustring,
+    rust_icu_uloc as uloc, rust_icu_unum as unum, rust_icu_ustring as ustring,
     rust_icu_ustring::buffered_uchar_method_with_retry,
     std::{convert::TryFrom, convert::TryInto, ptr},
 };
@@ -197,7 +196,9 @@ impl UFormattedNumber {
     ///
     /// Implements `unumf_resultNextFieldPosition`. Since 0.3.1. All access is
     /// via iterators.
-    pub fn try_field_iter<'a>(&'a self) -> Result<unum::UFieldPositionIterator<'a, Self>, common::Error> {
+    pub fn try_field_iter<'a>(
+        &'a self,
+    ) -> Result<unum::UFieldPositionIterator<'a, Self>, common::Error> {
         let mut result = unum::UFieldPositionIterator::try_new_owned(self)?;
         let mut status = sys::UErrorCode::U_ZERO_ERROR;
         unsafe {
@@ -205,7 +206,7 @@ impl UFormattedNumber {
                 self.as_c_ptr(),
                 result.as_mut_ptr(),
                 &mut status,
-                )
+            )
         };
         common::Error::ok_or_warning(status)?;
         Ok(result)
@@ -259,7 +260,10 @@ mod testing {
     #[test]
     fn basic() {
         let fmt = super::UNumberFormatter::try_new(
-            "measure-unit/length-meter compact-long sign-always", "sr-RS").unwrap();
+            "measure-unit/length-meter compact-long sign-always",
+            "sr-RS",
+        )
+        .unwrap();
         let result = fmt.format_double(123456.7890).unwrap();
         let result_str: String = result.try_into().unwrap();
         assert_eq!("+123 хиљаде m", result_str);
@@ -280,35 +284,35 @@ mod testing {
             expected: &'static str,
         }
         let tests = vec![
-           TestCase{
-               locale: "sr-RS",
-               number: 123456.7890,
-               skeleton: "measure-unit/length-meter compact-long sign-always",
-               expected: "+123 хиљаде m",
-           },
-           TestCase{
-               locale: "sr-RS-u-nu-deva",
-               number: 123456.7890,
-               skeleton: "measure-unit/length-meter compact-long sign-always",
-               expected: "+१२३ хиљаде m",
-           },
-           TestCase{
-               locale: "sr-RS",
-               number: 123456.7890,
-               skeleton: "numbering-system/deva",
-               expected: "१२३.४५६,७८९",
-           },
-           TestCase{
-               locale: "en-IN",
-               number: 123456.7890,
-               skeleton: "@@@",
-               expected: "1,23,000",
-           },
+            TestCase {
+                locale: "sr-RS",
+                number: 123456.7890,
+                skeleton: "measure-unit/length-meter compact-long sign-always",
+                expected: "+123 хиљаде m",
+            },
+            TestCase {
+                locale: "sr-RS-u-nu-deva",
+                number: 123456.7890,
+                skeleton: "measure-unit/length-meter compact-long sign-always",
+                expected: "+१२३ хиљаде m",
+            },
+            TestCase {
+                locale: "sr-RS",
+                number: 123456.7890,
+                skeleton: "numbering-system/deva",
+                expected: "१२३.४५६,७८९",
+            },
+            TestCase {
+                locale: "en-IN",
+                number: 123456.7890,
+                skeleton: "@@@",
+                expected: "1,23,000",
+            },
         ];
 
         for test in tests {
-            let fmt = super::UNumberFormatter::try_new(
-                &test.skeleton, &test.locale).expect(&format!("for test {:?}", &test));
+            let fmt = super::UNumberFormatter::try_new(&test.skeleton, &test.locale)
+                .expect(&format!("for test {:?}", &test));
             let result = fmt.format_double(test.number).unwrap();
             let result_str: String = result.try_into().unwrap();
             assert_eq!(test.expected, result_str, "for test {:?}", &test);

@@ -108,10 +108,7 @@ impl UTransliterator {
         let mut status = common::Error::OK_CODE;
         unsafe {
             assert!(common::Error::is_ok(status));
-            versioned_function!(utrans_register)(
-                trans.rep.as_ptr(),
-                &mut status,
-            )
+            versioned_function!(utrans_register)(trans.rep.as_ptr(), &mut status)
         }
         common::Error::ok_or_warning(status)?;
         // ICU4C now owns the transliterator and is responsible for closing it,
@@ -170,15 +167,10 @@ impl UTransliterator {
     /// Implements `utrans_getUnicodeID`.
     pub fn get_id(&self) -> Result<String, common::Error> {
         let mut id_len: i32 = 0;
-        let rep = unsafe {
-            versioned_function!(utrans_getUnicodeID)(
-                self.rep.as_ptr(),
-                &mut id_len,
-            )
-        };
+        let rep =
+            unsafe { versioned_function!(utrans_getUnicodeID)(self.rep.as_ptr(), &mut id_len) };
         assert_ne!(rep, 0 as *const sys::UChar);
-        let id_buf =
-            unsafe { slice::from_raw_parts(rep, id_len as usize) }.to_vec();
+        let id_buf = unsafe { slice::from_raw_parts(rep, id_len as usize) }.to_vec();
         let id = ustring::UChar::from(id_buf);
         String::try_from(&id)
     }
@@ -192,10 +184,7 @@ impl UTransliterator {
         let mut status = common::Error::OK_CODE;
         let rep = unsafe {
             assert!(common::Error::is_ok(status));
-            versioned_function!(utrans_openInverse)(
-                self.rep.as_ptr(),
-                &mut status,
-            )
+            versioned_function!(utrans_openInverse)(self.rep.as_ptr(), &mut status)
         };
         common::Error::ok_or_warning(status)?;
         assert_ne!(rep, 0 as *mut sys::UTransliterator);
@@ -208,10 +197,7 @@ impl UTransliterator {
     /// expected by [`new`](#method.new).
     ///
     /// Implements `utrans_toRules`.
-    pub fn to_rules(
-        &self,
-        escape_unprintable: bool,
-    ) -> Result<String, common::Error> {
+    pub fn to_rules(&self, escape_unprintable: bool) -> Result<String, common::Error> {
         let mut status = common::Error::OK_CODE;
         // Preflight to determine length of rules text.
         let rules_len = unsafe {
@@ -249,10 +235,7 @@ impl UTransliterator {
     /// is cleared.
     ///
     /// Implements `utrans_setFilter`.
-    pub fn set_filter(
-        &mut self,
-        pattern: Option<&str>,
-    ) -> Result<(), common::Error> {
+    pub fn set_filter(&mut self, pattern: Option<&str>) -> Result<(), common::Error> {
         let pattern = match pattern {
             Some(s) => Some(ustring::UChar::try_from(s)?),
             None => None,
@@ -350,12 +333,7 @@ impl UTransliterator {
     /// Implements `utrans_unregisterID`.
     pub fn unregister(id: &str) -> Result<(), common::Error> {
         let id = ustring::UChar::try_from(id)?;
-        unsafe {
-            versioned_function!(utrans_unregisterID)(
-                id.as_c_ptr(),
-                id.len() as i32,
-            )
-        }
+        unsafe { versioned_function!(utrans_unregisterID)(id.as_c_ptr(), id.len() as i32) }
         Ok(())
     }
 }
@@ -389,8 +367,7 @@ mod tests {
 
     #[test]
     fn test_inverse() {
-        let trans =
-            UTransliterator::new("Latin-ASCII", None, DIR_FWD).unwrap();
+        let trans = UTransliterator::new("Latin-ASCII", None, DIR_FWD).unwrap();
         let inverse = trans.inverse().unwrap();
         assert_eq!(inverse.get_id().unwrap(), "ASCII-Latin");
     }
@@ -399,12 +376,10 @@ mod tests {
     fn test_rules_based() {
         let rules = "a <> xyz;";
 
-        let fwd_trans = UTransliterator::new("MyA-MyXYZ", Some(rules), DIR_FWD)
-            .unwrap();
+        let fwd_trans = UTransliterator::new("MyA-MyXYZ", Some(rules), DIR_FWD).unwrap();
         assert_eq!(fwd_trans.transliterate("abc").unwrap(), "xyzbc");
 
-        let rev_trans = UTransliterator::new("MyXYZ-MyA", Some(rules), DIR_REV)
-            .unwrap();
+        let rev_trans = UTransliterator::new("MyXYZ-MyA", Some(rules), DIR_REV).unwrap();
         assert_eq!(rev_trans.transliterate("xyzbc").unwrap(), "abc");
     }
 

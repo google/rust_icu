@@ -40,7 +40,7 @@ impl std::fmt::Display for Locale {
     /// `rust_icu` implementation.
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Locale::FromULoc(ref l) =>  write!(f, "{}", l),
+            Locale::FromULoc(ref l) => write!(f, "{}", l),
         }
     }
 }

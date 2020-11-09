@@ -365,7 +365,11 @@ mod tests {
 
             let fmt = fmt;
             let actual = fmt.format(t.date)?;
-            assert_eq!(actual, t.expected, "(left==actual; right==expected)\n\ttest: {:?}", t);
+            assert_eq!(
+                actual, t.expected,
+                "(left==actual; right==expected)\n\ttest: {:?}",
+                t
+            );
         }
         Ok(())
     }

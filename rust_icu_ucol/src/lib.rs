@@ -267,11 +267,25 @@ mod tests {
     #[test]
     fn attribute_setter() {
         let collator = crate::UCollator::try_from("sr-Latn").unwrap();
-        collator.set_attribute(sys::UColAttribute::UCOL_CASE_FIRST, sys::UColAttributeValue::UCOL_OFF).unwrap();
-        let attr = collator.get_attribute(sys::UColAttribute::UCOL_CASE_FIRST).unwrap();
+        collator
+            .set_attribute(
+                sys::UColAttribute::UCOL_CASE_FIRST,
+                sys::UColAttributeValue::UCOL_OFF,
+            )
+            .unwrap();
+        let attr = collator
+            .get_attribute(sys::UColAttribute::UCOL_CASE_FIRST)
+            .unwrap();
         assert_eq!(sys::UColAttributeValue::UCOL_OFF, attr);
-        collator.set_attribute(sys::UColAttribute::UCOL_CASE_FIRST, sys::UColAttributeValue::UCOL_LOWER_FIRST).unwrap();
-        let attr = collator.get_attribute(sys::UColAttribute::UCOL_CASE_FIRST).unwrap();
+        collator
+            .set_attribute(
+                sys::UColAttribute::UCOL_CASE_FIRST,
+                sys::UColAttributeValue::UCOL_LOWER_FIRST,
+            )
+            .unwrap();
+        let attr = collator
+            .get_attribute(sys::UColAttribute::UCOL_CASE_FIRST)
+            .unwrap();
         assert_eq!(sys::UColAttributeValue::UCOL_LOWER_FIRST, attr);
     }
 }

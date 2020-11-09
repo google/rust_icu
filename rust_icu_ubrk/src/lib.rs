@@ -132,8 +132,7 @@ impl Iterator for UBreakIterator {
     /// [`preceding`]: #method.preceding
     /// [`previous`]: #method.previous
     fn next(&mut self) -> Option<Self::Item> {
-        let index =
-            unsafe { versioned_function!(ubrk_next)(self.rep.as_ptr()) };
+        let index = unsafe { versioned_function!(ubrk_next)(self.rep.as_ptr()) };
         if index == UBRK_DONE {
             None
         } else {
@@ -205,10 +204,7 @@ impl UBreakIterator {
     /// for rules syntax.
     ///
     /// Implements `ubrk_openRules`.
-    pub fn try_new_rules(
-        rules: &str,
-        text: &str,
-    ) -> Result<Self, common::Error> {
+    pub fn try_new_rules(rules: &str, text: &str) -> Result<Self, common::Error> {
         let rules = ustring::UChar::try_from(rules)?;
         let text = ustring::UChar::try_from(text)?;
         Self::try_new_rules_ustring(&rules, &text)
@@ -254,10 +250,7 @@ impl UBreakIterator {
     /// [`get_binary_rules`]: #method.get_binary_rules
     ///
     /// Implements `ubrk_openBinaryRules`.
-    pub fn try_new_binary_rules(
-        rules: &Vec<u8>,
-        text: &str,
-    ) -> Result<Self, common::Error> {
+    pub fn try_new_binary_rules(rules: &Vec<u8>, text: &str) -> Result<Self, common::Error> {
         let text = ustring::UChar::try_from(text)?;
         Self::try_new_binary_rules_ustring(rules, &text)
     }
@@ -369,10 +362,7 @@ impl UBreakIterator {
     }
 
     /// Implements `ubrk_setText`.
-    pub fn set_text_ustring(
-        &mut self,
-        text: &ustring::UChar,
-    ) -> Result<(), common::Error> {
+    pub fn set_text_ustring(&mut self, text: &ustring::UChar) -> Result<(), common::Error> {
         let mut status = common::Error::OK_CODE;
         // Clone text and take ownership.
         let text = text.clone();
@@ -402,8 +392,7 @@ impl UBreakIterator {
     ///
     /// Implements `ubrk_previous`.
     pub fn previous(&self) -> Option<i32> {
-        let result =
-            unsafe { versioned_function!(ubrk_previous)(self.rep.as_ptr()) };
+        let result = unsafe { versioned_function!(ubrk_previous)(self.rep.as_ptr()) };
         if result == UBRK_DONE {
             None
         } else {
@@ -435,9 +424,7 @@ impl UBreakIterator {
     ///
     /// Implements `ubrk_preceding`.
     pub fn preceding(&self, offset: i32) -> i32 {
-        unsafe {
-            versioned_function!(ubrk_preceding)(self.rep.as_ptr(), offset)
-        }
+        unsafe { versioned_function!(ubrk_preceding)(self.rep.as_ptr(), offset) }
     }
 
     /// Moves the iterator to the boundary immediately following the specified offset
@@ -445,18 +432,15 @@ impl UBreakIterator {
     ///
     /// Implements `ubrk_following`.
     pub fn following(&self, offset: i32) -> i32 {
-        unsafe {
-            versioned_function!(ubrk_following)(self.rep.as_ptr(), offset)
-        }
+        unsafe { versioned_function!(ubrk_following)(self.rep.as_ptr(), offset) }
     }
 
     /// Reports whether the specified offset is a boundary.
     ///
     /// Implements `ubrk_isBoundary`.
     pub fn is_boundary(&self, offset: i32) -> bool {
-        let result: sys::UBool = unsafe {
-            versioned_function!(ubrk_isBoundary)(self.rep.as_ptr(), offset)
-        };
+        let result: sys::UBool =
+            unsafe { versioned_function!(ubrk_isBoundary)(self.rep.as_ptr(), offset) };
         result != 0
     }
 
@@ -470,11 +454,7 @@ impl UBreakIterator {
         let mut status = common::Error::OK_CODE;
         let char_ptr = unsafe {
             assert!(common::Error::is_ok(status));
-            versioned_function!(ubrk_getLocaleByType)(
-                self.rep.as_ptr(),
-                type_,
-                &mut status,
-            )
+            versioned_function!(ubrk_getLocaleByType)(self.rep.as_ptr(), type_, &mut status)
         };
         common::Error::ok_or_warning(status)?;
         let c_str = unsafe { ffi::CStr::from_ptr(char_ptr) };
@@ -549,8 +529,7 @@ impl Iterator for Locales {
         if self.index >= self.upper {
             return None;
         }
-        let loc_ptr =
-            unsafe { versioned_function!(ubrk_getAvailable)(self.index) };
+        let loc_ptr = unsafe { versioned_function!(ubrk_getAvailable)(self.index) };
         assert_ne!(loc_ptr, 0 as *const raw::c_char);
         let c_str = unsafe { ffi::CStr::from_ptr(loc_ptr) };
         let loc = uloc::ULoc::try_from(c_str);
@@ -602,21 +581,16 @@ mod tests {
         fn next(&mut self) -> Option<Self::Item> {
             let start = self.iter.current();
             self.iter.next().and_then(|end| {
-                String::from_utf16(
-                    &self.chars[(start as usize)..(end as usize)],
-                )
-                .ok()
+                String::from_utf16(&self.chars[(start as usize)..(end as usize)]).ok()
             })
         }
     }
 
-    const TEXT: &str =
-        r#""It wasn't the wine," murmured Mr. Snodgrass. "It was the salmon.""#;
+    const TEXT: &str = r#""It wasn't the wine," murmured Mr. Snodgrass. "It was the salmon.""#;
 
     #[test]
     fn test_iteration() {
-        let mut break_iter =
-            UBreakIterator::try_new(UBRK_WORD, "en", TEXT).unwrap();
+        let mut break_iter = UBreakIterator::try_new(UBRK_WORD, "en", TEXT).unwrap();
 
         assert!(break_iter.is_boundary(0));
         assert_eq!(0, break_iter.first());
@@ -690,9 +664,7 @@ mod tests {
         let iter1_binary_rules = iter1.get_binary_rules().unwrap();
         let iter1_boundaries: Vec<i32> = iter1.collect();
 
-        let iter2 =
-            UBreakIterator::try_new_binary_rules(&iter1_binary_rules, TEXT)
-                .unwrap();
+        let iter2 = UBreakIterator::try_new_binary_rules(&iter1_binary_rules, TEXT).unwrap();
         let iter2_boundaries: Vec<i32> = iter2.collect();
 
         assert!(!iter2_boundaries.is_empty());
@@ -713,8 +685,7 @@ $not_w = [^w];
 $not_w+;  # No breaks between code points other than `w`.
 $w+ {99}; # Break on `w`s with custom rule status of `99`.
 "#;
-        let mut break_iter =
-            UBreakIterator::try_new_rules(rules, TEXT).unwrap();
+        let mut break_iter = UBreakIterator::try_new_rules(rules, TEXT).unwrap();
 
         #[derive(Debug)]
         struct TestCase {
@@ -837,23 +808,15 @@ $w+ {99}; # Break on `w`s with custom rule status of `99`.
 
     #[test]
     fn test_get_locale_by_type() {
-        let iter =
-            UBreakIterator::try_new(UBRK_WORD, "en_US_CA@lb=strict", TEXT)
-                .unwrap();
+        let iter = UBreakIterator::try_new(UBRK_WORD, "en_US_CA@lb=strict", TEXT).unwrap();
 
         // The "valid locale" is the most specific locale supported by ICU, given
         // what was requested.
-        assert_eq!(
-            "en_US",
-            iter.get_locale_by_type(ULOC_VALID_LOCALE).unwrap(),
-        );
+        assert_eq!("en_US", iter.get_locale_by_type(ULOC_VALID_LOCALE).unwrap(),);
 
         // The "actual locale" is the locale that breaking information actually comes from.
         // In most cases this will be "root".
-        assert_eq!(
-            "root",
-            iter.get_locale_by_type(ULOC_ACTUAL_LOCALE).unwrap(),
-        );
+        assert_eq!("root", iter.get_locale_by_type(ULOC_ACTUAL_LOCALE).unwrap(),);
     }
 
     #[test]

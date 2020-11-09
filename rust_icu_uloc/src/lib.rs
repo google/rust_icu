@@ -15,16 +15,15 @@
 use {
     rust_icu_common as common,
     rust_icu_common::buffered_string_method_with_retry,
+    rust_icu_sys as sys,
     rust_icu_sys::versioned_function,
     rust_icu_sys::*,
-    rust_icu_sys as sys,
     rust_icu_uenum::Enumeration,
     std::{
         cmp::Ordering,
         convert::{From, TryFrom, TryInto},
-        ffi,
+        ffi, fmt,
         os::raw,
-        fmt,
     },
 };
 
@@ -669,7 +668,7 @@ mod tests {
     }
 
     // This tests verifies buggy behavior which is fixed since ICU version 67.1
-    #[cfg(not(feature="icu_version_67_plus"))]
+    #[cfg(not(feature = "icu_version_67_plus"))]
     #[test]
     fn test_accept_language_exact_match() {
         let accept_list: Result<Vec<_>, _> = vec!["es_ES", "ar_EG", "fr_FR"]
@@ -695,7 +694,7 @@ mod tests {
         );
     }
 
-    #[cfg(feature="icu_version_67_plus")]
+    #[cfg(feature = "icu_version_67_plus")]
     #[test]
     fn test_accept_language_exact_match() {
         let accept_list: Result<Vec<_>, _> = vec!["es_ES", "ar_EG", "fr_FR"]
