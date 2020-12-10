@@ -33,8 +33,10 @@ ICU_LIBDIR := $(shell icu-config --libdir)
 PKG_CONFIG_PATH := "${HOME}/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
 LD_LIBRARY_PATH := "${ICU_LIBDIR}"
 test:
-	echo "ICU version detected: ${ICU_VERSION} ${ICU_LIBDIR}" \
+	       echo "ICU version detected:       ${ICU_VERSION}" \
+	    && echo "ICU libdir:                 ${ICU_LIBDIR}" \
 		&& echo "ICU major version detected: ${ICU_MAJOR_VERSION}" \
+		&& echo "PKG_CONFIG_PATH:            ${PKG_CONFIG_PATH}" \
 		&& PKG_CONFIG_PATH=${PKG_CONFIG_PATH} \
 				LD_LIBRARY_PATH=${LD_LIBRARY_PATH} \
 				cargo test \

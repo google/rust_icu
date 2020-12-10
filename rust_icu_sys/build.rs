@@ -207,6 +207,15 @@ mod inner {
             self.prefix()
         }
 
+        /// Returns all the include directories as reported by the C++ flags.
+        fn include_dirs(&mut self) -> Result<Vec<String>> {
+            Ok(self.cppflags()?.split(" ")
+                .filter(|p| p.starts_with("-I"))
+                .map(|p| &p[2..])
+                .map(|s| s.to_string())
+                .collect())
+        }
+
         /// Returns the config major number.  For example, will return "64" for
         /// version "64.2"
         fn version_major() -> Result<String> {
@@ -235,23 +244,41 @@ mod inner {
     ///
     /// This is the recommended way to bind complex libraries at the moment.  Returns
     /// the full path of the generated wrapper header file.
-    fn generate_wrapper_header(
-        out_dir_path: &Path,
-        bindgen_source_modules: &[&str],
-        include_path: &Path,
-    ) -> String {
+    fn generate_wrapper_header(out_dir_path: &Path, bindgen_source_modules: &[&str]) -> String {
         let wrapper_path = out_dir_path.join("wrapper.h");
         let mut wrapper_file = File::create(&wrapper_path).unwrap();
         wrapper_file
-            .write_all(b"/* Generated file, do not edit. */ \n")
+            .write_all(
+                concat!(
+                    "/* Generated file, do not edit. */ \n",
+                    "/* Assumes correct -I flag to the compiler is passed. */\n"
+                )
+                .as_bytes(),
+            )
             .unwrap();
+        let include_dirs = ICUConfig::new().include_dirs().unwrap();
         let includes = bindgen_source_modules
             .iter()
             .copied()
             .map(|f| {
-                let file_path = include_path.join(format!("{}.h", f));
-                let file_path_str = format!("#include \"{}\"\n", file_path.to_str().unwrap());
-                println!("include-file: '{}'", file_path.to_str().unwrap());
+                // bindgen requires a full path to the include, so we need to
+                // search through include paths manually and add the files
+                // here.
+                for include_dir in include_dirs.iter() {
+                    let include_path = std::path::PathBuf::from(include_dir)
+                        .join("unicode")
+                        .join(format!("{}.h", f));
+                    if include_path.exists() {
+                        return include_path.to_str().unwrap().to_string();
+                    } else {
+                        println!("does not exist: {:?}", include_path);
+                    }
+                }
+                f.to_string()
+            })
+            .map(|f| {
+                let file_path_str = format!("#include \"{}\"\n", f);
+                println!("include-file: '{}'", f);
                 file_path_str
             })
             .collect::<String>();
@@ -300,11 +327,12 @@ mod inner {
         let ld_flags = ICUConfig::new()
             .ldflags()
             .with_context(|| "could not prepare bindgen builder")?;
-        let builder = builder.clang_arg(&ld_flags);
+        let builder = builder.clang_arg(ld_flags);
         let cpp_flags = ICUConfig::new()
             .cppflags()
             .with_context(|| "could not prepare bindgen builder")?;
         let builder = builder.clang_arg(cpp_flags);
+        let builder = builder.detect_include_paths(true);
 
         let bindings = builder
             .generate()
@@ -421,19 +449,14 @@ macro_rules! versioned_function {{
     pub fn icu_config_autodetect() -> Result<()> {
         println!("icu-version: {}", ICUConfig::new().version()?);
         println!("icu-cppflags: {}", ICUConfig::new().cppflags()?);
+        println!("icu-ldflags: {}", ICUConfig::new().ldflags()?);
         println!("icu-has-renaming: {}", has_renaming()?);
 
         // The path to the directory where cargo will add the output artifacts.
         let out_dir = env::var("OUT_DIR").unwrap();
         let out_dir_path = Path::new(&out_dir);
 
-        // The path where all unicode headers can be found.
-        let include_dir_path = Path::new(&ICUConfig::new().prefix()?)
-            .join("include")
-            .join("unicode");
-
-        let header_file =
-            generate_wrapper_header(&out_dir_path, &BINDGEN_SOURCE_MODULES, &include_dir_path);
+        let header_file = generate_wrapper_header(&out_dir_path, &BINDGEN_SOURCE_MODULES);
         run_bindgen(&header_file, out_dir_path).with_context(|| "while running bindgen")?;
         run_renamegen(out_dir_path).with_context(|| "while running renamegen")?;
 
