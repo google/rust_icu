@@ -207,15 +207,6 @@ mod inner {
             self.prefix()
         }
 
-        /// Returns all the include directories as reported by the C++ flags.
-        fn include_dirs(&mut self) -> Result<Vec<String>> {
-            Ok(self.cppflags()?.split(" ")
-                .filter(|p| p.starts_with("-I"))
-                .map(|p| &p[2..])
-                .map(|s| s.to_string())
-                .collect())
-        }
-
         /// Returns the config major number.  For example, will return "64" for
         /// version "64.2"
         fn version_major() -> Result<String> {
@@ -243,7 +234,8 @@ mod inner {
     /// Generates a wrapper header that includes all headers of interest for binding.
     ///
     /// This is the recommended way to bind complex libraries at the moment.  Returns
-    /// the full path of the generated wrapper header file.
+    /// the relative path of the generated wrapper header file with respect to some
+    /// path from the include dir path (`-I`).
     fn generate_wrapper_header(out_dir_path: &Path, bindgen_source_modules: &[&str]) -> String {
         let wrapper_path = out_dir_path.join("wrapper.h");
         let mut wrapper_file = File::create(&wrapper_path).unwrap();
@@ -256,25 +248,16 @@ mod inner {
                 .as_bytes(),
             )
             .unwrap();
-        let include_dirs = ICUConfig::new().include_dirs().unwrap();
         let includes = bindgen_source_modules
             .iter()
             .copied()
             .map(|f| {
-                // bindgen requires a full path to the include, so we need to
-                // search through include paths manually and add the files
-                // here.
-                for include_dir in include_dirs.iter() {
-                    let include_path = std::path::PathBuf::from(include_dir)
-                        .join("unicode")
-                        .join(format!("{}.h", f));
-                    if include_path.exists() {
-                        return include_path.to_str().unwrap().to_string();
-                    } else {
-                        println!("does not exist: {:?}", include_path);
-                    }
-                }
-                f.to_string()
+                std::path::PathBuf::new()
+                    .join("unicode")
+                    .join(format!("{}.h", f))
+                    .to_str()
+                    .unwrap()
+                    .to_string()
             })
             .map(|f| {
                 let file_path_str = format!("#include \"{}\"\n", f);
