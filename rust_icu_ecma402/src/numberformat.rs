@@ -36,7 +36,7 @@ pub(crate) mod internal {
     /// The conversion may fail if the options are malformed, for example request currency
     /// formatting but do not have a currency defined.
     ///
-    /// [skel]: https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md
+    /// [skel]: https://github.com/unicode-org/icu/blob/%6d%61%73%74%65%72/docs/userguide/format_parse/numbers/skeletons.md
     pub fn skeleton_from(opts: &numberformat::Options) -> Result<String, common::Error> {
         let mut skel: Vec<String> = vec![];
         if let Some(ref c) = opts.compact_display {

@@ -338,7 +338,7 @@ These are the assumptions made in the making of this library:
 ## ICU installation instructions
 
 These instructions follow the "out-of-tree" build instructions from
-[the ICU repository](https://github.com/unicode-org/icu/blob/master/icu4c/readme.html).
+[the ICU repository](https://github.com/unicode-org/icu/blob/%6d%61%73%74%65%72/icu4c/readme.html).
 
 ### Assumptions
 
