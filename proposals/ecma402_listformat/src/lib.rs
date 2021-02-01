@@ -532,7 +532,7 @@ pub mod listformat {
         ///
         /// This makes it unnecessary for [Format] to implement its own, and can
         /// completely avoid constructing any intermediary representation.  This, in turn,
-        /// allows the user to provide a purpose built formatter, or an "exotic" one if needed.
+        /// allows the user to provide a purpose built formatter, or a custom one if needed.
         ///
         /// A purpose built formatter could be one that formats into a fixed-size buffer; or
         /// another that knows how to format strings into a DOM.  If ECMA 402 compatibility is

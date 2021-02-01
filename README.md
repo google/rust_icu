@@ -4,7 +4,7 @@ Item       | Description
 ---------- | -----------
 ICU 63..68 | [![Test status](https://github.com/google/rust_icu/workflows/Test/badge.svg)](https://github.com/google/rust_icu/workflows/Test/badge.svg)
 Source     | https://github.com/google/rust_icu
-README     | https://github.com/google/rust_icu/blob/master/README.md
+README     | https://github.com/google/rust_icu/blob/main/README.md
 Coverage   | [View report](/coverage/report.md)
 Docs       | https://docs.rs/crate/rust_icu
 
@@ -123,7 +123,7 @@ development environment will use the same settings, we opted to offer certain
 features (below) as configuration options.
 
 While our intention is to keep the list of features below up to date with the
-[actual list in `Cargo.toml`](https://github.com/google/rust_icu/blob/master/Cargo.toml),
+[actual list in `Cargo.toml`](https://github.com/google/rust_icu/blob/main/Cargo.toml),
 the list may periodically go out of date.
 
 To use any of the features, you will need to activate the feature in *all* the
