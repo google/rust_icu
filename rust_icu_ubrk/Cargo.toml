@@ -77,4 +77,4 @@ icu_version_68_plus = [
 is-it-maintained-issue-resolution = { repository = "google/rust_icu" }
 is-it-maintained-open-issues = { repository = "google/rust_icu" }
 maintenance = { status = "actively-developed" }
-travis-ci = { repository = "google/rust_icu", branch = "master" }
+travis-ci = { repository = "google/rust_icu", branch = "main" }

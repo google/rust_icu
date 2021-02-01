@@ -61,7 +61,7 @@ to the build environments.
 5. Release a buildenv tag:
 
    ```
-   git pull --rebase origin master  # Ensure that this commit is pushed.
+   git pull --rebase origin main  # Ensure that this commit is pushed.
    git tag -a buildenv-0.0.5  # Replace 0.0.5 with the version you intend to release.
    make buildenv # Build and push the container; requires push access to the repo.
    git push origin --tags  # Pushes the tag to the rust_icu repository
@@ -76,7 +76,7 @@ to the build environments.
 
 ## Prerequisites
 
-* A clean git repository; that is, a repo on a master branch that has no unpushed commits, 
+* A clean git repository; that is, a repo on a main branch that has no unpushed commits, 
   and no other staged or unstaged changes.
 
 * Write permission to publish the crates on `crates.io`.
@@ -102,7 +102,7 @@ the new version will be `0.0.5`.
    ```
 
    The above command will generate changes to the library that need to be committed
-   to master.  Create a PR to do so and commit.
+   to main.  Create a PR to do so and commit.
 
 4. Publish the result to `crates.io`:
 
