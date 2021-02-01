@@ -10,7 +10,7 @@
 //! [ECMA-402 API][ecma402api].
 //!
 //!   [ecma402api]: https://www.ecma-international.org/publications/standards/Ecma-402.htm
-//!   [meta1]: https://github.com/unicode-org/icu4x/blob/master/proposals/pr001-ecma402.md
+//!   [meta1]: https://github.com/unicode-org/icu4x/blob/%6d%61%73%74%65%72/proposals/pr001-ecma402.md
 //!
 //! ## A note about presentation
 //!
@@ -36,7 +36,7 @@
 //! API family, while in general it is very similar to all other functions in the [`Intl`
 //! library][intl].
 //!
-//!   [meta1approach]: https://github.com/unicode-org/icu4x/blob/master/proposals/pr001-ecma402.md#approach
+//!   [meta1approach]: https://github.com/unicode-org/icu4x/blob/%6d%61%73%74%65%72/proposals/pr001-ecma402.md#approach
 //!   [listformat]:
 //!   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat
 //!   [intl]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl

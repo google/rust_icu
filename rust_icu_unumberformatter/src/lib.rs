@@ -125,7 +125,7 @@ impl UNumberFormatter {
     /// Implements `unumf_openForSkeletonAndLocaleWithError`. Since 0.3.1.
     /// Implements `unumf_openForSkeletonAndLocale`. Since 0.3.1.
     ///
-    /// [skel]: https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md
+    /// [skel]: https://github.com/unicode-org/icu/blob/%6d%61%73%74%65%72/docs/userguide/format_parse/numbers/skeletons.md
     pub fn try_new(skeleton: &str, locale: &str) -> Result<UNumberFormatter, common::Error> {
         let locale = uloc::ULoc::try_from(locale)?;
         let skeleton = ustring::UChar::try_from(skeleton)?;

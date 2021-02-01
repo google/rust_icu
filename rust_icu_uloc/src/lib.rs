@@ -254,7 +254,7 @@ impl ULoc {
 }
 
 /// This implementation is based on ULocale.compareTo from ICU4J.
-/// See https://github.com/unicode-org/icu/blob/master/icu4j/main/classes/core/src/com/ibm/icu/util/ULocale.java
+/// See https://github.com/unicode-org/icu/blob/%6d%61%73%74%65%72/icu4j/main/classes/core/src/com/ibm/icu/util/ULocale.java
 impl Ord for ULoc {
     fn cmp(&self, other: &Self) -> Ordering {
         /// Compare corresponding keywords from two `ULoc`s. If the keywords match, compare the
