@@ -18,6 +18,7 @@ ecma402_traits = { path = "../ecma402_traits", version = "0.2.0" }
 log = "0.4.6"
 paste = "1.0"
 rust_icu_common = { path = "../rust_icu_common", version = "0.4.1", default-features = false }
+rust_icu_udat = { path = "../rust_icu_udat", version = "0.4.1", default-features = false }
 rust_icu_sys = { path = "../rust_icu_sys", version = "0.4.1", default-features = false }
 rust_icu_uloc = { path = "../rust_icu_uloc", version = "0.4.1", default-features = false }
 rust_icu_ustring = { path = "../rust_icu_ustring", version = "0.4.1", default-features = false }

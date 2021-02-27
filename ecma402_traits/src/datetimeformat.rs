@@ -273,9 +273,7 @@ pub trait DateTimeFormat {
     /// The `date` holds the number of seconds (with fractional part) since the beginning of the
     /// Unix epoch.  The date is a very generic type because there is no official date-time type
     /// in Rust.
-    fn format<I, D, W>(&self, date: D, writer: &mut W) -> fmt::Result
+    fn format<W>(&self, date: f64, writer: &mut W) -> fmt::Result
     where
-        I: fmt::Display,
-        D: AsRef<f64>,
         W: fmt::Write;
 }
