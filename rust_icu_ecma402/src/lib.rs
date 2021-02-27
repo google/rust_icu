@@ -29,6 +29,11 @@ pub mod pluralrules;
 /// [link]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat
 pub mod numberformat;
 
+/// Implements ECMA-402 [`Intl.DateTimeFormat`][link].
+///
+/// [link]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
+pub mod datetimeformat;
+
 pub enum Locale {
     FromULoc(ULoc),
 }
