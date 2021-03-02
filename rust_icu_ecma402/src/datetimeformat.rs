@@ -33,6 +33,7 @@ pub(crate) mod internal {
     use rust_icu_ustring as ustring;
     use std::convert::TryFrom;
 
+    // TODO: implement this conversion completely.
     pub fn opt_to_pattern(_opts: DateTimeFormatOptions) -> Result<ustring::UChar, common::Error> {
         ustring::UChar::try_from("YYYY")
     }
