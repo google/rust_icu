@@ -940,4 +940,14 @@ mod tests {
         assert_eq!(ULoc::for_language_tag("en-t-it-u-tz-usnyc-nu-arabic-x-foo")?, loc);
         Ok(())
     }
+
+    #[test]
+    fn test_uloc_mut_add_unicode_extension() -> Result<(), Error> {
+        let loc = ULoc::for_language_tag("en-t-it-x-foo")?;
+        let mut loc_mut = ULocMut::from(loc);
+        loc_mut.set_unicode_keyvalue("tz", "usnyc");
+        let loc = ULoc::from(loc_mut);
+        assert_eq!(ULoc::for_language_tag("en-t-it-u-tz-usnyc-x-foo")?, loc);
+        Ok(())
+    }
 }
