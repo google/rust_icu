@@ -10,7 +10,8 @@ readonly __all_dirs="$(ls -d rust_icu_*)"
 
 env
 
-cargo install bindgen rustfmt
+# --force is needed to override the currently installed versions.
+cargo install --force bindgen rustfmt
 
 function run_cargo_test() {
   env LD_LIBRARY_PATH="/usr/local/lib" cargo test ${CARGO_TEST_ARGS}
