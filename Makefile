@@ -23,7 +23,7 @@ endif
 #   make USED_BUILDENV_VERSION=whatever-you-want docker-test
 #
 # NOTE: This version number is completely independent of the crate version.
-USED_BUILDENV_VERSION ?= 1.4.0
+USED_BUILDENV_VERSION ?= 1.4.2
 
 CARGO_FEATURE_VERSION :=
 
@@ -55,7 +55,7 @@ CARGO_TARGET_DIR := ${TMP}/rust_icu-${LOGNAME}-target
 # Pass different values for DOCKER_TEST_ENV and DOCKER_TEST_CARGO_TEST_ARGS to
 # test different configurations.  This is useful in Travis CI matrix tests, for
 # example.
-RUST_ICU_MAJOR_VERSION_NUMBER ?= 68
+RUST_ICU_MAJOR_VERSION_NUMBER ?= 69
 DOCKER_TEST_ENV ?= rust_icu_testenv-${RUST_ICU_MAJOR_VERSION_NUMBER}
 DOCKER_TEST_CARGO_TEST_ARGS ?=
 docker-test:
@@ -92,13 +92,10 @@ static-bindgen-%:
 			  "-c" "env OUTPUT_DIR=./rust_icu/rust_icu_sys/bindgen \
 			  ./rust_icu/rust_icu_sys/bindgen/run_bindgen.sh"
 
+# Keep only the latest version of the library in the static-bindgen target,
+# and any versions that do not have a lib.rs in rust_icu_sys/bindgen.
 static-bindgen: \
-		static-bindgen-68 \
-		static-bindgen-67 \
-		static-bindgen-66 \
-		static-bindgen-65 \
-		static-bindgen-64 \
-		static-bindgen-63
+    static-bindgen-69
 .PHONY: static-bindgen
 
 # Builds and pushes the build environment containers.  You would not normally
@@ -115,70 +112,70 @@ clean:
 # The sleep call is needed because we've observed that crates are sometimes
 # not found by cargo immediately after a publish.  Sleeping on this is bad,
 # but there doesn't seem to be a much better option available.
-define publish
+define publishfn
 	( cd $(1) && cargo publish && sleep 30)
 endef
 
 # This is not the best method, since it will error out if a crate has already
 # been published.
-.PHONY: publish
 publish:
-	$(call publish,rust_icu_sys)
-	$(call publish,rust_icu_common)
-	$(call publish,rust_icu_uenum)
-	$(call publish,rust_icu_ustring)
-	$(call publish,rust_icu_utext)
-	$(call publish,rust_icu_uloc)
-	$(call publish,rust_icu_ucal)
-	$(call publish,rust_icu_udat)
-	$(call publish,rust_icu_udata)
-	$(call publish,rust_icu_ucol)
-	$(call publish,rust_icu_umsg)
-	$(call publish,rust_icu_ulistformatter)
-	$(call publish,rust_icu_upluralrules)
-	$(call publish,rust_icu_uformattable)
-	$(call publish,rust_icu_unum)
-	$(call publish,rust_icu_ubrk)
-	$(call publish,rust_icu_utrans)
-	$(call publish,rust_icu)
-	$(call publish,rust_icu_unumberformatter)
-	$(call publish,rust_icu_ecma402)
+	$(call publishfn,rust_icu_sys)
+	$(call publishfn,rust_icu_common)
+	$(call publishfn,rust_icu_uenum)
+	$(call publishfn,rust_icu_ustring)
+	$(call publishfn,rust_icu_utext)
+	$(call publishfn,rust_icu_uloc)
+	$(call publishfn,rust_icu_ucal)
+	$(call publishfn,rust_icu_udat)
+	$(call publishfn,rust_icu_udata)
+	$(call publishfn,rust_icu_ucol)
+	$(call publishfn,rust_icu_umsg)
+	$(call publishfn,rust_icu_ulistformatter)
+	$(call publishfn,rust_icu_upluralrules)
+	$(call publishfn,rust_icu_uformattable)
+	$(call publishfn,rust_icu_unum)
+	$(call publishfn,rust_icu_ubrk)
+	$(call publishfn,rust_icu_utrans)
+	$(call publishfn,rust_icu)
+	$(call publishfn,rust_icu_unumberformatter)
+	$(call publishfn,rust_icu_ecma402)
+.PHONY: publish
 
 # A helper to up-rev the cargo crate versions.
 # NOTE: The cargo crate version number is completely independent of the Docker
 # build environment version number.
-UPREV_OLD_VERSION ?= 0.4.1
-UPREV_NEW_VERSION ?= 0.4.2
-define uprev
+UPREV_OLD_VERSION ?= 0.5.0
+UPREV_NEW_VERSION ?= 0.5.1
+define uprevfn
 	( \
 		cd $(1) && \
 		sed -i -e s/${UPREV_OLD_VERSION}/$(UPREV_NEW_VERSION)/g Cargo.toml \
     )
 endef
 
-.PHONY: uprev
 uprev:
-	$(call uprev,rust_icu)
-	$(call uprev,rust_icu_common)
-	$(call uprev,rust_icu_intl)
-	$(call uprev,rust_icu_sys)
-	$(call uprev,rust_icu_ucal)
-	$(call uprev,rust_icu_ucol)
-	$(call uprev,rust_icu_udat)
-	$(call uprev,rust_icu_udata)
-	$(call uprev,rust_icu_uenum)
-	$(call uprev,rust_icu_ulistformatter)
-	$(call uprev,rust_icu_uloc)
-	$(call uprev,rust_icu_umsg)
-	$(call uprev,rust_icu_upluralrules)
-	$(call uprev,rust_icu_ustring)
-	$(call uprev,rust_icu_utext)
-	$(call uprev,rust_icu_uformattable)
-	$(call uprev,rust_icu_unum)
-	$(call uprev,rust_icu_unumberformatter)
-	$(call uprev,rust_icu_ubrk)
-	$(call uprev,rust_icu_utrans)
-	$(call uprev,rust_icu_ecma402)
+	$(call uprevfn,rust_icu)
+	$(call uprevfn,rust_icu_common)
+	$(call uprevfn,rust_icu_intl)
+	$(call uprevfn,rust_icu_sys)
+	$(call uprevfn,rust_icu_ucal)
+	$(call uprevfn,rust_icu_ucol)
+	$(call uprevfn,rust_icu_udat)
+	$(call uprevfn,rust_icu_udata)
+	$(call uprevfn,rust_icu_uenum)
+	$(call uprevfn,rust_icu_ulistformatter)
+	$(call uprevfn,rust_icu_uloc)
+	$(call uprevfn,rust_icu_umsg)
+	$(call uprevfn,rust_icu_upluralrules)
+	$(call uprevfn,rust_icu_ustring)
+	$(call uprevfn,rust_icu_utext)
+	$(call uprevfn,rust_icu_uformattable)
+	$(call uprevfn,rust_icu_unum)
+	$(call uprevfn,rust_icu_unumberformatter)
+	$(call uprevfn,rust_icu_ubrk)
+	$(call uprevfn,rust_icu_utrans)
+	$(call uprevfn,rust_icu_ecma402)
+.PHONY: uprev
 
 cov:
 	./build/showprogress.sh
