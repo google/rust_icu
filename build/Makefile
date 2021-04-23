@@ -1,5 +1,4 @@
 # Uses version tag of the form buildenv-0.0.0.
-#
 RAW_VERSION := $(shell git describe --dirty --tags --match="buildenv-*")
 VERSION ?= $(RAW_VERSION:buildenv-%=%)
 
@@ -36,6 +35,8 @@ push-%: tag-%
 
 all: \
 	push-buildenv \
+	push-maint-69 \
+	push-testenv-69 \
 	push-maint-68 \
 	push-testenv-68 \
 	push-maint-67 \
