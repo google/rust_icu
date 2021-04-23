@@ -115,7 +115,7 @@ mod testing {
             array: Vec<&'static str>,
             opts: listformat::Options,
             expected: &'static str,
-        };
+        }
         let tests = vec![
             TestCase {
                 locale: "en-US",

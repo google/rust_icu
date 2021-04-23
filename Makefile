@@ -175,6 +175,7 @@ uprev:
 	$(call uprevfn,rust_icu_ubrk)
 	$(call uprevfn,rust_icu_utrans)
 	$(call uprevfn,rust_icu_ecma402)
+	$(call uprevfn,ecma402_traits)
 .PHONY: uprev
 
 cov:

@@ -335,7 +335,7 @@ mod tests {
             date: sys::UDate,
             expected: &'static str,
             calendar: Option<ucal::UCalendar>,
-        };
+        }
         let tests = vec![
             Test {
                 name: "French default",
@@ -465,7 +465,7 @@ mod tests {
             date: sys::UDate,
             pattern: &'static str,
             expected: &'static str,
-        };
+        }
         let tests = vec![
             Test {
                 date: 100.0,
@@ -505,7 +505,7 @@ mod tests {
             input: &'static str,
             pattern: &'static str,
             expected: sys::UDate,
-        };
+        }
         let tests: Vec<Test> = vec![
             Test {
                 input: "2018-10-30T15:30:00-07:00",

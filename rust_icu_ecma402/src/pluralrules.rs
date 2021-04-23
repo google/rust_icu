@@ -90,7 +90,7 @@ mod testing {
             opts: pluralrules::Options,
             numbers: Vec<f64>,
             expected: Vec<&'static str>,
-        };
+        }
         let tests = vec![
             TestCase {
                 locale: "ar_EG",
