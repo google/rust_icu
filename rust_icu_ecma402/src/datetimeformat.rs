@@ -68,7 +68,7 @@ impl ecma402_traits::datetimeformat::DateTimeFormat for DateTimeFormat {
     ///
     /// The function implements [`Intl.DateTimeFormat`][link1] from [ECMA 402][ecma].  The `date`
     /// is expressed in possibly fractional seconds since the Unix Epoch.  The formatting time zone
-    /// and calendar are taken from the locale that was passed into [DateTimeFormat::try_new].
+    /// and calendar are taken from the locale that was passed into `DateTimeFormat::try_new`.
     ///
     ///    [link1]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat
     ///    [ecma]: https://www.ecma-international.org/publications/standards/Ecma-402.htm
@@ -97,7 +97,7 @@ mod testing {
             opts: DateTimeFormatOptions,
             dates: Vec<usys::UDate>,
             expected: Vec<&'static str>,
-        };
+        }
         let tests = vec![TestCase {
             locale: "sr_RS-u-tz-uslax",
             opts: Default::default(),
