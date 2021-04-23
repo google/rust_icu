@@ -1,12 +1,12 @@
 # rust_icu: low-level rust language bindings for the ICU library
 
-Item       | Description
----------- | -----------
-ICU 63..68 | [![Test status](https://github.com/google/rust_icu/workflows/Test/badge.svg)](https://github.com/google/rust_icu/workflows/Test/badge.svg)
-Source     | https://github.com/google/rust_icu
-README     | https://github.com/google/rust_icu/blob/main/README.md
-Coverage   | [View report](/coverage/report.md)
-Docs       | https://docs.rs/crate/rust_icu
+Item           | Description
+-------------- | -----------
+ICU 63, 67..69 | [![Test status](https://github.com/google/rust_icu/workflows/Test/badge.svg)](https://github.com/google/rust_icu/workflows/Test/badge.svg)
+Source         | https://github.com/google/rust_icu
+README         | https://github.com/google/rust_icu/blob/main/README.md
+Coverage       | [View report](/coverage/report.md)
+Docs           | https://docs.rs/crate/rust_icu
 
 This is a library of low level native rust language bindings for the
 International Components for Unicode (ICU) library for C (a.k.a. ICU4C).
@@ -100,15 +100,20 @@ The limitations we know of today are as follows:
 
 # Compatibility
 
-Up to 3 minor releases of `rust_icu` are tested for each major release, and
-automated tests are executed for all ICU library versions of interest, in all
-feature combinations of interest.
+The compatibility guarantee is as follows:
 
-`rust_icu` version   | ICU 63.x | ICU 64.2 | ICU 65.1 | ICU 66.0.1 | ICU 67.1 | ICU 68.1
------------------- | -------- | -------- | -------- | ---------- | -------- | --------
-0.2                |    ✅    |    ✅    |    ✅    |    ✅      |    ✅    |    ✅
-0.3                |    ✅    |    ✅    |    ✅    |    ✅      |    ✅    |    ✅
-0.4                |    ✅    |    ✅    |    ✅    |    ✅      |    ✅    |    ✅
+1. Up to 3 minor releases of `rust_icu` are tested for each major release
+2. Automated tests are executed for last three major ICU library versions in all
+   feature combinations of interest.
+3. Automated tests are executed for the ICU library version in use by the docs.rs
+   system (so the documentation could be built).
+
+`rust_icu` version   | ICU 63.x | ICU 64.2 | ICU 65.1 | ICU 66.0.1 | ICU 67.1 | ICU 68.1 | ICU 69.1
+-------------------- | -------- | -------- | -------- | ---------- | -------- | -------- | --------
+0.2                  |    ✅    |    ✅    |    ✅    |    ✅      |    ✅    |    ✅    | 
+0.3                  |    ✅    |    ✅    |    ✅    |    ✅      |    ✅    |    ✅    |
+0.4                  |    ✅    |    ✅    |    ✅    |    ✅      |    ✅    |    ✅    |
+0.5                  |    ✅    |          |          |            |    ✅    |    ✅    |    ✅    
 
 > Prior to a 1.0.0 release, API versions that only differ in the patch version
 > number (0.x.**y**) only should be compatible.
