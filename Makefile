@@ -95,6 +95,9 @@ static-bindgen-%:
 # Keep only the latest version of the library in the static-bindgen target,
 # and any versions that do not have a lib.rs in rust_icu_sys/bindgen.
 static-bindgen: \
+    static-bindgen-63 \
+    static-bindgen-67 \
+    static-bindgen-68 \
     static-bindgen-69
 .PHONY: static-bindgen
 

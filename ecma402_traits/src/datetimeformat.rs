@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::num;
+
 /// Contains the API configuration as prescribed by ECMA 402.
 ///
 /// The meaning of the options is the same as in the similarly named
@@ -20,6 +22,8 @@
 /// See [DateTimeFormatOptions] for the contents of the options.  See the [DateTimeFormat::try_new]
 /// for the use of the options.
 pub mod options {
+    use std::fmt;
+
     /// The date and time formatting options.
     #[derive(Eq, PartialEq, Debug, Clone)]
     pub enum Style {
@@ -131,6 +135,17 @@ pub mod options {
         H24,
     }
 
+    impl fmt::Display for HourCycle {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            match self {
+                HourCycle::H11 => write!(f, "h11"),
+                HourCycle::H12 => write!(f, "h12"),
+                HourCycle::H23 => write!(f, "h23"),
+                HourCycle::H24 => write!(f, "h24"),
+            }
+        }
+    }
+
     #[derive(Eq, PartialEq, Debug, Clone)]
     pub enum Weekday {
         /// "Thursday"
@@ -186,12 +201,16 @@ pub mod options {
 #[derive(Eq, PartialEq, Debug, Clone)]
 pub struct DateTimeFormatOptions {
     /// The formatting style to use for formatting the date part.
-    pub date_style: options::Style,
+    /// If `date_style` or `time_style` are set, none of the other options
+    /// are acceptable.
+    pub date_style: Option<options::Style>,
     /// The formatting style to use for formatting the time part.
-    pub time_style: options::Style,
+    /// If `date_style` or `time_style` are set, none of the other options
+    /// are acceptable.
+    pub time_style: Option<options::Style>,
     /// The number of fractional seconds to apply when calling `format`.
-    /// Valid values are 0 to 3.
-    pub fractional_second_digits: u8,
+    /// Valid values are 1 to 3.
+    pub fractional_second_digits: Option<num::NonZeroU8>,
     /// If left unspecified, the locale default is used.
     pub calendar: Option<options::Calendar>,
     /// If left unspecified, the locale default is used.
@@ -225,9 +244,9 @@ pub struct DateTimeFormatOptions {
 impl Default for DateTimeFormatOptions {
     fn default() -> Self {
         Self {
-            date_style: options::Style::Long,
-            time_style: options::Style::Long,
-            fractional_second_digits: 2,
+            date_style: None,
+            time_style: None,
+            fractional_second_digits: None,
             day_period: None,
             numbering_system: None,
             calendar: None,
