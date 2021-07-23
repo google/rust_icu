@@ -133,6 +133,35 @@ impl UCollator {
         UCollator::to_rust_ordering(result)
     }
 
+    /// Get a sort key for a string from this collator.
+    ///
+    /// Returns a sort key.
+    ///
+    /// Implements `ucol_getSortKey`
+    pub fn get_sort_key(&self, source: &ustring::UChar) -> Vec<u8> {
+        // Preflight to see how long the buffer should be.
+        let result_length: i32 = unsafe {
+            versioned_function!(ucol_getSortKey)(
+                self.rep.as_ptr(),
+                source.as_c_ptr(),
+                source.len() as i32,
+                std::ptr::null_mut(),
+                0,
+            )
+        };
+        let mut result: Vec<u8> = vec![0; result_length as usize];
+        unsafe {
+            versioned_function!(ucol_getSortKey)(
+                self.rep.as_ptr(),
+                source.as_c_ptr(),
+                source.len() as i32,
+                result.as_mut_ptr(),
+                result.len() as i32,
+            )
+        };
+        result
+    }
+
     /// Compares strings `first` and `second` according to the collation rules in this collator.
     ///
     /// Returns [Ordering::Less] if `first` compares as less than `second`, and for other return
@@ -257,6 +286,23 @@ mod tests {
             let first = ustring::UChar::try_from(*a).expect("first");
             let second = ustring::UChar::try_from(*b).expect("second");
             collator.strcoll(&first, &second)
+        });
+
+        let alphabet = vec!["a", "b", "c", "č", "ć", "d", "dž", "đ"];
+        assert_eq!(alphabet, mixed_up);
+        Ok(())
+    }
+
+    #[test]
+    fn get_sort_key_test() -> Result<(), common::Error> {
+        let collator = crate::UCollator::try_from("sr-Latn")?;
+        let mut mixed_up = vec!["d", "dž", "đ", "a", "b", "c", "č", "ć"];
+        mixed_up.sort_by(|a, b| {
+            let first = ustring::UChar::try_from(*a).expect("first");
+            let second = ustring::UChar::try_from(*b).expect("second");
+            let first_key = collator.get_sort_key(&first);
+            let second_key = collator.get_sort_key(&second);
+            first_key.cmp(&second_key)
         });
 
         let alphabet = vec!["a", "b", "c", "č", "ć", "d", "dž", "đ"];
