@@ -12,7 +12,6 @@ Native bindings to the ICU4C library from Unicode.
 
 Commonly used types.
 """
-default-features = false
 
 keywords = ["icu", "unicode", "i18n", "l10n"]
 

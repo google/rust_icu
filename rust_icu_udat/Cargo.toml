@@ -1,5 +1,4 @@
 [package]
-anyhow = "1.0"
 authors = ["Google Inc."]
 build = "build.rs"
 edition = "2018"

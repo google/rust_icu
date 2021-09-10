@@ -1,6 +1,5 @@
 [package]
 authors = ["Google Inc."]
-default-features = false
 edition = "2018"
 keywords = ["icu", "unicode", "i18n", "l10n"]
 license = "Apache-2.0"
