@@ -275,6 +275,9 @@ mod testing {
                 locale: "sr-RS",
                 opts: DateTimeFormatOptions{
                     year:  Some(options::DisplaySize::Numeric),
+                    // If time_zone is unset, this becomes a conversion into the
+                    // "local" time zone, which may make this test brittle.
+                    time_zone: Some("UTC".into()),
                     ..Default::default()
                 },
 
