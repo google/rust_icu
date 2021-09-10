@@ -11,11 +11,16 @@ Docs           | https://docs.rs/crate/rust_icu
 This is a library of low level native rust language bindings for the
 International Components for Unicode (ICU) library for C (a.k.a. ICU4C).
 
-If you just want quick instructions to contribute, see the
-[quickstart guide](https://github.com/google/rust_icu#icu-installation-instructions).
+If you just want quick instructions on how to download and install, see the
+[quickstart guide][qsg]
 
-See: http://icu-project.org for details about the ICU library. The library
-source can be viewed on Github at https://github.com/unicode-org/icu.
+[qsg]: #quickstart-guide
+
+See the [ICU project home page][ipr] for details about the ICU library. The
+library source can be [viewed on Github][uoi].
+
+[ipr]: https://icu-project.org
+[uoi]: https://github.com/unicode-org/icu
 
 The latest version of this file is available at
 https://github.com/google/rust_icu.
@@ -339,6 +344,33 @@ These are the assumptions made in the making of this library:
     what a generated library would look like in rust.
 
 # Additional instructions
+
+## Quickstart guide
+
+Before you begin, please ensure the following prerequisites are met:
+
+* You have [docker][docker] installed and it runs on your system.
+* You have GNU Make.
+* You have [git][git].
+* You have plenty of disk space. The docker images for the build environment
+  are a bit large, so a few GiB are needed to fit all of them.
+* You have an Internet connection.
+
+[docker] https://docs.docker.com/engine/install/
+
+From there, the following sequence of commands will check out, build and test
+the `rust_icu` source code.
+
+```bash
+mkdir -p ~/tmp
+cd tmp
+git clone https://github.com/google/rust_icu
+cd rust_icu
+make docker-test
+```
+
+You can now make changes to the code and tests.  You can re-run the compile and
+test cycle by running `make docker-test`.
 
 ## ICU installation instructions
 
