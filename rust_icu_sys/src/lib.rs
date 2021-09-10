@@ -17,7 +17,8 @@
     non_snake_case,
     non_camel_case_types,
     non_upper_case_globals,
-    unused_imports
+    unused_imports,
+    rustdoc::bare_urls,
 )]
 
 #[cfg(all(feature = "icu_version_in_env", feature = "icu_config"))]
