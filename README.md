@@ -115,10 +115,12 @@ The compatibility guarantee is as follows:
 
 `rust_icu` version   | ICU 63.x | ICU 64.2 | ICU 65.1 | ICU 66.0.1 | ICU 67.1 | ICU 68.1 | ICU 69.1
 -------------------- | -------- | -------- | -------- | ---------- | -------- | -------- | --------
-0.2                  |    ✅    |    ✅    |    ✅    |    ✅      |    ✅    |    ✅    | 
+0.2                  |    ✅    |    ✅    |    ✅    |    ✅      |    ✅    |    ✅    |
 0.3                  |    ✅    |    ✅    |    ✅    |    ✅      |    ✅    |    ✅    |
 0.4                  |    ✅    |    ✅    |    ✅    |    ✅      |    ✅    |    ✅    |
-0.5                  |    ✅    |          |          |            |    ✅    |    ✅    |    ✅    
+0.5                  |    ✅    |          |          |            |    ✅    |    ✅    |    ✅
+---                  |   ---    |    ---   |   ---    |   ---      |   ---    |   ---    |    ✅
+1.0                  |    ✅    |          |          |            |    ✅    |    ✅    |    ✅
 
 > Prior to a 1.0.0 release, API versions that only differ in the patch version
 > number (0.x.**y**) only should be compatible.
