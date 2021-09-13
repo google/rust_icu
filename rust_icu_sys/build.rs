@@ -279,10 +279,6 @@ mod inner {
             })
             // Bindings are pretty much unreadable without rustfmt.
             .rustfmt_bindings(true)
-            // Some comments get recognized as rust doctests, which will fail compilation.
-            // Turning the comments off will remove that error.  We do get left without
-            // documentation, but one should probably use online docs anyways.
-            .generate_comments(false)
             // These attributes are useful to have around for generated types.
             .derive_default(true)
             .derive_hash(true)

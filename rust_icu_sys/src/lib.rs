@@ -23,6 +23,7 @@
     non_camel_case_types,
     non_upper_case_globals,
     unused_imports,
+    rustdoc::bare_urls,
     deref_nullptr,
 )]
 
