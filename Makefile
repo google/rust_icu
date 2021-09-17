@@ -141,6 +141,7 @@ publish:
 	$(call publishfn,rust_icu_utrans)
 	$(call publishfn,rust_icu)
 	$(call publishfn,rust_icu_unumberformatter)
+	$(call publishfn,ecma402_traits)
 	$(call publishfn,rust_icu_ecma402)
 .PHONY: publish
 
@@ -177,8 +178,8 @@ uprev:
 	$(call uprevfn,rust_icu_unumberformatter)
 	$(call uprevfn,rust_icu_ubrk)
 	$(call uprevfn,rust_icu_utrans)
-	$(call uprevfn,rust_icu_ecma402)
 	$(call uprevfn,ecma402_traits)
+	$(call uprevfn,rust_icu_ecma402)
 .PHONY: uprev
 
 cov:
