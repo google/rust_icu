@@ -9,4 +9,5 @@ unumf_openResult
 unumf_resultAsValue
 unumf_resultGetAllFieldPositions
 unumf_resultNextFieldPosition
+unumf_resultToDecimalNumber
 unumf_resultToString

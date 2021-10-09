@@ -28,6 +28,7 @@ rust_icu_uenum = { path = "../rust_icu_uenum", version = "1.0.1", default-featur
 rust_icu_ulistformatter = { path = "../rust_icu_ulistformatter", version = "1.0.1", default-features = false }
 rust_icu_uloc = { path = "../rust_icu_uloc", version = "1.0.1", default-features = false }
 rust_icu_umsg = { path = "../rust_icu_umsg", version = "1.0.1", default-features = false }
+rust_icu_unorm2 = { path = "../rust_icu_unorm2", version = "1.0.1", default-features = false }
 rust_icu_ustring = { path = "../rust_icu_ustring", version = "1.0.1", default-features = false }
 rust_icu_utext = { path = "../rust_icu_utext", version = "1.0.1", default-features = false }
 rust_icu_utrans = { path = "../rust_icu_utrans", version = "1.0.1", default-features = false }
@@ -49,6 +50,7 @@ use-bindgen = [
   "rust_icu_ulistformatter/use-bindgen",
   "rust_icu_uloc/use-bindgen",
   "rust_icu_umsg/use-bindgen",
+  "rust_icu_unorm2/use-bindgen",
   "rust_icu_ustring/use-bindgen",
   "rust_icu_utext/use-bindgen",
   "rust_icu_utrans/use-bindgen",
@@ -65,6 +67,7 @@ renaming = [
   "rust_icu_ulistformatter/renaming",
   "rust_icu_uloc/renaming",
   "rust_icu_umsg/renaming",
+  "rust_icu_unorm2/renaming",
   "rust_icu_ustring/renaming",
   "rust_icu_utext/renaming",
   "rust_icu_utrans/renaming",
@@ -81,6 +84,7 @@ icu_config = [
   "rust_icu_ulistformatter/icu_config",
   "rust_icu_uloc/icu_config",
   "rust_icu_umsg/icu_config",
+  "rust_icu_unorm2/icu_config",
   "rust_icu_ustring/icu_config",
   "rust_icu_utext/icu_config",
   "rust_icu_utrans/icu_config",
@@ -97,6 +101,7 @@ icu_version_in_env = [
   "rust_icu_ulistformatter/icu_version_in_env",
   "rust_icu_uloc/icu_version_in_env",
   "rust_icu_umsg/icu_version_in_env",
+  "rust_icu_unorm2/icu_version_in_env",
   "rust_icu_ustring/icu_version_in_env",
   "rust_icu_utext/icu_version_in_env",
   "rust_icu_utrans/icu_version_in_env",
@@ -113,6 +118,7 @@ icu_version_64_plus = [
   "rust_icu_ulistformatter/icu_version_64_plus",
   "rust_icu_uloc/icu_version_64_plus",
   "rust_icu_umsg/icu_version_64_plus",
+  "rust_icu_unorm2/icu_version_64_plus",
   "rust_icu_ustring/icu_version_64_plus",
   "rust_icu_utext/icu_version_64_plus",
   "rust_icu_utrans/icu_version_64_plus",
@@ -129,6 +135,7 @@ icu_version_67_plus = [
   "rust_icu_ulistformatter/icu_version_67_plus",
   "rust_icu_uloc/icu_version_67_plus",
   "rust_icu_umsg/icu_version_67_plus",
+  "rust_icu_unorm2/icu_version_67_plus",
   "rust_icu_ustring/icu_version_67_plus",
   "rust_icu_utext/icu_version_67_plus",
   "rust_icu_utrans/icu_version_67_plus",
@@ -145,6 +152,7 @@ icu_version_68_plus = [
   "rust_icu_ulistformatter/icu_version_68_plus",
   "rust_icu_uloc/icu_version_68_plus",
   "rust_icu_umsg/icu_version_68_plus",
+  "rust_icu_unorm2/icu_version_68_plus",
   "rust_icu_ustring/icu_version_68_plus",
   "rust_icu_utext/icu_version_68_plus",
   "rust_icu_utrans/icu_version_68_plus",

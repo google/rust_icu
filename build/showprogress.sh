@@ -24,6 +24,7 @@ C_API_HEADER_NAMES=(
   "ustring"
   "utext"
   "utrans"
+  "unorm2"
 )
 
 ICU_INCLUDE_PATH="$(icu-config --cppflags-searchpath | sed -e 's/-I//' | sed -e 's/ //g')"

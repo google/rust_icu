@@ -1,4 +1,3 @@
-ubrk_close
 ubrk_countAvailable
 ubrk_current
 ubrk_first

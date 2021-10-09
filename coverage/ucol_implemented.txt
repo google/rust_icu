@@ -1,5 +1,6 @@
 ucol_countAvailable
 ucol_getAvailable
+ucol_getSortKey
 ucol_getStrength
 ucol_openAvailableLocales
 ucol_setStrength
