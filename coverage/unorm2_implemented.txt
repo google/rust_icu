@@ -1,3 +1,4 @@
+unorm2_close
 unorm2_composePair
 unorm2_getNFCInstance
 unorm2_getNFDInstance
