@@ -143,6 +143,7 @@ publish:
 	$(call publishfn,rust_icu_unumberformatter)
 	$(call publishfn,rust_icu_ecma402)
 	$(call publishfn,rust_icu_unorm2)
+	$(call publishfn,rust_icu_uchar)
 .PHONY: publish
 
 # A helper to up-rev the cargo crate versions.
@@ -181,6 +182,7 @@ uprev:
 	$(call uprevfn,rust_icu_ecma402)
 	$(call uprevfn,ecma402_traits)
 	$(call uprevfn,rust_icu_unorm2)
+	$(call uprevfn,uchar)
 .PHONY: uprev
 
 cov:

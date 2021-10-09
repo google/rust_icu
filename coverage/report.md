@@ -18,7 +18,7 @@
 | `ustring.h` | 3 / 61 | 
 | `utext.h` | 3 / 28 | 
 | `utrans.h` | 10 / 20 | 
-| `unorm2.h` | 7 / 22 | 
+| `unorm2.h` | 8 / 22 | 
 # Unimplemented functions per header
 
 
@@ -545,6 +545,7 @@
 
 | Unimplemented | Implemented |
 | ------------- | ----------- |
+| | `unorm2_close` |
 | | `unorm2_composePair` |
 | | `unorm2_getNFCInstance` |
 | | `unorm2_getNFDInstance` |
@@ -553,7 +554,6 @@
 | | `unorm2_getNFKDInstance` |
 | | `unorm2_normalize` |
 | `unorm2_append` | |
-| `unorm2_close` | |
 | `unorm2_getCombiningClass` | |
 | `unorm2_getDecomposition` | |
 | `unorm2_getInstance` | |
