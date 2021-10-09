@@ -1,0 +1,7 @@
+unorm2_composePair
+unorm2_getNFCInstance
+unorm2_getNFDInstance
+unorm2_getNFKCCasefoldInstance
+unorm2_getNFKCInstance
+unorm2_getNFKDInstance
+unorm2_normalize

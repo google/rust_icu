@@ -4,6 +4,7 @@ uloc_acceptLanguage
 uloc_addLikelySubtags
 uloc_canonicalize
 uloc_forLanguageTag
+uloc_getBaseName
 uloc_getCountry
 uloc_getDefault
 uloc_getKeywordValue()

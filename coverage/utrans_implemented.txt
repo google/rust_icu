@@ -1,5 +1,4 @@
 utrans_clone
-utrans_close
 utrans_getUnicodeID
 utrans_openIDs
 utrans_openInverse

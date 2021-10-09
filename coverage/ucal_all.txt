@@ -23,6 +23,7 @@ ucal_getNow
 ucal_getTimeZoneDisplayName
 ucal_getTimeZoneID
 ucal_getTimeZoneIDForWindowsID
+ucal_getTimeZoneOffsetFromLocal
 ucal_getTimeZoneTransitionDate
 ucal_getType
 ucal_getTZDataVersion

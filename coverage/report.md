@@ -2,22 +2,23 @@
 
 | Header | Implemented |
 | ------ | ----------- |
-| `ubrk.h` | 20 / 22 | 
-| `ucal.h` | 15 / 46 | 
-| `ucol.h` | 7 / 50 | 
-| `udat.h` | 6 / 38 | 
+| `ubrk.h` | 19 / 23 | 
+| `ucal.h` | 15 / 47 | 
+| `ucol.h` | 8 / 50 | 
+| `udat.h` | 10 / 38 | 
 | `udata.h` | 2 / 8 | 
 | `uenum.h` | 8 / 8 | 
 | `uformattable.h` | 7 / 13 | 
 | `ulistformatter.h` | 2 / 8 | 
-| `uloc.h` | 19 / 42 | 
+| `uloc.h` | 20 / 42 | 
 | `umsg.h` | 6 / 20 | 
 | `unum.h` | 15 / 31 | 
-| `unumberformatter.h` | 8 / 12 | 
-| `upluralrules.h` | 3 / 7 | 
+| `unumberformatter.h` | 8 / 13 | 
+| `upluralrules.h` | 3 / 8 | 
 | `ustring.h` | 3 / 61 | 
 | `utext.h` | 3 / 28 | 
-| `utrans.h` | 11 / 20 | 
+| `utrans.h` | 10 / 20 | 
+| `unorm2.h` | 7 / 22 | 
 # Unimplemented functions per header
 
 
@@ -25,7 +26,6 @@
 
 | Unimplemented | Implemented |
 | ------------- | ----------- |
-| | `ubrk_close` |
 | | `ubrk_countAvailable` |
 | | `ubrk_current` |
 | | `ubrk_first` |
@@ -45,6 +45,8 @@
 | | `ubrk_previous` |
 | | `ubrk_safeClone` |
 | | `ubrk_setText` |
+| `ubrk_clone` | |
+| `ubrk_close` | |
 | `ubrk_refreshUText` | |
 | `ubrk_setUText` | |
 
@@ -87,6 +89,7 @@
 | `ucal_getTimeZoneDisplayName` | |
 | `ucal_getTimeZoneID` | |
 | `ucal_getTimeZoneIDForWindowsID` | |
+| `ucal_getTimeZoneOffsetFromLocal` | |
 | `ucal_getTimeZoneTransitionDate` | |
 | `ucal_getType` | |
 | `ucal_getWeekendTransition` | |
@@ -105,6 +108,7 @@
 | ------------- | ----------- |
 | | `ucol_countAvailable` |
 | | `ucol_getAvailable` |
+| | `ucol_getSortKey` |
 | | `ucol_getStrength` |
 | | `ucol_openAvailableLocales` |
 | | `ucol_setStrength` |
@@ -130,7 +134,6 @@
 | `ucol_getRules` | |
 | `ucol_getRulesEx` | |
 | `ucol_getShortDefinitionString` | |
-| `ucol_getSortKey` | |
 | `ucol_getTailoredSet` | |
 | `ucol_getUCAVersion` | |
 | `ucol_getUnsafeSet` | |
@@ -160,9 +163,13 @@
 | ------------- | ----------- |
 | | `udat_close` |
 | | `UDateFormat` |
+| | `UDateTimePatternGenerator` |
 | | `udat_format` |
 | | `udat_open` |
 | | `udat_parse` |
+| | `udatpg_clone` |
+| | `udatpg_getBestPattern` |
+| | `udatpg_open` |
 | | `udat_setCalendar` |
 | `udat_adoptNumberFormat` | |
 | `udat_adoptNumberFormatForFields` | |
@@ -272,6 +279,7 @@
 | | `uloc_addLikelySubtags` |
 | | `uloc_canonicalize` |
 | | `uloc_forLanguageTag` |
+| | `uloc_getBaseName` |
 | | `uloc_getCountry` |
 | | `uloc_getDefault` |
 | | `uloc_getKeywordValue()` |
@@ -288,7 +296,6 @@
 | `uloc_acceptLanguageFromHTTP` | |
 | `uloc_countAvailable` | |
 | `uloc_getAvailable` | |
-| `uloc_getBaseName` | |
 | `uloc_getCharacterOrientation` | |
 | `uloc_getDisplayCountry` | |
 | `uloc_getDisplayKeyword` | |
@@ -393,6 +400,7 @@
 | `unumf_formatDouble` | |
 | `unumf_formatInt` | |
 | `unumf_resultAsValue` | |
+| `unumf_resultToDecimalNumber` | |
 
 # Header: `upluralrules.h`
 
@@ -404,6 +412,7 @@
 | `uplrules_close` | |
 | `uplrules_open` | |
 | `uplrules_selectFormatted` | |
+| `uplrules_selectForRange` | |
 | `uplrules_selectWithFormat` | |
 
 # Header: `ustring.h`
@@ -512,7 +521,6 @@
 | Unimplemented | Implemented |
 | ------------- | ----------- |
 | | `utrans_clone` |
-| | `utrans_close` |
 | | `utrans_getUnicodeID` |
 | | `utrans_openIDs` |
 | | `utrans_openInverse` |
@@ -522,6 +530,7 @@
 | | `utrans_toRules` |
 | | `utrans_transUChars` |
 | | `utrans_unregisterID` |
+| `utrans_close` | |
 | `utrans_countAvailableIDs` | |
 | `utrans_getAvailableID` | |
 | `utrans_getID` | |
@@ -531,3 +540,30 @@
 | `utrans_transIncremental` | |
 | `utrans_transIncrementalUChars` | |
 | `utrans_unregister` | |
+
+# Header: `unorm2.h`
+
+| Unimplemented | Implemented |
+| ------------- | ----------- |
+| | `unorm2_composePair` |
+| | `unorm2_getNFCInstance` |
+| | `unorm2_getNFDInstance` |
+| | `unorm2_getNFKCCasefoldInstance` |
+| | `unorm2_getNFKCInstance` |
+| | `unorm2_getNFKDInstance` |
+| | `unorm2_normalize` |
+| `unorm2_append` | |
+| `unorm2_close` | |
+| `unorm2_getCombiningClass` | |
+| `unorm2_getDecomposition` | |
+| `unorm2_getInstance` | |
+| `unorm2_getRawDecomposition` | |
+| `unorm2_hasBoundaryAfter` | |
+| `unorm2_hasBoundaryBefore` | |
+| `unorm2_isInert` | |
+| `unorm2_isNormalized` | |
+| `unorm2_normalizeSecondAndAppend` | |
+| `unorm2_openFiltered` | |
+| `unorm2_quickCheck` | |
+| `unorm2_spanQuickCheckYes` | |
+| `unorm_compare` | |

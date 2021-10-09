@@ -38,6 +38,7 @@
 //! | rust_icu_ulistformatter | icu::listformatter |
 //! | rust_icu_uloc | icu::loc |
 //! | rust_icu_umsg | icu::msg |
+//! | rust_icu_unorm | unorm |
 //! | rust_icu_ustring | icu::string |
 //! | rust_icu_utext | text |
 //! | rust_icu_utrans | trans |
@@ -56,3 +57,4 @@ pub use rust_icu_umsg as msg;
 pub use rust_icu_ustring as string;
 pub use rust_icu_utext as text;
 pub use rust_icu_utrans as trans;
+pub use rust_icu_unorm2 as norm;
