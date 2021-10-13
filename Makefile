@@ -124,7 +124,7 @@ endef
 
 # Everyone's dependency.
 publish-rust_icu_sys:
-	$(call publishfn,rust_icu_sys)
+	#$(call publishfn,rust_icu_sys)
 .PHONY: publish-rust_icu_sys
 
 publish-rust_icu: publish-rust_icu_sys
@@ -197,7 +197,7 @@ uprev:
 	$(call uprevfn,rust_icu_ecma402)
 	$(call uprevfn,ecma402_traits)
 	$(call uprevfn,rust_icu_unorm2)
-	$(call uprevfn,uchar)
+	$(call uprevfn,rust_icu_uchar)
 .PHONY: uprev
 
 cov:
