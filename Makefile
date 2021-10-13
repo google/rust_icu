@@ -119,10 +119,15 @@ define publishfn
 	( cd $(1) && cargo publish && sleep 30)
 endef
 
-# This is not the best method, since it will error out if a crate has already
-# been published.
-publish:
+######################################################################
+## Targets for publishing crates to crates.io
+
+# Everyone's dependency.
+publish-rust_icu_sys:
 	$(call publishfn,rust_icu_sys)
+.PHONY: publish-rust_icu_sys
+
+publish-rust_icu: publish-rust_icu_sys
 	$(call publishfn,rust_icu_common)
 	$(call publishfn,rust_icu_uenum)
 	$(call publishfn,rust_icu_ustring)
@@ -139,11 +144,21 @@ publish:
 	$(call publishfn,rust_icu_unum)
 	$(call publishfn,rust_icu_ubrk)
 	$(call publishfn,rust_icu_utrans)
-	$(call publishfn,rust_icu)
 	$(call publishfn,rust_icu_unumberformatter)
-	$(call publishfn,rust_icu_ecma402)
 	$(call publishfn,rust_icu_unorm2)
 	$(call publishfn,rust_icu_uchar)
+.PHONY: publish-rust_icu
+
+publish-ecma402_traits:
+	$(call publishfn,ecma402_traits)
+.PHONY: publish-ecma402_traits
+
+publish-rust_icu_ecma402: publish-rust_icu publish-ecma402_traits
+	$(call publishfn,rust_icu_ecma402)
+.PHONY: publish-rust_icu_ecma402
+
+publish: publish-rust_icu publish-rust_icu_ecma402
+	$(call publishfn,rust_icu)
 .PHONY: publish
 
 # A helper to up-rev the cargo crate versions.
