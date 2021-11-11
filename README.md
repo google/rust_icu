@@ -359,7 +359,8 @@ Before you begin, please ensure the following prerequisites are met:
   are a bit large, so a few GiB are needed to fit all of them.
 * You have an Internet connection.
 
-[docker] https://docs.docker.com/engine/install/
+[docker]: https://docs.docker.com/engine/install/
+[git]: https://git-scm.com
 
 From there, the following sequence of commands will check out, build and test
 the `rust_icu` source code.
