@@ -37,6 +37,9 @@ icu_version_67_plus = [
 icu_version_68_plus = [
   "rust_icu_sys/icu_version_68_plus",
 ]
+icu_version_69_max = [
+  "rust_icu_sys/icu_version_69_max",
+]
 
 [badges]
 maintenance = { status = "actively-developed" }
