@@ -1,10 +1,12 @@
 # rust_icu_buildenv.
-FROM rust:1.45 AS buildenv
+FROM rust:1.56 AS buildenv
 
 RUN mkdir -p /src
 
 WORKDIR /src
 RUN ls -l && pwd && echo $PATH
+
+RUN rustc --version
 
 RUN apt-get update && apt-get install -y \
 apt-utils \
@@ -21,12 +23,10 @@ strace \
 
 RUN \
 cargo version && \
-rustup toolchain install nightly && \
-rustup default nightly && \
-rustup component add rustfmt --toolchain nightly
+rustup component add rustfmt
 
 RUN \
-cargo install --force bindgen rustfmt
+cargo install --force bindgen
 
 RUN chmod --recursive a+rwx $HOME
 RUN echo $HOME && cd && ls -ld $HOME

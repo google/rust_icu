@@ -2,7 +2,7 @@
 # on source that has been mounted in.
 ARG DOCKER_REPO=filipfilmar
 ARG VERSION=0.0.0
-ARG ICU_VERSION_TAG=maint-64
+ARG ICU_VERSION_TAG=maint-67
 FROM $DOCKER_REPO/rust_icu_$ICU_VERSION_TAG:$VERSION AS buildenv
 ARG DOCKER_REPO
 ARG VERSION
@@ -21,7 +21,7 @@ RUN mkdir -p $RUST_ICU_SOURCE_DIR && \
 COPY entrypoint.sh /entrypoint.sh 
 RUN chmod a+rwx /entrypoint.sh
 
-RUN cargo +nightly install bindgen rustfmt
+RUN cargo install bindgen
 
 ENV CARGO_TEST_ARGS=""
 ENV RUST_ICU_MAJOR_VERSION_NUMBER=""

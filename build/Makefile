@@ -5,7 +5,7 @@ VERSION ?= $(RAW_VERSION:buildenv-%=%)
 # The docker repo should be a more official one.
 DOCKER_REPO ?= filipfilmar
 
-.DEFAULT_GOAL: all
+.DEFAULT: all
 
 build-%: Dockerfile.%
 	docker build \

@@ -98,7 +98,8 @@ static-bindgen: \
     static-bindgen-63 \
     static-bindgen-67 \
     static-bindgen-68 \
-    static-bindgen-69
+    static-bindgen-69 \
+    static-bindgen-70
 .PHONY: static-bindgen
 
 # Builds and pushes the build environment containers.  You would not normally
