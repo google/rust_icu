@@ -33,8 +33,15 @@ tag-%: build-%
 push-%: tag-%
 	docker push ${DOCKER_REPO}/rust_icu_$*:${VERSION}
 
+latest: \
+	push-maint-70 \
+	push-testenv-70
+.PHONY: latest
+
 all: \
 	push-buildenv \
+	push-maint-70 \
+	push-testenv-70 \
 	push-maint-69 \
 	push-testenv-69 \
 	push-maint-68 \
@@ -46,3 +53,4 @@ all: \
 	push-testenv \
 	push-hermetic
 	echo "buildenv-version: ${VERSION}"
+.PHONY: all
