@@ -12,7 +12,7 @@
 #   docker run test
 ARG DOCKER_REPO=filipfilmar
 ARG VERSION=0.0.1
-FROM $DOCKER_REPO/rust_icu_maint-64:$VERSION AS buildenv
+FROM $DOCKER_REPO/rust_icu_maint-67:$VERSION AS buildenv
 ARG DOCKER_REPO
 ARG VERSION
 

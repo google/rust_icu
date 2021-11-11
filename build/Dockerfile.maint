@@ -1,6 +1,6 @@
 ARG DOCKER_REPO=filipfilmar
 ARG VERSION=0.0.0
-ARG ICU_VERSION_TAG=maint/maint-64
+ARG ICU_VERSION_TAG=maint/maint-67
 FROM $DOCKER_REPO/rust_icu_buildenv:$VERSION AS buildenv
 
 # Every FROM declaration clears ARG values; but re-declaring
