@@ -8,6 +8,7 @@ members = [
   "rust_icu_sys",
   "rust_icu_ucal",
   "rust_icu_uchar",
+  "rust_icu_ucnv",
   "rust_icu_ucol",
   "rust_icu_udat",
   "rust_icu_udata",
