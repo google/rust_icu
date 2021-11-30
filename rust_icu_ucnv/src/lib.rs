@@ -23,6 +23,9 @@
 //! name (as a `&str`). This type provides conversion functions between UTF-16 and the
 //! provided encoding.
 //!
+//! This crate also provides [utf8::Converter] as a convenience type to work directly with UTF-8
+//! strings, such as with Rust's `&str` and `String` types.
+//!
 //! For more information on ICU conversion, an interested reader can check out the
 //! [conversion documentation on the ICU user guide](https://unicode-org.github.io/icu/userguide/conversion/).
 //!
@@ -41,6 +44,8 @@ use {
     rust_icu_common as common, rust_icu_sys as sys, rust_icu_sys::versioned_function,
     rust_icu_sys::*,
 };
+
+pub mod utf8;
 
 /// Get an iterator over all canonical converter names available to ICU.
 ///
