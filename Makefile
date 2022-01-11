@@ -125,7 +125,7 @@ endef
 
 # Everyone's dependency.
 publish-rust_icu_sys:
-	#$(call publishfn,rust_icu_sys)
+	$(call publishfn,rust_icu_sys)
 .PHONY: publish-rust_icu_sys
 
 publish-rust_icu: publish-rust_icu_sys
