@@ -148,6 +148,7 @@ publish-rust_icu: publish-rust_icu_sys
 	$(call publishfn,rust_icu_unumberformatter)
 	$(call publishfn,rust_icu_unorm2)
 	$(call publishfn,rust_icu_uchar)
+	$(call publishfn,rust_icu_ucnv)
 .PHONY: publish-rust_icu
 
 publish-ecma402_traits:
@@ -165,8 +166,8 @@ publish: publish-rust_icu publish-rust_icu_ecma402
 # A helper to up-rev the cargo crate versions.
 # NOTE: The cargo crate version number is completely independent of the Docker
 # build environment version number.
-UPREV_OLD_VERSION ?= 1.0.3
-UPREV_NEW_VERSION ?= 1.0.4
+UPREV_OLD_VERSION ?= 2.0.0
+UPREV_NEW_VERSION ?= 2.0.1
 define uprevfn
 	( \
 		cd $(1) && \
@@ -199,6 +200,7 @@ uprev:
 	$(call uprevfn,ecma402_traits)
 	$(call uprevfn,rust_icu_unorm2)
 	$(call uprevfn,rust_icu_uchar)
+	$(call uprevfn,rust_icu_ucnv)
 .PHONY: uprev
 
 cov:
