@@ -166,8 +166,8 @@ publish: publish-rust_icu publish-rust_icu_ecma402
 # A helper to up-rev the cargo crate versions.
 # NOTE: The cargo crate version number is completely independent of the Docker
 # build environment version number.
-UPREV_OLD_VERSION ?= 2.0.0
-UPREV_NEW_VERSION ?= 2.0.1
+UPREV_OLD_VERSION ?= 2.0.1
+UPREV_NEW_VERSION ?= 2.0.2
 define uprevfn
 	( \
 		cd $(1) && \
