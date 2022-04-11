@@ -34,12 +34,14 @@ push-%: tag-%
 	docker push ${DOCKER_REPO}/rust_icu_$*:${VERSION}
 
 latest: \
-	push-maint-70 \
-	push-testenv-70
+	push-maint-71 \
+	push-testenv-71
 .PHONY: latest
 
 all: \
 	push-buildenv \
+	push-maint-71 \
+	push-testenv-71 \
 	push-maint-70 \
 	push-testenv-70 \
 	push-maint-69 \
