@@ -23,7 +23,7 @@ endif
 #   make USED_BUILDENV_VERSION=whatever-you-want docker-test
 #
 # NOTE: This version number is completely independent of the crate version.
-USED_BUILDENV_VERSION ?= 1.4.2
+USED_BUILDENV_VERSION ?= 1.4.3
 
 CARGO_FEATURE_VERSION :=
 
@@ -99,7 +99,8 @@ static-bindgen: \
     static-bindgen-67 \
     static-bindgen-68 \
     static-bindgen-69 \
-    static-bindgen-70
+    static-bindgen-70 \
+    static-bindgen-71
 .PHONY: static-bindgen
 
 # Builds and pushes the build environment containers.  You would not normally
@@ -166,8 +167,8 @@ publish: publish-rust_icu publish-rust_icu_ecma402
 # A helper to up-rev the cargo crate versions.
 # NOTE: The cargo crate version number is completely independent of the Docker
 # build environment version number.
-UPREV_OLD_VERSION ?= 2.0.1
-UPREV_NEW_VERSION ?= 2.0.2
+UPREV_OLD_VERSION ?= 2.0.2
+UPREV_NEW_VERSION ?= 2.0.3
 define uprevfn
 	( \
 		cd $(1) && \
