@@ -216,6 +216,13 @@ impl UCollator {
         unsafe { versioned_function!(ucol_setStrength)(self.rep.as_ptr(), strength) };
     }
 
+    // Implement `ucol_setMaxVariable`
+    generalized_fallible_setter!(
+        set_max_variable,
+        ucol_setMaxVariable,
+        [max_variable: sys::UColReorderCode,]
+    );
+
     // Implement `ucol_setAttribute`
     generalized_fallible_setter!(
         set_attribute,
