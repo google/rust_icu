@@ -84,7 +84,7 @@ macro_rules! buffered_uchar_method_with_retry {
 
             // Requires that any pointers that are passed in are valid.
             let full_len: i32 = unsafe {
-                assert!(common::Error::is_ok(status));
+                assert!(common::Error::is_ok(status), "status: {:?}", status);
                 method_to_call(
                     $($before_arg,)*
                     buf.as_mut_ptr() as *mut sys::UChar,
@@ -101,7 +101,8 @@ macro_rules! buffered_uchar_method_with_retry {
                     full_len > $buffer_capacity
                         .try_into()
                         .map_err(|e| common::Error::wrapper(e))?) {
-
+                
+                status = common::Error::OK_CODE;
                 assert!(full_len > 0);
                 let full_len: usize = full_len
                     .try_into()
@@ -111,7 +112,7 @@ macro_rules! buffered_uchar_method_with_retry {
                 // Same unsafe requirements as above, plus full_len must be exactly the output
                 // buffer size.
                 unsafe {
-                    assert!(common::Error::is_ok(status));
+                    assert!(common::Error::is_ok(status), "status: {:?}", status);
                     method_to_call(
                         $($before_arg,)*
                         buf.as_mut_ptr() as *mut sys::UChar,

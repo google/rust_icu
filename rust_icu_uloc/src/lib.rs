@@ -585,6 +585,16 @@ mod tests {
         Ok(())
     }
 
+    // https://github.com/google/rust_icu/issues/244
+    #[test]
+    fn test_long_language_tag() -> Result<(), Error> {
+        let mut language_tag: String = "und-CO".to_owned();
+        let language_tag_rest = (0..500).map(|_| " ").collect::<String>();
+        language_tag.push_str(&language_tag_rest);
+        let loc = ULoc::for_language_tag(&language_tag)?;
+        Ok(())
+    }
+
     #[test]
     fn test_script() -> Result<(), Error> {
         let loc = ULoc::try_from("sr-Cyrl")?;

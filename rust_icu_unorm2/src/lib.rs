@@ -123,6 +123,7 @@ impl UNormalizer {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rust_icu_ustring::UChar;
 
     #[test]
     fn test_compose_pair_nfkc() -> Result<(), common::Error> {
@@ -149,6 +150,17 @@ mod tests {
             let result = n.compose_pair(t.p1, t.p2);
             assert_eq!(result, t.ex);
         }
+        Ok(())
+    }
+
+    // https://github.com/google/rust_icu/issues/244
+    #[test]
+    fn test_long_input_string() -> Result<(), common::Error> {
+        let s = (0..67).map(|_| "탐").collect::<String>();
+        let u = UChar::try_from(&s[..]).unwrap();
+        let normalizer = UNormalizer::new_nfd().unwrap();
+        normalizer.normalize_ustring(&u).unwrap();
+
         Ok(())
     }
 }
