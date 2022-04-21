@@ -260,6 +260,7 @@ macro_rules! buffered_string_method_with_retry {
                         .try_into()
                         .map_err(|e| common::Error::wrapper(e))?) {
 
+                status = common::Error::OK_CODE;
                 assert!(full_len > 0);
                 let full_len: usize = full_len
                     .try_into()

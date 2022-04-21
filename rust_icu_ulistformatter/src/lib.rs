@@ -127,11 +127,12 @@ impl UListFormatter {
             || (common::Error::is_ok(status)
                 && full_len > CAPACITY.try_into().map_err(|e| common::Error::wrapper(e))?)
         {
+            status = common::Error::OK_CODE;
             assert!(full_len > 0);
             let full_len: usize = full_len.try_into().map_err(|e| common::Error::wrapper(e))?;
             buf.resize(full_len, 0);
             unsafe {
-                assert!(common::Error::is_ok(status));
+                assert!(common::Error::is_ok(status), "status: {:?}", status);
                 versioned_function!(ulistfmt_format)(
                     self.rep.as_ptr(),
                     pointers as *const *const sys::UChar,
