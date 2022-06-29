@@ -189,12 +189,9 @@ mod inner {
 
         /// Obtains the needed flags for the linker.
         fn ldflags(&mut self) -> Result<String> {
-            // Replacements needed because of https://github.com/rust-lang/cargo/issues/7217
-            let result = self
-                .rep
+            self.rep
                 .run(&["--libs", "icu-i18n"])
-                .with_context(|| "could not get the ld flags")?;
-            Ok(result.replace("-L", "-L ").replace("-l", "-l "))
+                .with_context(|| "could not get the ld flags")
         }
 
         /// Obtains the needed flags for the C++ compiler.
