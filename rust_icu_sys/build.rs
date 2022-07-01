@@ -391,11 +391,11 @@ macro_rules! versioned_function {{
 
 // There was no renaming in this one, so just short-circuit this macro.
 #[macro_export]
-macro_rules! versioned_function {{
-    ($func_name:path) => {{
+macro_rules! versioned_function {
+    ($func_name:path) => {
         $func_name
-    }}
-}}
+    }
+}
 "#
                     .to_string()
                     .into_bytes(),
