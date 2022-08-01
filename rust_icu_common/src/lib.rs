@@ -19,7 +19,7 @@
 use {
     anyhow::anyhow,
     rust_icu_sys as sys,
-    std::{ffi, os},
+    std::{ffi, os, convert::TryInto},
     thiserror::Error,
 };
 
@@ -182,117 +182,64 @@ macro_rules! simple_drop_impl {
     };
 }
 
-/// Generates a method to wrap ICU4C `uloc` methods that require a resizable output string buffer.
-///
-/// The various `uloc` methods of this type have inconsistent signature patterns, with some putting
-/// all their input arguments _before_ the `buffer` and its `capacity`, and some splitting the input
-/// arguments.
-///
-/// Therefore, the macro supports input arguments in both positions.
-///
-/// For an invocation of the form
-///
-/// ```ignore
-/// buffered_string_method_with_retry!(
-///     my_method,
-///     BUFFER_CAPACITY,
-///     [before_arg_a: before_type_a, before_arg_b: before_type_b,],
-///     [after_arg_a: after_type_a, after_arg_b: after_type_b,]
-/// );
-/// ```
-///
-/// the generated method has a signature of the form
-///
-/// ```ignore
-/// fn my_method(
-///     method_to_call: unsafe extern "C" fn(
-///         before_type_a,
-///         before_type_b,
-///         *mut raw::c_char,
-///         i32,
-///         after_type_a,
-///         after_type_b,
-///         *mut sys::UErrorCode,
-///     ) -> i32,
-///     before_arg_a: before_type_a,
-///     before_arg_b: before_type_b,
-///     after_arg_a: after_type_a,
-///     after_arg_b: after_type_b
-/// ) -> Result<String, common::Error> {}
-/// ```
-#[macro_export]
-macro_rules! buffered_string_method_with_retry {
+/// Helper for calling ICU4C `uloc` methods that require a resizable output string buffer.
+pub fn buffered_string_method_with_retry<F>(
+    mut method_to_call: F,
+    buffer_capacity: usize,
+) -> Result<String, Error>
+where
+    F: FnMut(*mut os::raw::c_char, i32, *mut sys::UErrorCode) -> i32,
+{
+    let mut status = Error::OK_CODE;
+    let mut buf: Vec<u8> = vec![0; buffer_capacity];
 
-    ($method_name:ident, $buffer_capacity:expr,
-     [$($before_arg:ident: $before_arg_type:ty,)*],
-     [$($after_arg:ident: $after_arg_type:ty,)*]) => {
-        fn $method_name(
-            method_to_call: unsafe extern "C" fn(
-                $($before_arg_type,)*
-                *mut raw::c_char,
-                i32,
-                $($after_arg_type,)*
-                *mut sys::UErrorCode,
-            ) -> i32,
-            $($before_arg: $before_arg_type,)*
-            $($after_arg: $after_arg_type,)*
-        ) -> Result<String, common::Error> {
-            let mut status = common::Error::OK_CODE;
-            let mut buf: Vec<u8> = vec![0; $buffer_capacity];
+    // Requires that any pointers that are passed in are valid.
+    let full_len: i32 = {
+        assert!(Error::is_ok(status));
+        method_to_call(
+            buf.as_mut_ptr() as *mut os::raw::c_char,
+            buffer_capacity as i32,
+            &mut status,
+        )
+    };
 
-            // Requires that any pointers that are passed in are valid.
-            let full_len: i32 = unsafe {
-                assert!(common::Error::is_ok(status));
-                method_to_call(
-                    $($before_arg,)*
-                    buf.as_mut_ptr() as *mut raw::c_char,
-                    $buffer_capacity as i32,
-                    $($after_arg,)*
-                    &mut status,
-                )
-            };
+    // ICU methods are inconsistent in whether they silently truncate the output or treat
+    // the overflow as an error, so we need to check both cases.
+    if status == sys::UErrorCode::U_BUFFER_OVERFLOW_ERROR ||
+       (Error::is_ok(status) &&
+            full_len > buffer_capacity
+                .try_into()
+                .map_err(|e| Error::wrapper(e))?) {
 
-            // ICU methods are inconsistent in whether they silently truncate the output or treat
-            // the overflow as an error, so we need to check both cases.
-            if status == sys::UErrorCode::U_BUFFER_OVERFLOW_ERROR ||
-               (common::Error::is_ok(status) &&
-                    full_len > $buffer_capacity
-                        .try_into()
-                        .map_err(|e| common::Error::wrapper(e))?) {
+        status = Error::OK_CODE;
+        assert!(full_len > 0);
+        let full_len: usize = full_len
+            .try_into()
+            .map_err(|e| Error::wrapper(e))?;
+        buf.resize(full_len, 0);
 
-                status = common::Error::OK_CODE;
-                assert!(full_len > 0);
-                let full_len: usize = full_len
-                    .try_into()
-                    .map_err(|e| common::Error::wrapper(e))?;
-                buf.resize(full_len, 0);
-
-                // Same unsafe requirements as above, plus full_len must be exactly the output
-                // buffer size.
-                unsafe {
-                    assert!(common::Error::is_ok(status));
-                    method_to_call(
-                        $($before_arg,)*
-                        buf.as_mut_ptr() as *mut raw::c_char,
-                        full_len as i32,
-                        $($after_arg,)*
-                        &mut status,
-                    )
-                };
-            }
-
-            common::Error::ok_or_warning(status)?;
-
-            // Adjust the size of the buffer here.
-            if (full_len >= 0) {
-                let full_len: usize = full_len
-                    .try_into()
-                    .map_err(|e| common::Error::wrapper(e))?;
-                buf.resize(full_len, 0);
-            }
-            String::from_utf8(buf).map_err(|e| e.utf8_error().into())
-        }
+        // Same unsafe requirements as above, plus full_len must be exactly the output
+        // buffer size.
+        {
+            assert!(Error::is_ok(status));
+            method_to_call(
+                buf.as_mut_ptr() as *mut os::raw::c_char,
+                full_len as i32,
+                &mut status,
+            )
+        };
     }
+
+    Error::ok_or_warning(status)?;
+
+    // Adjust the size of the buffer here.
+    if full_len >= 0 {
+        let full_len: usize = full_len
+            .try_into()
+            .map_err(|e| Error::wrapper(e))?;
+        buf.resize(full_len, 0);
+    }
+    String::from_utf8(buf).map_err(|e| e.utf8_error().into())
 }
 
 /// There is a slew of near-identical method calls which differ in the type of
