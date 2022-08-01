@@ -356,7 +356,7 @@ mod inner {
 macro_rules! versioned_function {{
     ($i:ident) => {{
       $crate::__private_do_not_use::paste::expr! {{
-        [< $i _{0} >]
+        $crate::[< $i _{0} >]
       }}
     }}
 }}
@@ -365,8 +365,8 @@ macro_rules! versioned_function {{
 #[cfg(not(feature="renaming"))]
 #[macro_export]
 macro_rules! versioned_function {{
-    ($func_name:path) => {{
-        $func_name
+    ($func_name:ident) => {{
+        $crate::$func_name
     }}
 }}
 "#,
