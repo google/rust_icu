@@ -171,11 +171,12 @@ impl Into<std::fmt::Error> for Error {
 #[macro_export]
 macro_rules! simple_drop_impl {
     ($type_name:ty, $impl_function_name:ident) => {
-        impl Drop for $type_name {
+        impl $crate::__private_do_not_use::Drop for $type_name {
             #[doc = concat!("Implements `", stringify!($impl_function_name), "`.")]
             fn drop(&mut self) {
                 unsafe {
-                    versioned_function!($impl_function_name)(self.rep.as_ptr());
+                    $crate::__private_do_not_use::versioned_function!($impl_function_name)
+                        (self.rep.as_ptr());
                 }
             }
         }
@@ -447,6 +448,13 @@ impl CStringVec {
     pub fn is_empty(&self) -> bool {
         self.rep.is_empty()
     }
+}
+
+// Items used by macros. Unstable private API; do not use.
+#[doc(hidden)]
+pub mod __private_do_not_use {
+    pub use Drop;
+    pub use rust_icu_sys::versioned_function;
 }
 
 #[cfg(test)]
