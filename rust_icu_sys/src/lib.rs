@@ -128,3 +128,8 @@ impl From<i8> for UCharCategory {
     }
 }
 
+// Items used by the `versioned_function!` macro. Unstable private API; do not use.
+#[doc(hidden)]
+pub mod __private_do_not_use {
+    pub extern crate paste;
+}
