@@ -15,14 +15,13 @@
 use {
     rust_icu_common as common,
     rust_icu_common::buffered_string_method_with_retry,
-    rust_icu_sys as sys,
     rust_icu_sys::versioned_function,
     rust_icu_sys::*,
     rust_icu_uenum::Enumeration,
     std::{
         cmp::Ordering,
         collections::HashMap,
-        convert::{From, TryFrom, TryInto},
+        convert::{From, TryFrom},
         ffi, fmt,
         os::raw,
     },
@@ -230,20 +229,20 @@ impl ULoc {
 
     /// Implements `uloc_toLanguageTag` from ICU4C.
     pub fn to_language_tag(&self, strict: bool) -> Result<String, common::Error> {
-        buffered_string_method_with_retry!(
-            buffered_string_to_language_tag,
-            LOCALE_CAPACITY,
-            [locale_id: *const raw::c_char,],
-            [strict: rust_icu_sys::UBool,]
-        );
-
         let locale_id = self.as_c_str();
         // No `UBool` constants available in rust_icu_sys, unfortunately.
         let strict = if strict { 1 } else { 0 };
-        buffered_string_to_language_tag(
-            versioned_function!(uloc_toLanguageTag),
-            locale_id.as_ptr(),
-            strict,
+        buffered_string_method_with_retry(
+            |buf, len, error| unsafe {
+                versioned_function!(uloc_toLanguageTag)(
+                    locale_id.as_ptr(),
+                    buf,
+                    len,
+                    strict,
+                    error,
+                )
+            },
+            LOCALE_CAPACITY,
         )
     }
 
@@ -261,21 +260,19 @@ impl ULoc {
 
     /// Implements `uloc_getKeywordValue()` from ICU4C.
     pub fn keyword_value(&self, keyword: &str) -> Result<Option<String>, common::Error> {
-        buffered_string_method_with_retry!(
-            buffered_string_keyword_value,
-            LOCALE_CAPACITY,
-            [
-                locale_id: *const raw::c_char,
-                keyword_name: *const raw::c_char,
-            ],
-            []
-        );
         let locale_id = self.as_c_str();
         let keyword_name = str_to_cstring(keyword);
-        buffered_string_keyword_value(
-            versioned_function!(uloc_getKeywordValue),
-            locale_id.as_ptr(),
-            keyword_name.as_ptr(),
+        buffered_string_method_with_retry(
+            |buf, len, error| unsafe {
+                versioned_function!(uloc_getKeywordValue)(
+                    locale_id.as_ptr(),
+                    keyword_name.as_ptr(),
+                    buf,
+                    len,
+                    error,
+                )
+            },
+            LOCALE_CAPACITY,
         )
         .map(|value| if value.is_empty() { None } else { Some(value) })
     }
@@ -313,18 +310,18 @@ impl ULoc {
     /// Note that an invalid tag will cause that tag and all others to be
     /// ignored.  For example `en-us` will work but `en_US` will not.
     pub fn for_language_tag(tag: &str) -> Result<ULoc, common::Error> {
-        buffered_string_method_with_retry!(
-            buffered_string_for_language_tag,
-            LOCALE_CAPACITY,
-            [tag: *const raw::c_char,],
-            [parsed_length: *mut i32,]
-        );
-
         let tag = str_to_cstring(tag);
-        let locale_id = buffered_string_for_language_tag(
-            versioned_function!(uloc_forLanguageTag),
-            tag.as_ptr(),
-            std::ptr::null_mut(),
+        let locale_id = buffered_string_method_with_retry(
+            |buf, len, error| unsafe {
+                versioned_function!(uloc_forLanguageTag)(
+                    tag.as_ptr(),
+                    buf,
+                    len,
+                    std::ptr::null_mut(),
+                    error
+                )
+            },
+            LOCALE_CAPACITY,
         )?;
         ULoc::try_from(&locale_id[..])
     }
@@ -339,14 +336,11 @@ impl ULoc {
             *mut UErrorCode,
         ) -> i32,
     ) -> Result<String, common::Error> {
-        buffered_string_method_with_retry!(
-            buffered_string_char_star,
-            LOCALE_CAPACITY,
-            [char_star: *const raw::c_char,],
-            []
-        );
         let asciiz = self.as_c_str();
-        buffered_string_char_star(uloc_method, asciiz.as_ptr())
+        buffered_string_method_with_retry(
+            |buf, len, error| unsafe { uloc_method(asciiz.as_ptr(), buf, len, error) },
+            LOCALE_CAPACITY,
+        )
     }
 
     /// Call a `uloc` method that takes this locale's ID, panics on any errors, and returns
@@ -468,18 +462,6 @@ pub fn accept_language(
     accept_list: impl IntoIterator<Item = impl Into<ULoc>>,
     available_locales: impl IntoIterator<Item = impl Into<ULoc>>,
 ) -> Result<(Option<ULoc>, UAcceptResult), common::Error> {
-    buffered_string_method_with_retry!(
-        buffered_string_uloc_accept_language,
-        LOCALE_CAPACITY,
-        [],
-        [
-            out_result: *mut UAcceptResult,
-            accept_list: *mut *const ::std::os::raw::c_char,
-            accept_list_count: i32,
-            available_locales: *mut UEnumeration,
-        ]
-    );
-
     let mut accept_result: UAcceptResult = UAcceptResult::ULOC_ACCEPT_FAILED;
     let mut accept_list_cstrings: Vec<ffi::CString> = vec![];
     // This is mutable only to satisfy the missing `const`s in the ICU4C API.
@@ -502,12 +484,19 @@ pub fn accept_language(
     let available_locales: Vec<&str> = available_locales.iter().map(|uloc| uloc.label()).collect();
     let mut available_locales = Enumeration::try_from(&available_locales[..])?;
 
-    let matched_locale = buffered_string_uloc_accept_language(
-        versioned_function!(uloc_acceptLanguage),
-        &mut accept_result,
-        accept_list.as_mut_ptr(),
-        accept_list.len() as i32,
-        available_locales.repr(),
+    let matched_locale = buffered_string_method_with_retry(
+        |buf, len, error| unsafe {
+            versioned_function!(uloc_acceptLanguage)(
+                buf,
+                len,
+                &mut accept_result,
+                accept_list.as_mut_ptr(),
+                accept_list.len() as i32,
+                available_locales.repr(),
+                error,
+            )
+        },
+        LOCALE_CAPACITY,
     );
 
     // Having no match is a valid if disappointing result.
