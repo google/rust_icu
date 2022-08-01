@@ -29,7 +29,7 @@ use {
 
 macro_rules! format_type {
     ($method_name:ident, $impl_function_name:ident, $value_type:ty) => {
-        /// Implements `$impl_function_name`. Since 0.3.1.
+        #[doc = concat!("Implements `", stringify!($impl_function_name), "`. Since 0.3.1.")]
         pub fn $method_name(&self, value: $value_type) -> Result<UFormattedNumber, common::Error> {
             let mut result = UFormattedNumber::try_new()?;
             let mut status = sys::UErrorCode::U_ZERO_ERROR;

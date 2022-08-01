@@ -61,13 +61,13 @@ macro_rules! attribute{
     ($method_name:ident, $original_method_name:ident, $type_name:ty) => (
 
         paste::item! {
-            /// Implements `$original_method_name`. Since 0.3.1.
+            #[doc = concat!("Implements `", stringify!($original_method_name), "`. Since 0.3.1.")]
             pub fn [< get_ $method_name >](&self, attr: sys::UNumberFormatAttribute) -> $type_name {
                 unsafe {
                     versioned_function!([< unum_get $original_method_name >])(self.rep.as_ptr(), attr)
                 }
             }
-            /// Implements `$original_method_name`. Since 0.3.1.
+            #[doc = concat!("Implements `", stringify!($original_method_name), "`. Since 0.3.1.")]
             pub fn [< set_ $method_name >](&mut self, attr: sys::UNumberFormatAttribute, value: $type_name) {
                 unsafe {
                     versioned_function!([< unum_set $original_method_name >])(self.rep.as_ptr(), attr, value)
