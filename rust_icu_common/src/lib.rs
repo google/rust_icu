@@ -172,7 +172,7 @@ impl Into<std::fmt::Error> for Error {
 macro_rules! simple_drop_impl {
     ($type_name:ty, $impl_function_name:ident) => {
         impl Drop for $type_name {
-            /// Implements `$impl_function_name`.
+            #[doc = concat!("Implements `", stringify!($impl_function_name), "`.")]
             fn drop(&mut self) {
                 unsafe {
                     versioned_function!($impl_function_name)(self.rep.as_ptr());
@@ -329,7 +329,7 @@ macro_rules! buffered_string_method_with_retry {
 #[macro_export]
 macro_rules! format_ustring_for_type{
     ($method_name:ident, $function_name:ident, $type_decl:ty) => (
-        /// Implements `$function_name`.
+        #[doc = concat!("Implements `", stringify!($function_name), "`.")]
         pub fn $method_name(&self, number: $type_decl) -> Result<String, common::Error> {
             let result = paste::item! {
                 self. [< $method_name _ustring>] (number)?
@@ -340,7 +340,7 @@ macro_rules! format_ustring_for_type{
         // Should be able to use https://github.com/google/rust_icu/pull/144 to
         // make this even shorter.
         paste::item! {
-            /// Implements `$function_name`.
+            #[doc = concat!("Implements `", stringify!($function_name), "`.")]
             pub fn [<$method_name _ustring>] (&self, param: $type_decl) -> Result<ustring::UChar, common::Error> {
                 const CAPACITY: usize = 200;
                 buffered_uchar_method_with_retry!(
@@ -399,7 +399,7 @@ macro_rules! format_ustring_for_type{
 #[macro_export]
 macro_rules! generalized_fallible_getter{
     ($top_level_method_name:ident, $impl_name:ident, [ $( $arg:ident: $arg_type:ty ,)* ],  $ret_type:ty) => (
-        /// Implements `$impl_name`.
+        #[doc = concat!("Implements `", stringify!($impl_name), "`.")]
         pub fn $top_level_method_name(&self, $( $arg: $arg_type, )* ) -> Result<$ret_type, common::Error> {
             let mut status = common::Error::OK_CODE;
             let result: $ret_type = unsafe {

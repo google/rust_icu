@@ -61,7 +61,8 @@ impl<'a> Drop for crate::UFormattable<'a> {
 /// * `$method_name` is an identifier
 macro_rules! simple_getter {
     ($method_name:ident, $impl_function_name:ident, $return_type:ty) => {
-        /// Implements `$impl_function_name`
+        #[doc = concat!("Implements `", stringify!($impl_function_name), "`.")]
+        ///
         /// Use [UFormattable::get_type] to verify that the type matches.
         pub fn $method_name(&self) -> Result<$return_type, common::Error> {
             let mut status = common::Error::OK_CODE;
