@@ -83,8 +83,12 @@ extern crate libc;
 
 // A "fake" extern used to express link preferences.  The libraries mentioned
 // below will be converted to "-l" flags to the linker.
-#[link(name = "icui18n", kind = "dylib")]
-#[link(name = "icuuc", kind = "dylib")]
+#[cfg_attr(not(feature = "static"), link(name = "icui18n", kind = "dylib"))]
+#[cfg_attr(not(feature = "static"), link(name = "icuuc", kind = "dylib"))]
+#[cfg_attr(feature = "static", link(name = "icui18n", kind = "static"))]
+#[cfg_attr(feature = "static", link(name = "icuuc", kind = "static"))]
+#[cfg_attr(feature = "static", link(name = "icudata", kind = "static"))]
+#[cfg_attr(feature = "static", link(name = "stdc++", kind = "static"))]
 extern "C" {}
 
 impl From<i8> for UCharCategory {
