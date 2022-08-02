@@ -88,7 +88,7 @@ extern crate libc;
 #[cfg_attr(feature = "static", link(name = "icui18n", kind = "static"))]
 #[cfg_attr(feature = "static", link(name = "icuuc", kind = "static"))]
 #[cfg_attr(feature = "static", link(name = "icudata", kind = "static"))]
-#[cfg_attr(feature = "static", link(name = "stdc++", kind = "static"))]
+#[cfg_attr(feature = "static", link(name = "stdc++", kind = "dylib"))]
 extern "C" {}
 
 impl From<i8> for UCharCategory {
