@@ -142,7 +142,7 @@ confusing compilation end result.
 Feature              | Default? | Description
 -------------------- | -------- | -----------
 `use-bindgen`        | Yes      | If set, cargo will run `bindgen` to generate bindings based on the installed ICU library. The program `icu-config` must be in $PATH for this to work. In the future there may be other approaches for auto-detecting libraries, such as via `pkg-config`.
-`renaming`           | Yes      | If set, ICU bindings are generated with version numbers appended. This is called "renaming" in ICU, and is normally needed only when linking against specific ICU version is required, for example to work around having to link different ICU versions. See [the ICU documentation](http://userguide.icu-project.org/design) for a discussion of renaming. **This feature MUST be used when `bindgen` is NOT used.**
+`renaming`           | Yes      | If set, ICU bindings are generated with version numbers appended. This is called "renaming" in ICU, and is normally needed only when linking against specific ICU version is required, for example to work around having to link different ICU versions. See [the ICU documentation](https://unicode-org.github.io/icu/userguide/icu/design.html) for a discussion of renaming. **This feature MUST be used when `bindgen` is NOT used.**
 `icu_config`         | Yes      | If set, the binary icu-config will be used to configure the library. Turn this feature off if you do not want `build.rs` to try to autodetect the build environment. You will want to skip this feature if your build environment configures ICU in a different way. **This feature is only meaningful when `bindgen` feature is used; otherwise it has no effect.**
 `icu_version_in_env` | No       | If set, ICU bindings are made for the ICU version specified in the environment variable `RUST_ICU_MAJOR_VERSION_NUMBER`, which is made available to cargo at build time. See section below for details on how to use this feature. **This feature is only meaningful when `bindgen` feature is NOT used; otherwise it has no effect.**
 
@@ -172,7 +172,7 @@ Feature              | Default? | Description
     You will need access to the ICU libraries for the `rust_icu` bindings to
     link against. Download and installation of ICU is out of scope of this
     document. Please read through the
-    [ICU introduction](https://userguide.icu-project.org/intro) to learn how to
+    [ICU introduction](https://unicode-org.github.io/icu/userguide/icu/) to learn how to
     build and install.
 
     Sometimes, the ICU library will be preinstalled on your system, or you can
@@ -281,7 +281,7 @@ reference version of ICU.
 There is plenty of prior art that has been considered:
 
 *   https://github.com/servo/rust-icu
-*   https://github.com/open-i18n/unic
+*   https://github.com/open-i18n/rust-unic
 *   https://github.com/fullcontact/icu-sys
 *   https://github.com/rust-locale
 *   https://github.com/unicode-rs
@@ -375,7 +375,7 @@ test cycle by running `make docker-test`.
 ## ICU installation instructions
 
 These instructions follow the "out-of-tree" build instructions from
-[the ICU repository](https://github.com/unicode-org/icu/blob/%6d%61%73%74%65%72/icu4c/readme.html).
+[the ICU repository](https://github.com/unicode-org/icu/blob/main/icu4c/readme.html).
 
 ### Assumptions
 
