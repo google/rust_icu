@@ -4,16 +4,16 @@
 | ------ | ----------- |
 | `ubrk.h` | 19 / 23 | 
 | `ucal.h` | 15 / 47 | 
-| `ucol.h` | 8 / 50 | 
+| `ucol.h` | 8 / 51 | 
 | `udat.h` | 10 / 38 | 
 | `udata.h` | 2 / 8 | 
 | `uenum.h` | 8 / 8 | 
-| `uformattable.h` | 7 / 13 | 
+| `uformattable.h` | 6 / 13 | 
 | `ulistformatter.h` | 2 / 8 | 
 | `uloc.h` | 20 / 42 | 
 | `umsg.h` | 6 / 20 | 
-| `unum.h` | 15 / 31 | 
-| `unumberformatter.h` | 8 / 13 | 
+| `unum.h` | 14 / 31 | 
+| `unumberformatter.h` | 7 / 13 | 
 | `upluralrules.h` | 3 / 8 | 
 | `ustring.h` | 3 / 61 | 
 | `utext.h` | 3 / 28 | 
@@ -114,6 +114,7 @@
 | | `ucol_setStrength` |
 | | `ucol_strcoll` |
 | | `ucol_strcollUTF8` |
+| `ucol_clone` | |
 | `ucol_cloneBinary` | |
 | `ucol_close` | |
 | `ucol_equal` | |
@@ -241,7 +242,6 @@
 
 | Unimplemented | Implemented |
 | ------------- | ----------- |
-| | `$impl_function_name` |
 | | `ufmt_close` |
 | | `ufmt_getArrayItemByIndex` |
 | | `ufmt_getDecNumChars` |
@@ -350,7 +350,6 @@
 
 | Unimplemented | Implemented |
 | ------------- | ----------- |
-| | `$original_method_name` |
 | | `unum_clone` |
 | | `unum_formatDecimal` |
 | | `unum_formatDoubleCurrency` |
@@ -387,7 +386,6 @@
 
 | Unimplemented | Implemented |
 | ------------- | ----------- |
-| | `$impl_function_name` |
 | | `unumf_formatDecimal` |
 | | `unumf_openForSkeletonAndLocale` |
 | | `unumf_openForSkeletonAndLocaleWithError` |
