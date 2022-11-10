@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        icu_version: [63, 68, 69, 70, 71]
+        icu_version: [63, 69, 70, 71, 72]
     steps:
       - uses: actions/checkout@v2
       - name: 'Test ICU version ${{ matrix.icu_version }}'
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        icu_version: [68, 69]
+        icu_version: [69]
         feature_set:
           - "renaming,icu_version_in_env,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus,icu_version_69_max"
           - "renaming,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus,icu_config,use-bindgen,icu_version_69_max"
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        icu_version: [70, 71]
+        icu_version: [70, 71, 72]
         feature_set:
           - "renaming,icu_version_in_env,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus"
           - "renaming,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus,icu_config,use-bindgen"

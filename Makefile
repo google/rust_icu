@@ -55,7 +55,7 @@ CARGO_TARGET_DIR := ${TMP}/rust_icu-${LOGNAME}-target
 # Pass different values for DOCKER_TEST_ENV and DOCKER_TEST_CARGO_TEST_ARGS to
 # test different configurations.  This is useful in Travis CI matrix tests, for
 # example.
-RUST_ICU_MAJOR_VERSION_NUMBER ?= 69
+RUST_ICU_MAJOR_VERSION_NUMBER ?= 72
 DOCKER_TEST_ENV ?= rust_icu_testenv-${RUST_ICU_MAJOR_VERSION_NUMBER}
 DOCKER_TEST_CARGO_TEST_ARGS ?=
 docker-test:
@@ -78,7 +78,7 @@ docker-test:
 #
 # % is expected to be a number equal to a valid ICU major version number, such
 # as "65" or such.
-static-bindgen-%:
+static-bindgen-%.stamp:
 	mkdir -p ${CARGO_TARGET_DIR}
 	echo top_dir: ${TOP_DIR}
 	echo pwd: $(shell pwd)
@@ -91,16 +91,18 @@ static-bindgen-%:
 			${DOCKER_REPO}/rust_icu_testenv-$*:${USED_BUILDENV_VERSION} \
 			  "-c" "env OUTPUT_DIR=./rust_icu/rust_icu_sys/bindgen \
 			  ./rust_icu/rust_icu_sys/bindgen/run_bindgen.sh"
+	touch $@
 
 # Keep only the latest version of the library in the static-bindgen target,
 # and any versions that do not have a lib.rs in rust_icu_sys/bindgen.
 static-bindgen: \
-    static-bindgen-63 \
-    static-bindgen-67 \
-    static-bindgen-68 \
-    static-bindgen-69 \
-    static-bindgen-70 \
-    static-bindgen-71
+    static-bindgen-63.stamp \
+    static-bindgen-67.stamp \
+    static-bindgen-68.stamp \
+    static-bindgen-69.stamp \
+    static-bindgen-70.stamp \
+    static-bindgen-71.stamp \
+    static-bindgen-72.stamp
 .PHONY: static-bindgen
 
 # Builds and pushes the build environment containers.  You would not normally
@@ -110,6 +112,7 @@ buildenv:
 .PHONY: buildenv
 
 clean:
+	rm -f *.stamp
 	cargo clean
 .PHONY: clean
 # Publishes all crates to crates.io.
