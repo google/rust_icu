@@ -1,3 +1,4 @@
+ucol_clone
 ucol_cloneBinary
 ucol_close
 ucol_countAvailable

@@ -1,4 +1,3 @@
-$original_method_name
 unum_clone
 unum_formatDecimal
 unum_formatDoubleCurrency

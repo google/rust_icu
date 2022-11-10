@@ -1,4 +1,3 @@
-$impl_function_name
 unumf_formatDecimal
 unumf_openForSkeletonAndLocale
 unumf_openForSkeletonAndLocaleWithError
