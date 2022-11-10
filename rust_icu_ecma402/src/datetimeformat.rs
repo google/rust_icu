@@ -255,11 +255,12 @@ impl ecma402_traits::datetimeformat::DateTimeFormat for DateTimeFormat {
 
 #[cfg(test)]
 mod testing {
-    use super::*;
     use ecma402_traits::datetimeformat::{options, DateTimeFormat, DateTimeFormatOptions, };
+    use regex::Regex;
     use rust_icu_sys as usys;
     use rust_icu_uloc as uloc;
     use std::convert::TryFrom;
+    use super::*;
 
     #[test]
     fn date_time_format_examples() -> Result<(), common::Error> {
@@ -268,7 +269,7 @@ mod testing {
             locale: &'static str,
             opts: DateTimeFormatOptions,
             dates: Vec<usys::UDate>,
-            expected: Vec<&'static str>,
+            expected_regex: Vec<&'static str>,
         }
         let tests = vec![
             TestCase {
@@ -282,7 +283,7 @@ mod testing {
                 },
 
                 dates: vec![10000_f64],
-                expected: vec!["1970."],
+                expected_regex: vec!["1970."],
             },
             // In ICU 63 this gets reported as "GMT-08:00", likely the ICU data
             // from then didn't contain the Serbian long spellout of the "uslax"
@@ -316,7 +317,7 @@ mod testing {
                 },
 
                 dates: vec![10000_f64],
-                expected: vec!["Wednesday, Dec 31, 1969, 4:00:10 PM"],
+                expected_regex: vec!["Wednesday, Dec 31, 1969, 4:00:10.PM"],
             },
             TestCase {
                 locale: "en-US",
@@ -334,7 +335,7 @@ mod testing {
                 },
 
                 dates: vec![10000_f64],
-                expected: vec!["Wednesday, Dec 31, 1969, 4:00:10 PM GMT-8"],
+                expected_regex: vec![r"Wednesday, Dec 31, 1969, 4:00:10.PM.GMT\-8"],
             },
             TestCase {
                 locale: "en-US",
@@ -352,7 +353,7 @@ mod testing {
                 },
 
                 dates: vec![10000_f64],
-                expected: vec!["Thursday, Jan 1, 1970, 1:00:10 AM GMT+1"],
+                expected_regex: vec![r"Thursday, Jan 1, 1970, 1:00:10.AM.GMT\+1"],
             },
             TestCase {
                 locale: "en-US",
@@ -370,14 +371,14 @@ mod testing {
                 },
 
                 dates: vec![10000_f64],
-                expected: vec!["Thursday, Jan 1, 1970, 3:00:10 AM GMT+3"],
+                expected_regex: vec![r"Thursday, Jan 1, 1970, 3:00:10.AM.GMT\+3"],
             },
         ];
         for test in tests {
             let locale =
                 crate::Locale::FromULoc(uloc::ULoc::try_from(test.locale).expect("locale exists"));
             let formatter = super::DateTimeFormat::try_new(locale, test.clone().opts)?;
-            let actual = test
+            let actual: Vec<String> = test
                 .dates
                 .iter()
                 .map(|d| {
@@ -387,8 +388,13 @@ mod testing {
                         .expect(&format!("can format: {}", d));
                     result
                 })
-                .collect::<Vec<String>>();
-            assert_eq!(test.expected, actual, "for test case: {:?}", &test);
+                .collect();
+            let actual = test.expected.clone().iter().zip(actual)
+                .map(|(x, a)| 
+                    (Regex::new(x).unwrap().is_match(&a), a)
+                ).collect::<Vec<_>>();
+            let result = actual.iter().map(|p| p.0).all(|x| x);
+            assert!(result, "for test case: {:?}\n\tactual: {:?}\n\texpected: {:?}", &test, &actual, &test.expected);
         }
         Ok(())
     }

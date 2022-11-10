@@ -28,6 +28,7 @@ rust_icu_unumberformatter = { path = "../rust_icu_unumberformatter", version = "
 
 [dev-dependencies]
 anyhow = "1.0.25"
+regex = "1.7.0"
 
 # See the feature description in ../rust_icu_sys/Cargo.toml for details.
 [features]
