@@ -115,12 +115,9 @@ The compatibility guarantee is as follows:
 
 `rust_icu` version   | ICU 63.x | ICU 67.1 | ICU 68.1 | ICU 69.1 | ICU 70.1 | ICU 71.1 | ICU 72.1 |
 -------------------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-0.5                  |    ✅    |    ✅    |    ✅    |    ✅    |          |          |          |
 1.0                  |    ✅    |    ✅    |    ✅    |    ✅    |          |          |          |
 2.0                  |    ✅    |          |    ✅    |    ✅    |    ✅    |    ✅    |          |
-
-> If you must use a 0.x relase, please use the release 0.5.  Otherwise, we
-> recommend using the newest release that supports your use case.
+3.0                  |    ✅    |          |          |          |    ✅    |    ✅    |    ✅    |
 
 # Features
 
