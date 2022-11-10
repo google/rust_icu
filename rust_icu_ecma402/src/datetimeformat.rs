@@ -300,7 +300,7 @@ mod testing {
                 },
 
                 dates: vec![10000_f64],
-                expected: vec!["Северноамеричко пацифичко стандардно време"],
+                expected_regex: vec!["Северноамеричко пацифичко стандардно време"],
             },
             TestCase {
                 locale: "en-US",
@@ -389,12 +389,13 @@ mod testing {
                     result
                 })
                 .collect();
-            let actual = test.expected.clone().iter().zip(actual)
+            let actual = test.expected_regex.clone().iter().zip(actual)
                 .map(|(x, a)| 
                     (Regex::new(x).unwrap().is_match(&a), a)
                 ).collect::<Vec<_>>();
             let result = actual.iter().map(|p| p.0).all(|x| x);
-            assert!(result, "for test case: {:?}\n\tactual: {:?}\n\texpected: {:?}", &test, &actual, &test.expected);
+            assert!(result, "for test case: {:?}\n\tactual: {:?}\n\texpected: {:?}",
+                &test, &actual, &test.expected_regex);
         }
         Ok(())
     }
