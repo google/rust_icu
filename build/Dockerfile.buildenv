@@ -26,7 +26,7 @@ cargo version && \
 rustup component add rustfmt
 
 RUN \
-cargo install --force bindgen
+cargo install --force --version 0.59.2 bindgen
 
 RUN chmod --recursive a+rwx $HOME
 RUN echo $HOME && cd && ls -ld $HOME
