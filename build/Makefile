@@ -25,10 +25,6 @@ all: \
 	v72.stamp \
 	v71.stamp \
 	v70.stamp \
-	v69.stamp \
-	v68.stamp \
-	v67.stamp \
-	v66.stamp \
 	v63.stamp \
 	push-testenv.stamp \
 	push-hermetic.stamp
@@ -82,7 +78,13 @@ latest.stamp: push-buildenv.stamp v72.stamp
 # preserved. I.e. %.stamp doesn't work.
 .PRECIOUS: \
 	push-maint-72.stamp push-testenv-72.stamp \
-	build-testenv-72.stamp tag-testenv-72.stamp
+	build-testenv-72.stamp tag-testenv-72.stamp \
+	push-maint-71.stamp push-testenv-71.stamp \
+	build-testenv-71.stamp tag-testenv-71.stamp \
+	push-maint-70.stamp push-testenv-70.stamp \
+	build-testenv-70.stamp tag-testenv-70.stamp \
+	push-maint-63.stamp push-testenv-63.stamp \
+	build-testenv-63.stamp tag-testenv-63.stamp
 
 
 v%.stamp: push-maint-%.stamp push-testenv-%.stamp

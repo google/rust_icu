@@ -97,9 +97,6 @@ static-bindgen-%.stamp:
 # and any versions that do not have a lib.rs in rust_icu_sys/bindgen.
 static-bindgen: \
     static-bindgen-63.stamp \
-    static-bindgen-67.stamp \
-    static-bindgen-68.stamp \
-    static-bindgen-69.stamp \
     static-bindgen-70.stamp \
     static-bindgen-71.stamp \
     static-bindgen-72.stamp
