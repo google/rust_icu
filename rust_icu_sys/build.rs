@@ -59,6 +59,8 @@ mod inner {
             "utext",
             "utrans",
             "unorm2",
+            "ucptrie",
+            "umutablecptrie",
         ];
 
         // C functions that will be made available to rust code.  Add more to this list if you want to
@@ -84,6 +86,9 @@ mod inner {
             "utext_.*",
             "utrans_.*",
             "unorm2_.*",
+            "usrc_.*",
+            "umutablecp.*",
+            "ucp.*",
         ];
 
         // C types that will be made available to rust code.  Add more to this list if you want to
@@ -125,6 +130,10 @@ mod inner {
             "UTransliterator",
             "UWordBreak",
             "UNorm.*",
+            "UCPTrie.*",
+            "UCPTrieType",
+            "UCPTRIE.*",
+            "UPRV.*",
         ];
     }
 

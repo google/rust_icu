@@ -33,73 +33,12 @@ OUTPUT_DIR=${OUTPUT_DIR:-.}
 # intended to be kept in sync with the static variable by the same name in the
 # build.rs file.
 readonly BINDGEN_SOURCE_MODULES=(
-        "ubrk"
-        "ucal"
-        "uclean"
-        "ucnv"
-        "ucol"
-        "udat"
-        "udatpg"
-        "udata"
-        "uenum"
-        "ufieldpositer"
-        "uformattable"
-        "ulistformatter"
-        "umisc"
-        "umsg"
-        "unum"
-        "unumberformatter"
-        "upluralrules"
-        "uset"
-        "ustring"
-        "utext"
-        "utrans"
-        "unorm2"
-        "ucptrie"
-        "umutablecptrie"
 )
 
 # Types for which to generate the bindings.  Expand this list if you need more.
 # The syntax is regex.  This list is intended to be kept in sync with the static
 # variable by the same name in the build.rs file.
 readonly BINDGEN_ALLOWLIST_TYPES=(
-        "UAcceptResult"
-        "UBool"
-        "UBreakIterator"
-        "UBreakIteratorType"
-        "UCalendar.*"
-        "UChar.*"
-        "UCol.*"
-        "UCollation.*"
-        "UCollator"
-        "UConverter.*"
-        "UData.*"
-        "UDate.*"
-        "UDateTime.*"
-        "UDateFormat.*"
-        "UDisplayContext.*"
-        "UEnumeration.*"
-        "UErrorCode"
-        "UField.*"
-        "UFormat.*"
-        "UFormattedList.*"
-        "ULOC.*"
-        "ULineBreakTag"
-        "UListFormatter.*"
-        "ULoc.*"
-        "UMessageFormat"
-        "UNUM.*"
-        "UNumber.*",
-        "UParseError"
-        "UPlural.*"
-        "USentenceBreakTag"
-        "USet"
-        "UText"
-        "UTransDirection"
-        "UTransPosition"
-        "UTransliterator"
-        "UWordBreak"
-        "UNorm.*"
         "UCPTrie.*"
         "UCPTrieType"
         "UCPTRIE.*"
@@ -110,29 +49,15 @@ readonly BINDGEN_ALLOWLIST_TYPES=(
 # more.  This list is intended to be kept in sync with the static variable by
 # the same name in the build.rs file.
 readonly BINDGEN_ALLOWLIST_FUNCTIONS=(
-        "u_.*"
-        "ubrk_.*"
-        "ucal_.*"
-        "ucnv_.*"
-        "ucol_.*"
-        "udat_.*"
-        "udatpg_.*"
-        "udata_.*"
-        "uenum_.*"
-        "ufieldpositer_.*"
-        "ufmt_.*"
-        "ulistfmt_.*"
-        "uloc_.*"
-        "umsg_.*"
-        "unum_.*"
-        "unumf_.*"
-        "uplrules_.*"
-        "utext_.*"
-        "utrans_.*"
-        "unorm2_.*"
         "usrc_.*"
-        "umutablecp.*"
-        "ucp.*"
+)
+
+readonly TOOLS_DIR="/src/icu/icu4c/source/tools/toolutil"
+
+# Modules that are only included if present.  This is for the ICU tools, for
+# example. Relative to $TOOLS_DIR.
+readonly BINDGEN_TOOLS_MODULES=(
+  "writesrc.h"
 )
 
 function check_requirements() {
@@ -163,6 +88,18 @@ function generate_header_file() {
   for module in ${BINDGEN_SOURCE_MODULES[@]}; do
     echo "#include \"${ICU_INCLUDE_DIR}/${module}.h\"" >> "${MAIN_HEADER_FILE}"
   done
+
+  ls -d /src/icu
+
+  # Optionally include the files from other headers.
+  if [[ -e "${TOOLS_DIR}" ]]; then
+    for module in ${BINDGEN_TOOLS_MODULES[@]}; do
+      modulepath="${TOOLS_DIR}/${module}"
+      if [[ -f "${modulepath}" ]]; then 
+        echo "#include \"${modulepath}\"" >> "${MAIN_HEADER_FILE}"
+      fi
+    done
+  fi
 }
 
 function main() {
@@ -202,7 +139,9 @@ function main() {
     --output="${_output_file}" \
     "${MAIN_HEADER_FILE}" \
     -- \
-    $(icu-config --cppflags)
+    $(icu-config --cppflags) \
+    -I ${TOOLS_DIR} \
+    -I "/src/icu/icu4c/source/common"
 
   # This can fail for weird reasons, ignore.
   rustfmt --force "${_output_file}" || true
