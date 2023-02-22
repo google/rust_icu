@@ -54,7 +54,7 @@ impl<'a> Drop for crate::UFormattable<'a> {
 ///
 /// Example:
 ///
-/// ```
+/// ```ignore
 /// simple_getter!(get_array_length, ufmt_getArrayLength, i32);
 /// ```
 ///
