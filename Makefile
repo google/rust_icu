@@ -129,12 +129,38 @@ publish-rust_icu_sys.stamp:
 	$(call publishfn,rust_icu_sys)
 	touch $@
 
-publish-rust_icu.stamp: publish-rust_icu_sys.stamp
+
+publish-rust_icu_common.stamp: \
+	publish-rust_icu_sys.stamp
 	$(call publishfn,rust_icu_common)
+	touch $@
+
+publish-rust_icu_uenum.stamp: \
+	publish-rust_icu_common.stamp
 	$(call publishfn,rust_icu_uenum)
+	touch $@
+
+publish-rust_icu_ustring.stamp: \
+	publish-rust_icu_uenum.stamp
 	$(call publishfn,rust_icu_ustring)
+	touch $@
+
+publish-rust_icu_utext.stamp: \
+	publish-rust_icu_ustring.stamp
 	$(call publishfn,rust_icu_utext)
+	touch $@
+
+publish-rust_icu_uloc.stamp: \
+	publish-rust_icu_utext.stamp
 	$(call publishfn,rust_icu_uloc)
+	touch $@
+
+publish-rust_icu.stamp: \
+	publish-rust_icu_sys.stamp \
+	publish-rust_icu_common.stamp \
+	publish-rust_icu_uenum.stamp \
+	publish-rust_icu_utext.stamp \
+	publish-rust_icu_uloc.stamp
 	$(call publishfn,rust_icu_ucal)
 	$(call publishfn,rust_icu_udat)
 	$(call publishfn,rust_icu_udata)
