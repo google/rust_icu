@@ -78,7 +78,7 @@ docker-test:
 #
 # % is expected to be a number equal to a valid ICU major version number, such
 # as "65" or such.
-static-bindgen-%.stamp:
+static-bindgen-%.stamp: rust_icu_sys/bindgen/run_bindgen.sh
 	mkdir -p ${CARGO_TARGET_DIR}
 	echo top_dir: ${TOP_DIR}
 	echo pwd: $(shell pwd)
@@ -101,6 +101,30 @@ static-bindgen: \
     static-bindgen-71.stamp \
     static-bindgen-72.stamp
 .PHONY: static-bindgen
+
+
+static-bindgen-special-%.stamp: rust_icu_sys/bindgen_special/run_bindgen.sh
+	mkdir -p "${CARGO_TARGET_DIR}"
+	echo top_dir: "${TOP_DIR}"
+	echo pwd: "$(shell pwd)"
+	if [ "${ICU_SOURCE_DIR}" == "" ]; then exit 1; fi
+	docker run ${TTY} \
+			--user=${UID}:${GID} \
+			--volume=${TOP_DIR}:/src/rust_icu \
+			--volume=${LOGNAME_HOME}/.cargo:/usr/local/cargo \
+			--volume=${LOGNAME_HOME}/code/icu:/src/icu \
+			--env="RUST_ICU_MAJOR_VERSION_NUMBER=$*" \
+			--entrypoint="/bin/bash" \
+			${DOCKER_REPO}/rust_icu_testenv-$*:${USED_BUILDENV_VERSION} \
+			  "-c" "env OUTPUT_DIR=./rust_icu/rust_icu_sys/bindgen_special \
+			  ./rust_icu/rust_icu_sys/bindgen_special/run_bindgen.sh"
+	touch $@
+
+# Keep only the latest version of the library in the static-bindgen target,
+# and any versions that do not have a lib.rs in rust_icu_sys/bindgen.
+static-bindgen-special: \
+    static-bindgen-special-72.stamp
+.PHONY: static-bindgen-special
 
 # Builds and pushes the build environment containers.  You would not normally
 # need to do this.
