@@ -22,7 +22,7 @@ paste = "1.0"
 
 [build-dependencies]
 anyhow = "1.0"
-bindgen = { version = "0.53.2", optional = true }
+bindgen = { version = "0", optional = true }
 lazy_static = "1.4"
 
 [lib]
