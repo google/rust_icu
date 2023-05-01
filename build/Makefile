@@ -22,9 +22,9 @@ DOCKER_REPO ?= filipfilmar
 all: \
 	push-buildenv.stamp \
 	latest.stamp \
+	v73.stamp \
 	v72.stamp \
 	v71.stamp \
-	v70.stamp \
 	v63.stamp \
 	push-testenv.stamp \
 	push-hermetic.stamp
@@ -77,12 +77,12 @@ latest.stamp: push-buildenv.stamp v72.stamp
 # files to be preserved, but it seems that only explicitly named files can be
 # preserved. I.e. %.stamp doesn't work.
 .PRECIOUS: \
+	push-maint-73.stamp push-testenv-73.stamp \
+	build-testenv-73.stamp tag-testenv-73.stamp \
 	push-maint-72.stamp push-testenv-72.stamp \
 	build-testenv-72.stamp tag-testenv-72.stamp \
 	push-maint-71.stamp push-testenv-71.stamp \
 	build-testenv-71.stamp tag-testenv-71.stamp \
-	push-maint-70.stamp push-testenv-70.stamp \
-	build-testenv-70.stamp tag-testenv-70.stamp \
 	push-maint-63.stamp push-testenv-63.stamp \
 	build-testenv-63.stamp tag-testenv-63.stamp
 
