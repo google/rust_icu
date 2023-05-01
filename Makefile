@@ -23,7 +23,7 @@ endif
 #   make USED_BUILDENV_VERSION=whatever-you-want docker-test
 #
 # NOTE: This version number is completely independent of the crate version.
-USED_BUILDENV_VERSION ?= 1.4.3
+USED_BUILDENV_VERSION ?= 1.73.0
 
 CARGO_FEATURE_VERSION :=
 
@@ -55,7 +55,7 @@ CARGO_TARGET_DIR := ${TMP}/rust_icu-${LOGNAME}-target
 # Pass different values for DOCKER_TEST_ENV and DOCKER_TEST_CARGO_TEST_ARGS to
 # test different configurations.  This is useful in Travis CI matrix tests, for
 # example.
-RUST_ICU_MAJOR_VERSION_NUMBER ?= 72
+RUST_ICU_MAJOR_VERSION_NUMBER ?= 73
 DOCKER_TEST_ENV ?= rust_icu_testenv-${RUST_ICU_MAJOR_VERSION_NUMBER}
 DOCKER_TEST_CARGO_TEST_ARGS ?=
 docker-test:
@@ -97,9 +97,9 @@ static-bindgen-%.stamp: rust_icu_sys/bindgen/run_bindgen.sh
 # and any versions that do not have a lib.rs in rust_icu_sys/bindgen.
 static-bindgen: \
     static-bindgen-63.stamp \
-    static-bindgen-70.stamp \
     static-bindgen-71.stamp \
-    static-bindgen-72.stamp
+    static-bindgen-72.stamp \
+    static-bindgen-73.stamp
 .PHONY: static-bindgen
 
 
@@ -123,7 +123,8 @@ static-bindgen-special-%.stamp: rust_icu_sys/bindgen_special/run_bindgen.sh
 # Keep only the latest version of the library in the static-bindgen target,
 # and any versions that do not have a lib.rs in rust_icu_sys/bindgen.
 static-bindgen-special: \
-    static-bindgen-special-72.stamp
+    static-bindgen-special-72.stamp \
+    static-bindgen-special-73.stamp
 .PHONY: static-bindgen-special
 
 # Builds and pushes the build environment containers.  You would not normally
@@ -220,8 +221,8 @@ publish: publish.stamp
 # A helper to up-rev the cargo crate versions.
 # NOTE: The cargo crate version number is completely independent of the Docker
 # build environment version number.
-UPREV_OLD_VERSION ?= 3.0.0
-UPREV_NEW_VERSION ?= 3.0.1
+UPREV_OLD_VERSION ?= 4.0.0
+UPREV_NEW_VERSION ?= 4.0.1
 define uprevfn
 	( \
 		cd $(1) && \

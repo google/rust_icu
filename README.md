@@ -2,7 +2,7 @@
 
 Item           | Description
 -------------- | -----------
-ICU 63, 68..72 | [![Test status](https://github.com/google/rust_icu/workflows/Test/badge.svg)](https://github.com/google/rust_icu/workflows/Test/badge.svg)
+Testing        | [![Test status](https://github.com/google/rust_icu/workflows/Test/badge.svg)](https://github.com/google/rust_icu/workflows/Test/badge.svg)
 Source         | https://github.com/google/rust_icu
 README         | https://github.com/google/rust_icu/blob/main/README.md
 Coverage       | [View report](/coverage/report.md)
@@ -113,11 +113,11 @@ The compatibility guarantee is as follows:
 2. Automated tests are executed for the ICU library version in use by the docs.rs
    system (so the documentation could be built).
 
-`rust_icu` version   | ICU 63.x | ICU 67.1 | ICU 68.1 | ICU 69.1 | ICU 70.1 | ICU 71.1 | ICU 72.1 |
--------------------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-1.0                  |    ✅    |    ✅    |    ✅    |    ✅    |          |          |          |
-2.0                  |    ✅    |          |    ✅    |    ✅    |    ✅    |    ✅    |          |
-3.0                  |    ✅    |          |          |          |    ✅    |    ✅    |    ✅    |
+`rust_icu` version   | ICU 63.x | ICU 69.1 | ICU 70.1 | ICU 71.1 | ICU 72.1 | ICU 73.1 |
+-------------------- | -------- | -------- | -------- | -------- | -------- | -------- |
+2.0                  |    ✅    |    ✅    |    ✅    |    ✅    |          |          |
+3.0                  |    ✅    |          |    ✅    |    ✅    |    ✅    |          |
+4.0                  |    ✅    |          |          |    ✅    |    ✅    |    ✅    |
 
 # Features
 

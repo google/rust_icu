@@ -6,7 +6,7 @@ license = "Apache-2.0"
 name = "ecma402_traits"
 readme = "README.md"
 repository = "https://github.com/google/rust_icu"
-version = "3.0.0"
+version = "4.0.0"
 
 description = """
 Rust implementation of type traits to support ECMA 402 specification in Rust.
