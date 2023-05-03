@@ -21,7 +21,7 @@ RUN mkdir -p $RUST_ICU_SOURCE_DIR && \
 COPY entrypoint.sh /entrypoint.sh 
 RUN chmod a+rwx /entrypoint.sh
 
-RUN cargo install --force --version 0.59.2 bindgen
+RUN cargo install --force bindgen
 
 ENV CARGO_TEST_ARGS=""
 ENV RUST_ICU_MAJOR_VERSION_NUMBER=""
