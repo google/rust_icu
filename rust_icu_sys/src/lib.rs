@@ -13,6 +13,10 @@
 // limitations under the License.
 #![doc(test(ignore))]
 
+// Notes:
+// * deref_nullptr: since rustc 1.53, bindgen causes UB warnings -- see
+// https://github.com/rust-lang/rust-bindgen/issues/1651 remove this once bindgen has fixed the
+// issue (currently at version 1.59.1)
 #![allow(
     dead_code,
     non_snake_case,
@@ -20,6 +24,7 @@
     non_upper_case_globals,
     unused_imports,
     rustdoc::bare_urls,
+    deref_nullptr,
 )]
 
 #[cfg(all(feature = "icu_version_in_env", feature = "icu_config"))]
