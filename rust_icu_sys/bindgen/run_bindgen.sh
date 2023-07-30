@@ -41,6 +41,7 @@ readonly BINDGEN_SOURCE_MODULES=(
         "uclean"
         "ucnv"
         "ucol"
+        "ucsdet"
         "udat"
         "udatpg"
         "udata"
@@ -71,6 +72,8 @@ readonly BINDGEN_ALLOWLIST_TYPES=(
         "UBreakIterator"
         "UBreakIteratorType"
         "UCalendar.*"
+        "UCharsetDetector"
+        "UCharsetMatch"
         "UChar.*"
         "UCol.*"
         "UCollation.*"
@@ -118,6 +121,7 @@ readonly BINDGEN_ALLOWLIST_FUNCTIONS=(
         "ucal_.*"
         "ucnv_.*"
         "ucol_.*"
+        "ucsdet_.*"
         "udat_.*"
         "udatpg_.*"
         "udata_.*"
@@ -189,7 +193,7 @@ function main() {
   local _functions_concat="$(\
     echo ${BINDGEN_ALLOWLIST_FUNCTIONS[@]} | tr ' ' '|')"
 
-  set -x 
+  set -x
 
   # Example: "67.1", "66.0.1"
   local _icu_version="$(icu-config --version)"
