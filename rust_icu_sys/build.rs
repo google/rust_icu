@@ -22,7 +22,7 @@
 #[cfg(feature = "use-bindgen")]
 mod inner {
     use {
-        anyhow::{Context, Result},
+        anyhow::{anyhow, Context, Ok, Result},
         bindgen,
         lazy_static::lazy_static,
         std::env,
@@ -42,6 +42,7 @@ mod inner {
             "uclean",
             "ucnv",
             "ucol",
+            "ucsdet",
             "udat",
             "udatpg",
             "udata",
@@ -71,6 +72,7 @@ mod inner {
             "ucal_.*",
             "ucnv_.*",
             "ucol_.*",
+            "ucsdet_.*",
             "udat_.*",
             "udatpg_.*",
             "udata_.*",
@@ -99,6 +101,8 @@ mod inner {
             "UBreakIterator",
             "UBreakIteratorType",
             "UCalendar.*",
+            "UCharsetDetector",
+            "UCharsetMatch",
             "UChar.*",
             "UCol.*",
             "UCollation.*",
@@ -214,7 +218,14 @@ mod inner {
         fn version(&mut self) -> Result<String> {
             self.rep
                 .run(&["--modversion", "icu-i18n"])
-                .with_context(|| "while getting ICU version; is icu-config in $PATH?")
+                .and_then(|str| {
+                    if str.is_empty() {
+                        Err(anyhow!("empty version string"))
+                    } else {
+                        Ok(str)
+                    }
+                })
+                .with_context(|| "failed to get ICU version; please ensure icu-config in $PATH")
         }
 
         fn install_dir(&mut self) -> Result<String> {
@@ -299,12 +310,12 @@ mod inner {
 
         // Add all types that should be exposed to rust code.
         for bindgen_type in BINDGEN_ALLOWLIST_TYPES.iter() {
-            builder = builder.whitelist_type(bindgen_type);
+            builder = builder.allowlist_type(bindgen_type);
         }
 
         // Add all functions that should be exposed to rust code.
         for bindgen_function in BINDGEN_ALLOWLIST_FUNCTIONS.iter() {
-            builder = builder.whitelist_function(bindgen_function);
+            builder = builder.allowlist_function(bindgen_function);
         }
 
         // Add the correct clang settings.
