@@ -3930,6 +3930,100 @@ extern "C" {
     ) -> *mut UCollator;
 }
 #[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct UCharsetDetector {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct UCharsetMatch {
+    _unused: [u8; 0],
+}
+extern "C" {
+    pub fn ucsdet_open_72(status: *mut UErrorCode) -> *mut UCharsetDetector;
+}
+extern "C" {
+    pub fn ucsdet_close_72(ucsd: *mut UCharsetDetector);
+}
+extern "C" {
+    pub fn ucsdet_setText_72(
+        ucsd: *mut UCharsetDetector,
+        textIn: *const ::std::os::raw::c_char,
+        len: i32,
+        status: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn ucsdet_setDeclaredEncoding_72(
+        ucsd: *mut UCharsetDetector,
+        encoding: *const ::std::os::raw::c_char,
+        length: i32,
+        status: *mut UErrorCode,
+    );
+}
+extern "C" {
+    pub fn ucsdet_detect_72(
+        ucsd: *mut UCharsetDetector,
+        status: *mut UErrorCode,
+    ) -> *const UCharsetMatch;
+}
+extern "C" {
+    pub fn ucsdet_detectAll_72(
+        ucsd: *mut UCharsetDetector,
+        matchesFound: *mut i32,
+        status: *mut UErrorCode,
+    ) -> *mut *const UCharsetMatch;
+}
+extern "C" {
+    pub fn ucsdet_getName_72(
+        ucsm: *const UCharsetMatch,
+        status: *mut UErrorCode,
+    ) -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn ucsdet_getConfidence_72(ucsm: *const UCharsetMatch, status: *mut UErrorCode) -> i32;
+}
+extern "C" {
+    pub fn ucsdet_getLanguage_72(
+        ucsm: *const UCharsetMatch,
+        status: *mut UErrorCode,
+    ) -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn ucsdet_getUChars_72(
+        ucsm: *const UCharsetMatch,
+        buf: *mut UChar,
+        cap: i32,
+        status: *mut UErrorCode,
+    ) -> i32;
+}
+extern "C" {
+    pub fn ucsdet_getAllDetectableCharsets_72(
+        ucsd: *const UCharsetDetector,
+        status: *mut UErrorCode,
+    ) -> *mut UEnumeration;
+}
+extern "C" {
+    pub fn ucsdet_isInputFilterEnabled_72(ucsd: *const UCharsetDetector) -> UBool;
+}
+extern "C" {
+    pub fn ucsdet_enableInputFilter_72(ucsd: *mut UCharsetDetector, filter: UBool) -> UBool;
+}
+extern "C" {
+    pub fn ucsdet_getDetectableCharsets_72(
+        ucsd: *const UCharsetDetector,
+        status: *mut UErrorCode,
+    ) -> *mut UEnumeration;
+}
+extern "C" {
+    pub fn ucsdet_setDetectableCharset_72(
+        ucsd: *mut UCharsetDetector,
+        encoding: *const ::std::os::raw::c_char,
+        enabled: UBool,
+        status: *mut UErrorCode,
+    );
+}
+#[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialOrd, PartialEq)]
 pub struct UFieldPosition {
     pub field: i32,
