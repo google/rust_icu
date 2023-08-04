@@ -221,7 +221,7 @@ publish: publish.stamp
 # NOTE: The cargo crate version number is completely independent of the Docker
 # build environment version number.
 UPREV_OLD_VERSION ?= 4.0.0
-UPREV_NEW_VERSION ?= 4.0.1
+UPREV_NEW_VERSION ?= 4.1.0
 define uprevfn
 	( \
 		cd $(1) && \
@@ -236,6 +236,7 @@ uprev:
 	$(call uprevfn,rust_icu_sys)
 	$(call uprevfn,rust_icu_ucal)
 	$(call uprevfn,rust_icu_ucol)
+	$(call uprevfn,rust_icu_ucsdet)
 	$(call uprevfn,rust_icu_udat)
 	$(call uprevfn,rust_icu_udata)
 	$(call uprevfn,rust_icu_uenum)
