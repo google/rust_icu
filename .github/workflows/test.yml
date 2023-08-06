@@ -40,3 +40,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: 'Test ICU version ${{ matrix.icu_version }}'
         run: 'make DOCKER_TEST_ENV=rust_icu_testenv-${{ matrix.icu_version }} RUST_ICU_MAJOR_VERSION_NUMBER=${{ matrix.icu_version }} DOCKER_TEST_CARGO_TEST_ARGS="--no-default-features --features ${{ matrix.feature_set }}" docker-test'
+  test-bindgen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: 'Test static-bindgen'
+        run: 'make static-bindgen'

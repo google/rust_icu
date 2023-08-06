@@ -134,12 +134,22 @@ readonly BINDGEN_ALLOWLIST_FUNCTIONS=(
         "umutablecp.*"
         "ucp.*"
 )
+  
+_bindgen="bindgen"
 
 function check_requirements() {
-  icu-config --version &> /dev/null || \
+  ldd --version
+
+  icu-config --version || \
     (echo "The generator requires icu-config to be in PATH; see README.md"; exit 1)
 
-  bindgen --version &> /dev/null || \
+  if [[ -x "/usr/local/cargo/bin/bindgen" ]]; then
+    _bindgen="/usr/local/cargo/bin/bindgen"
+  else
+    echo OOPS. No usable bindgen in path.
+  fi
+
+  "${_bindgen}" --version || \
     (echo "The generator requires bindgen to be in PATH; see README.md"; exit 1)
 
   awk --version &> /dev/null || \
@@ -184,20 +194,17 @@ function main() {
   local _icu_version_major="${_icu_version%.*}"
   local _icu_version_major="${_icu_version_major%.*}"
 
-  # Respectful code hack.
-  local _allowlist="$(echo "d2hpdGVsaXN0Cg==" | base64 -d -)"
-
 
   local _output_file="${OUTPUT_DIR}/lib_${_icu_version_major}.rs"
-  bindgen \
+  "${_bindgen}" \
     --default-enum-style=rust \
     --no-doc-comments \
     --with-derive-default \
     --with-derive-hash \
     --with-derive-partialord \
     --with-derive-partialeq \
-    --"${_allowlist}"-type="${_allowlist_types_concat}" \
-    --"${_allowlist}"-function="${_functions_concat}" \
+    --allowlist-type="${_allowlist_types_concat}" \
+    --allowlist-function="${_functions_concat}" \
     --opaque-type="" \
     --output="${_output_file}" \
     "${MAIN_HEADER_FILE}" \
