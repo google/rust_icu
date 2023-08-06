@@ -85,11 +85,10 @@ static-bindgen-%.stamp: rust_icu_sys/bindgen/run_bindgen.sh
 	docker run ${TTY} \
 			--user=${UID}:${GID} \
 			--volume=${TOP_DIR}:/src/rust_icu \
-			--volume=${LOGNAME_HOME}/.cargo:/usr/local/cargo \
 			--env="RUST_ICU_MAJOR_VERSION_NUMBER=$*" \
 			--entrypoint="/bin/bash" \
 			${DOCKER_REPO}/rust_icu_testenv-$*:${USED_BUILDENV_VERSION} \
-			  "-c" "env OUTPUT_DIR=./rust_icu/rust_icu_sys/bindgen \
+			  "-l" "-c" "env OUTPUT_DIR=./rust_icu/rust_icu_sys/bindgen \
 			  ./rust_icu/rust_icu_sys/bindgen/run_bindgen.sh"
 	touch $@
 
