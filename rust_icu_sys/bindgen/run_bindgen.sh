@@ -25,6 +25,9 @@
 
 set -eo pipefail
 
+# Cargo needs to be in path as well.
+PATH=$PATH:/usr/local/cargo/bin
+
 # The directory into which the rust bindings file will be written.  If left
 # unset, the current directory is the default.
 OUTPUT_DIR=${OUTPUT_DIR:-.}
