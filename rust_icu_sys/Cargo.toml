@@ -21,7 +21,7 @@ libc = "0.2.34"
 paste = "1.0"
 
 [build-dependencies]
-anyhow = "1.0"
+anyhow = "1.0.72"
 bindgen = { version = "0.59.2", optional = true }
 lazy_static = "1.4"
 
