@@ -1,7 +1,7 @@
 [package]
 edition = "2018"
 name = "rust_icu_common"
-version = "4.2.0"
+version = "4.2.1"
 authors = ["Google Inc."]
 license = "Apache-2.0"
 readme = "README.md"
@@ -19,7 +19,7 @@ keywords = ["icu", "unicode", "i18n", "l10n"]
 anyhow = "1.0.25"
 thiserror = "1.0.9"
 
-rust_icu_sys = { path = "../rust_icu_sys", version = "4.2.0", default-features = false}
+rust_icu_sys = { path = "../rust_icu_sys", version = "4.2.1", default-features = false}
 
 # See the feature description in ../rust_icu_sys/Cargo.toml for details.
 [features]

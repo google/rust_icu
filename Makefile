@@ -222,7 +222,7 @@ publish: publish.stamp
 # NOTE: The cargo crate version number is completely independent of the Docker
 # build environment version number.
 UPREV_OLD_VERSION ?= 4.2.0
-UPREV_NEW_VERSION ?= 4.3.0
+UPREV_NEW_VERSION ?= 4.2.1
 define uprevfn
 	( \
 		cd $(1) && \
