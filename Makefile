@@ -200,6 +200,7 @@ publish-rust_icu.stamp: \
 	$(call publishfn,rust_icu_unorm2)
 	$(call publishfn,rust_icu_uchar)
 	$(call publishfn,rust_icu_ucnv)
+	$(call publishfn,rust_icu_ucsdet)
 	touch $@
 
 publish-ecma402_traits.stamp:
