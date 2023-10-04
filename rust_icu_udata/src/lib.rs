@@ -14,7 +14,6 @@
 
 use std::path::Path;
 use std::ffi;
-use std::ptr;
 
 use {
     rust_icu_common as common, rust_icu_sys as sys, rust_icu_sys::versioned_function,
@@ -27,8 +26,20 @@ enum Rep {
     /// The data memory is backed by a user-supplied buffer.
     Buffer(Vec<u8>),
     /// The data memory is backed by a resource file.
-    Resource(ptr::NonNull<sys::UDataMemory>),
+    Resource(
+        // This would have been std::ptr::NonNull if we didn't have to
+        // implement Send and Sync.
+        // We only ever touch this pointer in Rust when we initialize
+        // Rep::Resource, and when we dealocate Rep::Resource.
+        *const sys::UDataMemory,
+    ),
 }
+
+// Safety: The *const sys::UDataMemory above is only used by the underlying C++
+// library.
+unsafe impl Send for Rep {}
+unsafe impl Sync for Rep {}
+
 
 /// Implements `UDataMemory`.
 ///
@@ -48,13 +59,18 @@ pub struct UDataMemory {
 impl Drop for UDataMemory {
     // Implements `u_cleanup`.
     fn drop(&mut self) {
-        if let Rep::Resource(ref r) = self.rep {
+        if let Rep::Resource(r) = self.rep {
             unsafe {
-                versioned_function!(udata_close)(r.as_ptr())
+                // Safety: there is no other way to close the memory that the
+                // underlying C++ library uses but to pass it into this function.
+                versioned_function!(udata_close)(r as *mut sys::UDataMemory)
             };
         }
         // Without this, resource references will remain, but memory will be gone.
-        unsafe { versioned_function!(u_cleanup)() };
+        unsafe {
+            // Safety: no other way to call this function.
+            versioned_function!(u_cleanup)()
+        };
     }
 }
 
@@ -97,11 +113,14 @@ impl crate::UDataMemory {
         let path_cstr = ffi::CString::new(path.to_str().unwrap())?;
         let name_cstr = ffi::CString::new(name)?;
         let type_cstr = ffi::CString::new(a_type)?;
-        let raw = unsafe {
+        let rep = unsafe {
+            // Safety: we do what we must to call the underlying unsafe C API, and only return an
+            // opaque enum, to ensure that no rust client code may touch the raw pointer.
             assert!(common::Error::is_ok(status));
+
             // Would be nicer if there were examples of udata_open usage to
             // verify this.
-            versioned_function!(udata_open)(
+            let rep: *const sys::UDataMemory = versioned_function!(udata_open)(
                 path_cstr.as_ptr(),
                 if type_cstr.is_empty() {
                     std::ptr::null()
@@ -113,10 +132,43 @@ impl crate::UDataMemory {
                 } else {
                     name_cstr.as_ptr()
                 },
-                &mut status)
+                &mut status);
+            // Sadly we can not use NonNull, as we can not make the resulting
+            // type Sync or Send.
+            assert!(!rep.is_null());
+            Rep::Resource(rep)
         };
         common::Error::ok_or_warning(status)?;
-        let rep = ptr::NonNull::new(raw).expect("`raw` must not be null");
-        Ok(crate::UDataMemory{ rep: Rep::Resource(rep)})
+        Ok(crate::UDataMemory{ rep })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use std::sync::{Mutex, Weak, Arc};
+    use std::thread;
+
+    // We don't use UDataMemory in threaded contexts, but our users do. So let's
+    // ensure we can do this.
+    #[test]
+    fn send_sync_impl() {
+        let memory: Arc<Mutex<Weak<UDataMemory>>>= Arc::new(Mutex::new(Weak::new()));
+        // Ensure Sync.
+        let _clone = memory.clone();
+        thread::spawn(move || {
+            // Ensure Send.
+            let _m = memory;
+        });
+    }
+
+    #[test]
+    fn send_impl() {
+        let memory: Weak<UDataMemory> = Weak::new();
+        let _clone = memory.clone();
+        thread::spawn(move || {
+            let _m = memory;
+        });
     }
 }
