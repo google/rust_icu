@@ -24,7 +24,6 @@ use {
     rust_icu_common::simple_drop_impl,
     rust_icu_sys as sys,
     rust_icu_sys::versioned_function,
-    rust_icu_sys::*,
     rust_icu_uformattable as uformattable, rust_icu_uloc as uloc, rust_icu_ustring as ustring,
     rust_icu_ustring::buffered_uchar_method_with_retry,
     std::{convert::TryFrom, convert::TryInto, ptr},

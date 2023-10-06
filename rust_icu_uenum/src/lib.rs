@@ -27,7 +27,7 @@ use {
 pub struct Enumeration {
     // The raw underlying character array, in case the underlying char array is
     // owned by this enumeration.
-    raw: Option<common::CStringVec>,
+    _raw: Option<common::CStringVec>,
 
     // Internal low-level representation of the enumeration.  The internal
     // representation relies on `raw` and `len` above and must live at most as
@@ -76,7 +76,7 @@ impl TryFrom<&[&str]> for Enumeration {
         assert!(!rep.is_null());
         Ok(Enumeration {
             rep,
-            raw: Some(raw),
+            _raw: Some(raw),
         })
     }
 }
@@ -136,10 +136,10 @@ impl Enumeration {
     /// create an [Enumeration].
     #[doc(hidden)]
     pub unsafe fn from_raw_parts(
-        raw: Option<common::CStringVec>,
+        _raw: Option<common::CStringVec>,
         rep: *mut sys::UEnumeration,
     ) -> Enumeration {
-        Enumeration { raw, rep }
+        Enumeration { _raw, rep }
     }
 }
 
@@ -157,7 +157,7 @@ pub fn ucal_open_country_time_zones(country: &str) -> Result<Enumeration, common
     };
     common::Error::ok_or_warning(status)?;
     Ok(Enumeration {
-        raw: None,
+        _raw: None,
         rep: raw_enum,
     })
 }
@@ -199,7 +199,7 @@ pub fn ucal_open_time_zone_id_enumeration(
     };
     common::Error::ok_or_warning(status)?;
     Ok(Enumeration {
-        raw: None,
+        _raw: None,
         rep: raw_enum,
     })
 }
@@ -218,7 +218,7 @@ pub fn open_time_zones() -> Result<Enumeration, common::Error> {
     };
     common::Error::ok_or_warning(status)?;
     Ok(Enumeration {
-        raw: None,
+        _raw: None,
         rep: raw_enum,
     })
 }
@@ -240,7 +240,7 @@ pub fn uloc_open_keywords(locale: &str) -> Result<Enumeration, common::Error> {
         Ok(Enumeration::empty())
     } else {
         Ok(Enumeration {
-            raw: None,
+            _raw: None,
             rep: raw_enum,
         })
     }

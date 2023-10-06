@@ -24,7 +24,6 @@ use {
     rust_icu_common as common,
     rust_icu_sys as sys,
     rust_icu_sys::versioned_function,
-    rust_icu_sys::*,
     std::ffi,
 };
 
