@@ -53,7 +53,7 @@ pub fn set_data_directory(dir: &Path) {
 }
 
 /// The type of the ICU resource requested.  Some standard resources have their
-/// canned types. In case you run into one that is not captured here, use [Custom],
+/// canned types. In case you run into one that is not captured here, use `Custom`,
 /// and consider sending a pull request to add the new resource type.
 pub enum Type {
     /// An empty resource type. This is ostensibly allowed, but unclear when
@@ -171,28 +171,43 @@ impl crate::UDataMemory {
     /// [2]: https://unicode-org.github.io/icu/userguide/icu_data/#icu-data-directory
     pub fn open(path: Option<&Path>, a_type: Type, name: Option<&str>) -> Result<Self, common::Error> {
         let mut status = sys::UErrorCode::U_ZERO_ERROR;
+
         let path_cstr = path.map(|s| { ffi::CString::new(s.to_str().expect("should never be a runtime error")).unwrap()});
         let name_cstr = name.map(|s| { ffi::CString::new(s).expect("should never be a runtime error") } );
         let type_cstr = ffi::CString::new(a_type.as_ref()).expect("should never be a runtime errror");
-        let rep = unsafe {
+
+        let rep = Self::get_resource(
+            path_cstr.as_ref().map(|s| s.as_c_str()),
+            type_cstr.as_c_str(), 
+            name_cstr.as_ref().map(|s| s.as_c_str()), 
+            &mut status);
+        common::Error::ok_or_warning(status)?;
+
+        // Make sure that all CStrs outlive the call to Self::get_resource. It is
+        // all too easy to omit `path_cstr.as_ref()` above, resulting in *_cstr
+        // being destroyed before a call to Self::get_resource happens. Fun.
+        let (_a, _b, _c) = (path_cstr, name_cstr, type_cstr);
+        Ok(crate::UDataMemory{ rep })
+    }
+
+    fn get_resource(path: Option<&ffi::CStr>, a_type: &ffi::CStr, name: Option<&ffi::CStr>, status: &mut sys::UErrorCode) -> Rep {
+        unsafe {
             // Safety: we do what we must to call the underlying unsafe C API, and only return an
             // opaque enum, to ensure that no rust client code may touch the raw pointer.
-            assert!(common::Error::is_ok(status));
+            assert!(common::Error::is_ok(*status));
 
             // Would be nicer if there were examples of udata_open usage to
             // verify this.
             let rep: *const sys::UDataMemory = versioned_function!(udata_open)(
-                path_cstr.map(|s| s.as_ptr()).unwrap_or(std::ptr::null()),
-                type_cstr.as_ptr(),
-                name_cstr.map(|c| c.as_ptr()).unwrap_or(std::ptr::null()),
-                &mut status);
+                path.map(|s| s.as_ptr()).unwrap_or(std::ptr::null()),
+                a_type.as_ptr(),
+                name.map(|c| c.as_ptr()).unwrap_or(std::ptr::null()),
+                status);
             // Sadly we can not use NonNull, as we can not make the resulting
             // type Sync or Send.
             assert!(!rep.is_null());
             Rep::Resource(rep)
-        };
-        common::Error::ok_or_warning(status)?;
-        Ok(crate::UDataMemory{ rep })
+        }
     }
 }
 
