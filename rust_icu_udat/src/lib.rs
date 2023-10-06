@@ -23,7 +23,7 @@
 
 use {
     rust_icu_common as common, rust_icu_sys as sys, rust_icu_sys::versioned_function,
-    rust_icu_sys::*, rust_icu_ucal as ucal, rust_icu_uloc as uloc, rust_icu_ustring as ustring,
+    rust_icu_ucal as ucal, rust_icu_uloc as uloc, rust_icu_ustring as ustring,
 };
 use std::convert::{TryFrom, TryInto};
 
@@ -392,7 +392,7 @@ mod tests {
     fn test_format_default_calendar() -> Result<(), common::Error> {
         #[derive(Debug)]
         struct Test {
-            name: &'static str,
+            _name: &'static str,
             locale: &'static str,
             timezone: &'static str,
             date: sys::UDate,
@@ -401,7 +401,7 @@ mod tests {
         }
         let tests = vec![
             Test {
-                name: "French default",
+                _name: "French default",
                 locale: "fr-FR",
                 timezone: "America/Los_Angeles",
                 date: 100.0,
@@ -410,7 +410,7 @@ mod tests {
                 calendar: None,
             },
             Test {
-                name: "French default, a few hours later",
+                _name: "French default, a few hours later",
                 locale: "fr-FR",
                 timezone: "America/Los_Angeles",
                 date: 100000.0,
@@ -419,7 +419,7 @@ mod tests {
                 calendar: None,
             },
             Test {
-                name: "Serbian default",
+                _name: "Serbian default",
                 locale: "sr-RS",
                 timezone: "America/Los_Angeles",
                 date: 100000.0,
@@ -428,7 +428,7 @@ mod tests {
                 calendar: None,
             },
             Test {
-                name: "Dutch default",
+                _name: "Dutch default",
                 locale: "nl-NL",
                 timezone: "America/Los_Angeles",
                 date: 100000.0,
@@ -436,7 +436,7 @@ mod tests {
                 calendar: None,
             },
             Test {
-                name: "Dutch islamic overrides locale calendar and timezone",
+                _name: "Dutch islamic overrides locale calendar and timezone",
                 locale: "nl-NL-u-ca-gregorian",
                 timezone: "America/Los_Angeles",
                 date: 100000.0,
@@ -451,7 +451,7 @@ mod tests {
                 ),
             },
             Test {
-                name: "Dutch islamic take from locale",
+                _name: "Dutch islamic take from locale",
                 locale: "nl-NL-u-ca-islamic",
                 timezone: "America/Los_Angeles",
                 date: 200000.0,
@@ -459,7 +459,7 @@ mod tests {
                 calendar: None,
             },
             Test {
-                name: "Dutch islamic take from locale",
+                _name: "Dutch islamic take from locale",
                 locale: "nl-NL-u-ca-islamic",
                 timezone: "America/Los_Angeles",
                 date: 200000.0,

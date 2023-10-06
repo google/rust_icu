@@ -580,7 +580,7 @@ mod tests {
         let mut language_tag: String = "und-CO".to_owned();
         let language_tag_rest = (0..500).map(|_| " ").collect::<String>();
         language_tag.push_str(&language_tag_rest);
-        let loc = ULoc::for_language_tag(&language_tag)?;
+        let _loc = ULoc::for_language_tag(&language_tag)?;
         Ok(())
     }
 

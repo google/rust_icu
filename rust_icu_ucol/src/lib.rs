@@ -71,7 +71,6 @@ use {
     rust_icu_common::simple_drop_impl,
     rust_icu_sys as sys,
     rust_icu_sys::versioned_function,
-    rust_icu_sys::*,
     rust_icu_uenum as uenum, rust_icu_ustring as ustring,
     std::{cmp::Ordering, convert::TryFrom, ffi, ptr},
 };
