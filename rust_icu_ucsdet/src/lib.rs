@@ -37,6 +37,7 @@ use {
         ffi::CStr,
         marker::PhantomData,
         mem::transmute,
+        os::raw::c_char,
         ptr::{self, NonNull},
     },
 };
@@ -87,7 +88,7 @@ impl<'detector> CharsetDetector<'detector> {
         unsafe {
             versioned_function!(ucsdet_setText)(
                 self.rep.as_ptr(),
-                text.as_ptr() as *const i8,
+                text.as_ptr() as *const c_char,
                 text.len() as i32,
                 &mut status,
             );
@@ -101,7 +102,7 @@ impl<'detector> CharsetDetector<'detector> {
         unsafe {
             versioned_function!(ucsdet_setDeclaredEncoding)(
                 self.rep.as_ptr(),
-                encoding.as_ptr() as *const i8,
+                encoding.as_ptr() as *const c_char,
                 encoding.len() as i32,
                 &mut status,
             );
