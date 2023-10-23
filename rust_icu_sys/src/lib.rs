@@ -87,7 +87,15 @@ extern crate libc;
 #[cfg_attr(feature = "static", link(name = "icui18n", kind = "static"))]
 #[cfg_attr(feature = "static", link(name = "icuuc", kind = "static"))]
 #[cfg_attr(feature = "static", link(name = "icudata", kind = "static"))]
-#[cfg_attr(feature = "static", link(name = "stdc++", kind = "dylib"))]
+// On systems such as macOS, libc++ is the default library
+#[cfg_attr(
+    all(target_vendor = "apple", feature = "static"),
+    link(name = "c++", kind = "dylib")
+)]
+#[cfg_attr(
+    not(all(target_vendor = "apple", feature = "static")),
+    link(name = "stdc++", kind = "dylib")
+)]
 extern "C" {}
 
 impl From<i8> for UCharCategory {
