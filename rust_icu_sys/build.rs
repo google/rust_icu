@@ -478,6 +478,24 @@ macro_rules! versioned_function {
     }
 }
 
+fn rustc_link_libs() {
+    if cfg!(feature = "static") {
+        println!("cargo:rustc-link-lib=static=icuuc");
+        println!("cargo:rustc-link-lib=static=icui18n");
+        println!("cargo:rustc-link-lib=static:+whole-archive,-bundle=icudata");
+        // On systems such as macOS, libc++ is the default library
+        if cfg!(target_vendor = "apple") {
+            println!("cargo:rustc-link-lib=dylib=c++");
+        } else {
+            println!("cargo:rustc-link-lib=dylib=stdc++");
+        }
+    } else {
+        println!("cargo:rustc-link-lib=dylib=icuuc");
+        println!("cargo:rustc-link-lib=dylib=icui18n");
+        println!("cargo:rustc-link-lib=dylib=icudata");
+    }
+}
+
 #[cfg(feature = "use-bindgen")]
 fn main() -> Result<(), anyhow::Error> {
     std::env::set_var("RUST_BACKTRACE", "full");
@@ -486,10 +504,17 @@ fn main() -> Result<(), anyhow::Error> {
         return Ok(());
     }
     inner::icu_config_autodetect()?;
+    rustc_link_libs();
     println!("done:true");
     Ok(())
 }
 
 /// No-op if use-bindgen is disabled.
 #[cfg(not(feature = "use-bindgen"))]
-fn main() {}
+fn main() {
+    // can be used to provide an extra path to find libicuuc, libicui18n and libicudata
+    if let Ok(lib_dir) = std::env::var("RUST_ICU_LINK_SEARCH_DIR") {
+        println!("cargo:rustc-link-search=native={}", lib_dir);
+    }
+    rustc_link_libs();
+}

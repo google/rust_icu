@@ -23,7 +23,7 @@
     non_upper_case_globals,
     unused_imports,
     rustdoc::bare_urls,
-    deref_nullptr,
+    deref_nullptr
 )]
 
 #[cfg(all(feature = "icu_version_in_env", feature = "icu_config"))]
@@ -80,24 +80,6 @@ impl std::fmt::Display for UErrorCode {
 
 extern crate libc;
 
-// A "fake" extern used to express link preferences.  The libraries mentioned
-// below will be converted to "-l" flags to the linker.
-#[cfg_attr(not(feature = "static"), link(name = "icui18n", kind = "dylib"))]
-#[cfg_attr(not(feature = "static"), link(name = "icuuc", kind = "dylib"))]
-#[cfg_attr(feature = "static", link(name = "icui18n", kind = "static"))]
-#[cfg_attr(feature = "static", link(name = "icuuc", kind = "static"))]
-#[cfg_attr(feature = "static", link(name = "icudata", kind = "static"))]
-// On systems such as macOS, libc++ is the default library
-#[cfg_attr(
-    all(target_vendor = "apple", feature = "static"),
-    link(name = "c++", kind = "dylib")
-)]
-#[cfg_attr(
-    not(all(target_vendor = "apple", feature = "static")),
-    link(name = "stdc++", kind = "dylib")
-)]
-extern "C" {}
-
 impl From<i8> for UCharCategory {
     fn from(value: i8) -> Self {
         match value {
@@ -132,7 +114,7 @@ impl From<i8> for UCharCategory {
             28 => UCharCategory::U_INITIAL_PUNCTUATION,
             29 => UCharCategory::U_FINAL_PUNCTUATION,
             30 => UCharCategory::U_CHAR_CATEGORY_COUNT,
-            _ => { 
+            _ => {
                 panic!("could not convert: {}", value);
             }
         }

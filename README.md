@@ -142,6 +142,7 @@ Feature              | Default? | Description
 `renaming`           | Yes      | If set, ICU bindings are generated with version numbers appended. This is called "renaming" in ICU, and is normally needed only when linking against specific ICU version is required, for example to work around having to link different ICU versions. See [the ICU documentation](https://unicode-org.github.io/icu/userguide/icu/design.html) for a discussion of renaming. **This feature MUST be used when `bindgen` is NOT used.**
 `icu_config`         | Yes      | If set, the binary icu-config will be used to configure the library. Turn this feature off if you do not want `build.rs` to try to autodetect the build environment. You will want to skip this feature if your build environment configures ICU in a different way. **This feature is only meaningful when `bindgen` feature is used; otherwise it has no effect.**
 `icu_version_in_env` | No       | If set, ICU bindings are made for the ICU version specified in the environment variable `RUST_ICU_MAJOR_VERSION_NUMBER`, which is made available to cargo at build time. See section below for details on how to use this feature. **This feature is only meaningful when `bindgen` feature is NOT used; otherwise it has no effect.**
+`static`             | No       | If set, link ICU libraries statically (and the standard C++ dynamically). You can use `RUST_ICU_LINK_SEARCH_DIR` to add an extra path to the search path if you have a build of ICU in a non-standard directory.
 
 # Prerequisites
 
