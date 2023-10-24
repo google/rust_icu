@@ -77,6 +77,7 @@ docker-test:
 macos-test:
 	brew install icu4c
 	RUST_ICU_LINK_SEARCH_DIR=$(brew --prefix)/opt/icu4c/lib \
+	RUST_ICU_MAJOR_VERSION_NUMBER=${RUST_ICU_MAJOR_VERSION_NUMBER} \
 	cargo test --no-default-features --features=icu_version_64_plus,icu_version_67_plus,icu_version_68_plus,icu_version_in_env,renaming,static
 .PHONY: macos-test
 
