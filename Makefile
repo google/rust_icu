@@ -73,6 +73,13 @@ docker-test:
 			${DOCKER_REPO}/${DOCKER_TEST_ENV}:${USED_BUILDENV_VERSION}
 .PHONY: docker-test
 
+# Test with the homebrew version of icu4c on macOS with static linking (the default way of linking for distribution on Apple platforms)
+macos-test:
+	brew install icu4c
+	RUST_ICU_LINK_SEARCH_DIR=$(brew --prefix)/opt/icu4c/lib \
+	cargo test --no-default-features --features=icu_version_64_plus,icu_version_67_plus,icu_version_68_plus,icu_version_in_env,renaming,static
+.PHONY: macos-test
+
 # Refreshes the static bindgen output (contents of ./rust_icu_sys/bindgen) based
 # on the currently present ICU versions in the test environment.
 #

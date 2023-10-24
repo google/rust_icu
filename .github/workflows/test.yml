@@ -46,3 +46,14 @@ jobs:
       - uses: actions/checkout@v2
       - name: 'Test static-bindgen'
         run: 'make static-bindgen'
+  test-static-linking:
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - if: matrix.runs-on == 'macos-latest'
+        run: make macos-test
+      - if: matrix.runs-on == 'ubuntu-latest'
+        run: make test
