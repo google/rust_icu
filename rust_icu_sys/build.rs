@@ -225,7 +225,7 @@ mod inner {
                         Ok(str)
                     }
                 })
-                .with_context(|| "failed to get ICU version; please ensure icu-config in $PATH")
+                .with_context(|| "failed to get ICU version; please ensure pkg-config in $PATH")
         }
 
         fn install_dir(&mut self) -> Result<String> {

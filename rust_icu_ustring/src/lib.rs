@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! # Implemuntation of the functions in the ICU4C `ustring.h` header.
+//! # Implementation of the functions in the ICU4C `ustring.h` header.
 //!
 //! This is where the UTF-8 strings get converted back and forth to the UChar
 //! representation.
