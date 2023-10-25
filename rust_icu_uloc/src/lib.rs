@@ -15,13 +15,16 @@
 use {
     rust_icu_common as common,
     rust_icu_common::buffered_string_method_with_retry,
+    rust_icu_sys as sys,
     rust_icu_sys::versioned_function,
     rust_icu_sys::*,
     rust_icu_uenum::Enumeration,
+    rust_icu_ustring as ustring,
+    rust_icu_ustring::buffered_uchar_method_with_retry,
     std::{
         cmp::Ordering,
         collections::HashMap,
-        convert::{From, TryFrom},
+        convert::{From, TryFrom, TryInto},
         ffi, fmt,
         os::raw,
     },
@@ -209,10 +212,153 @@ impl ULoc {
         self.call_buffered_string_method_to_option(versioned_function!(uloc_getVariant))
     }
 
+    /// Implements `uloc_getName`.
+    pub fn name(&self) -> Option<String> {
+        self.call_buffered_string_method_to_option(versioned_function!(uloc_getName))
+    }
+
     /// Implements `uloc_canonicalize` from ICU4C.
     pub fn canonicalize(&self) -> Result<ULoc, common::Error> {
         self.call_buffered_string_method(versioned_function!(uloc_canonicalize))
             .map(|repr| ULoc { repr })
+    }
+
+    /// Implements 'uloc_getISO3Language' from ICU4C.
+    pub fn iso3_language(&self) -> Option<String> {
+        let lang = unsafe {
+            ffi::CStr::from_ptr(
+                versioned_function!(uloc_getISO3Language)(self.as_c_str().as_ptr())
+            ).to_str()
+        };
+        let value = lang.unwrap();
+        if value.is_empty() {
+            None
+        } else {
+            Some(value.to_string())
+        }
+    }
+
+    /// Implements 'uloc_getISO3Country' from ICU4C.
+    pub fn iso3_country(&self) -> Option<String> {
+        let country = unsafe {
+            ffi::CStr::from_ptr(
+                versioned_function!(uloc_getISO3Country)(self.as_c_str().as_ptr())
+            ).to_str()
+        };
+        let value = country.unwrap();
+        if value.is_empty() {
+            None
+        } else {
+            Some(value.to_string())
+        }
+    }
+
+    /// Implements `uloc_getDisplayLanguage`.
+    pub fn display_language(&self, display_locale: &ULoc) -> Result<ustring::UChar, common::Error> {
+        buffered_uchar_method_with_retry!(
+            display_language_impl,
+            LOCALE_CAPACITY,
+            [locale: *const raw::c_char, display_locale: *const raw::c_char,],
+            []
+        );
+        display_language_impl(
+            versioned_function!(uloc_getDisplayLanguage),
+            self.as_c_str().as_ptr(),
+            display_locale.as_c_str().as_ptr(),
+        )
+    }
+
+    /// Implements `uloc_getDisplayScript`.
+    pub fn display_script(&self, display_locale: &ULoc) -> Result<ustring::UChar, common::Error> {
+        buffered_uchar_method_with_retry!(
+            display_script_impl,
+            LOCALE_CAPACITY,
+            [locale: *const raw::c_char, display_locale: *const raw::c_char,],
+            []
+        );
+        display_script_impl(
+            versioned_function!(uloc_getDisplayScript),
+            self.as_c_str().as_ptr(),
+            display_locale.as_c_str().as_ptr(),
+        )
+    }
+
+    /// Implements `uloc_getDisplayCountry`.
+    pub fn display_country(&self, display_locale: &ULoc) -> Result<ustring::UChar, common::Error> {
+        buffered_uchar_method_with_retry!(
+            display_country_impl,
+            LOCALE_CAPACITY,
+            [locale: *const raw::c_char, display_locale: *const raw::c_char,],
+            []
+        );
+        display_country_impl(
+            versioned_function!(uloc_getDisplayCountry),
+            self.as_c_str().as_ptr(),
+            display_locale.as_c_str().as_ptr(),
+        )
+    }
+
+    /// Implements `uloc_getDisplayVariant`.
+    pub fn display_variant(&self, display_locale: &ULoc) -> Result<ustring::UChar, common::Error> {
+        buffered_uchar_method_with_retry!(
+            display_variant_impl,
+            LOCALE_CAPACITY,
+            [locale: *const raw::c_char, display_locale: *const raw::c_char,],
+            []
+        );
+        display_variant_impl(
+            versioned_function!(uloc_getDisplayCountry),
+            self.as_c_str().as_ptr(),
+            display_locale.as_c_str().as_ptr(),
+        )
+    }
+
+    /// Implements `uloc_getDisplayKeyword`.
+    pub fn display_keyword(keyword: &String, display_locale: &ULoc) -> Result<ustring::UChar, common::Error> {
+        buffered_uchar_method_with_retry!(
+            display_keyword_impl,
+            LOCALE_CAPACITY,
+            [keyword: *const raw::c_char, display_locale: *const raw::c_char,],
+            []
+        );
+        let keyword = ffi::CString::new(keyword.as_str()).unwrap();
+        display_keyword_impl(
+            versioned_function!(uloc_getDisplayKeyword),
+            keyword.as_ptr(),
+            display_locale.as_c_str().as_ptr(),
+        )
+    }
+
+    /// Implements `uloc_getDisplayKeywordValue`.
+    pub fn display_keyword_value(&self, keyword: &String, display_locale: &ULoc) -> Result<ustring::UChar, common::Error> {
+        buffered_uchar_method_with_retry!(
+            display_keyword_value_impl,
+            LOCALE_CAPACITY,
+            [keyword: *const raw::c_char, value: *const raw::c_char, display_locale: *const raw::c_char,],
+            []
+        );
+        let keyword = ffi::CString::new(keyword.as_str()).unwrap();
+        display_keyword_value_impl(
+            versioned_function!(uloc_getDisplayKeywordValue),
+            self.as_c_str().as_ptr(),
+            keyword.as_ptr(),
+            display_locale.as_c_str().as_ptr(),
+        )
+    }
+
+    /// Implements `uloc_getDisplayName`.
+    pub fn display_name(&self, display_locale: &ULoc) -> Result<ustring::UChar, common::Error> {
+        buffered_uchar_method_with_retry!(
+            display_name_impl,
+            LOCALE_CAPACITY,
+            [locale: *const raw::c_char, display_locale: *const raw::c_char,],
+            []
+        );
+        display_name_impl(
+            versioned_function!(uloc_getDisplayName),
+            self.as_c_str().as_ptr(),
+            display_locale.as_c_str().as_ptr(),
+        )
     }
 
     /// Implements `uloc_addLikelySubtags` from ICU4C.
@@ -635,6 +781,20 @@ mod tests {
     }
 
     #[test]
+    fn test_name() -> Result<(), Error> {
+        let loc = ULoc::try_from("en-US")?;
+        match loc.name() {
+            None => assert!(false),
+            Some(name) => assert_eq!(name, "en_US"),
+        }
+        let loc = ULoc::try_from("und")?;
+        assert_eq!(loc.name(), None);
+        let loc = ULoc::try_from("")?;
+        assert_eq!(loc.name(), None);
+        Ok(())
+    }
+
+    #[test]
     fn test_default_locale() {
         let loc = ULoc::try_from("fr-fr").expect("get fr_FR locale");
         set_default(&loc).expect("successful set of locale");
@@ -984,5 +1144,97 @@ mod tests {
     fn test_equivalence() {
         let loc = ULoc::try_from("sr@timezone=America/Los_Angeles").unwrap();
         assert_eq!(ULoc::for_language_tag("sr-u-tz-uslax").unwrap(), loc);
+    }
+
+    #[test]
+    fn test_for_language_error() {
+        let loc = ULoc::for_language_tag("en_US").unwrap();
+        assert_eq!(loc.language(), None);
+        assert_eq!(loc.country(), None);
+    }
+
+    #[test]
+    fn test_iso3_language() {
+        let loc = ULoc::for_language_tag("en-US").unwrap();
+        let iso_lang = loc.iso3_language();
+        assert_eq!(iso_lang, Some("eng".to_string()));
+        let loc = ULoc::for_language_tag("und").unwrap();
+        let iso_lang = loc.iso3_language();
+        assert_eq!(iso_lang, None);
+    }
+
+    #[test]
+    fn test_iso3_country() {
+        let loc = ULoc::for_language_tag("en-US").unwrap();
+        let iso_country = loc.iso3_country();
+        assert_eq!(iso_country, Some("USA".to_string()));
+        let loc = ULoc::for_language_tag("und").unwrap();
+        let iso_country = loc.iso3_country();
+        assert_eq!(iso_country, None);
+    }
+
+    #[test]
+    fn test_display_language() {
+        let english_locale = ULoc::for_language_tag("en").unwrap();
+        let french_locale = ULoc::for_language_tag("fr").unwrap();
+        let english_in_french = english_locale.display_language(&french_locale);
+        assert!(english_in_french.is_ok());
+        assert_eq!(english_in_french.unwrap().as_string_debug(), "anglais");
+        let root_locale = ULoc::for_language_tag("und").unwrap();
+        assert_eq!(root_locale.display_language(&french_locale).unwrap().as_string_debug(), "langue indéterminée");
+        let root_locale = ULoc::for_language_tag("en_US").unwrap();
+        assert_eq!(root_locale.display_language(&french_locale).unwrap().as_string_debug(), "langue indéterminée");
+    }
+
+    #[test]
+    fn test_display_script() {
+        let english_latin_locale = ULoc::for_language_tag("en-latg").unwrap();
+        let french_locale = ULoc::for_language_tag("fr").unwrap();
+        let latin_script_in_french = english_latin_locale.display_script(&french_locale);
+        assert!(latin_script_in_french.is_ok());
+        assert_eq!(latin_script_in_french.unwrap().as_string_debug(), "latin (variante gaélique)");
+        let english_locale = ULoc::for_language_tag("en").unwrap();
+        assert_eq!(english_locale.display_script(&french_locale).unwrap().as_string_debug(), "");
+    }
+
+    #[test]
+    fn test_display_country() {
+        let usa_locale = ULoc::for_language_tag("en-US").unwrap();
+        let french_locale = ULoc::for_language_tag("fr").unwrap();
+        let usa_in_french = usa_locale.display_country(&french_locale);
+        assert!(usa_in_french.is_ok());
+        assert_eq!(usa_in_french.unwrap().as_string_debug(), "États-Unis");
+        let english_locale = ULoc::for_language_tag("en").unwrap();
+        assert_eq!(english_locale.display_script(&french_locale).unwrap().as_string_debug(), "");
+    }
+
+    #[test]
+    fn test_display_keyword() {
+        let french_locale = ULoc::for_language_tag("fr").unwrap();
+        let currency_in_french = ULoc::display_keyword(&"currency".to_string(), &french_locale);
+        assert!(currency_in_french.is_ok());
+        assert_eq!(currency_in_french.unwrap().as_string_debug(), "devise");
+    }
+
+    #[test]
+    fn test_display_keyword_value() {
+        let locale_w_calendar = ULoc::for_language_tag("az-Cyrl-AZ-u-ca-hebrew-t-it-x-whatever").unwrap();
+        let french_locale = ULoc::for_language_tag("fr").unwrap();
+        let calendar_value_in_french = locale_w_calendar.display_keyword_value(
+            &"calendar".to_string(), &french_locale);
+        assert!(calendar_value_in_french.is_ok());
+        assert_eq!(calendar_value_in_french.unwrap().as_string_debug(), "calendrier hébraïque");
+    }
+
+    #[test]
+    fn test_display_name() {
+        let loc = ULoc::for_language_tag("az-Cyrl-AZ-u-ca-hebrew-t-it-x-whatever").unwrap();
+        let french_locale = ULoc::for_language_tag("fr").unwrap();
+        let display_name_in_french = loc.display_name(&french_locale);
+        assert!(display_name_in_french.is_ok());
+        assert_eq!(
+            display_name_in_french.unwrap().as_string_debug(),
+            "azerbaïdjanais (cyrillique, Azerbaïdjan, calendrier=calendrier hébraïque, t=it, usage privé=whatever)"
+        );
     }
 }

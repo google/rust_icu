@@ -26,3 +26,4 @@ members = [
   "rust_icu_utext",
   "rust_icu_utrans",
 ]
+resolver = "2"
