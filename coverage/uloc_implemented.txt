@@ -7,8 +7,16 @@ uloc_forLanguageTag
 uloc_getBaseName
 uloc_getCountry
 uloc_getDefault
+uloc_getDisplayCountry
+uloc_getDisplayKeyword
+uloc_getDisplayKeywordValue
+uloc_getDisplayLanguage
+uloc_getDisplayName
+uloc_getDisplayScript
+uloc_getDisplayVariant
 uloc_getKeywordValue()
 uloc_getLanguage
+uloc_getName
 uloc_getScript
 uloc_getVariant
 uloc_minimizeSubtags

@@ -6,14 +6,14 @@
 | `ucal.h` | 15 / 47 | 
 | `ucol.h` | 8 / 51 | 
 | `udat.h` | 10 / 38 | 
-| `udata.h` | 2 / 8 | 
+| `udata.h` | 4 / 8 | 
 | `uenum.h` | 8 / 8 | 
 | `uformattable.h` | 6 / 13 | 
 | `ulistformatter.h` | 2 / 8 | 
-| `uloc.h` | 20 / 42 | 
+| `uloc.h` | 28 / 42 | 
 | `umsg.h` | 6 / 20 | 
-| `unum.h` | 14 / 31 | 
-| `unumberformatter.h` | 7 / 13 | 
+| `unum.h` | 14 / 32 | 
+| `unumberformatter.h` | 7 / 6 | 
 | `upluralrules.h` | 3 / 8 | 
 | `ustring.h` | 3 / 61 | 
 | `utext.h` | 3 / 28 | 
@@ -211,11 +211,12 @@
 | Unimplemented | Implemented |
 | ------------- | ----------- |
 | | `UDataMemory` |
+| | `udata_open` |
 | | `udata_setCommonData` |
+| | `u_setDataDirectory` |
 | `udata_close` | |
 | `udata_getInfo` | |
 | `udata_getMemory` | |
-| `udata_open` | |
 | `udata_openChoice` | |
 | `udata_setAppData` | |
 | `udata_setFileAccess` | |
@@ -282,8 +283,16 @@
 | | `uloc_getBaseName` |
 | | `uloc_getCountry` |
 | | `uloc_getDefault` |
+| | `uloc_getDisplayCountry` |
+| | `uloc_getDisplayKeyword` |
+| | `uloc_getDisplayKeywordValue` |
+| | `uloc_getDisplayLanguage` |
+| | `uloc_getDisplayName` |
+| | `uloc_getDisplayScript` |
+| | `uloc_getDisplayVariant` |
 | | `uloc_getKeywordValue()` |
 | | `uloc_getLanguage` |
+| | `uloc_getName` |
 | | `uloc_getScript` |
 | | `uloc_getVariant` |
 | | `uloc_minimizeSubtags` |
@@ -297,13 +306,6 @@
 | `uloc_countAvailable` | |
 | `uloc_getAvailable` | |
 | `uloc_getCharacterOrientation` | |
-| `uloc_getDisplayCountry` | |
-| `uloc_getDisplayKeyword` | |
-| `uloc_getDisplayKeywordValue` | |
-| `uloc_getDisplayLanguage` | |
-| `uloc_getDisplayName` | |
-| `uloc_getDisplayScript` | |
-| `uloc_getDisplayVariant` | |
 | `uloc_getISO3Country` | |
 | `uloc_getISO3Language` | |
 | `uloc_getISOCountries` | |
@@ -312,7 +314,6 @@
 | `uloc_getLCID` | |
 | `uloc_getLineOrientation` | |
 | `uloc_getLocaleForLCID` | |
-| `uloc_getName` | |
 | `uloc_getParent` | |
 | `uloc_isRightToLeft` | |
 | `uloc_openAvailableByType` | |
@@ -373,6 +374,7 @@
 | `unum_getAttribute` | |
 | `unum_getContext` | |
 | `unum_getDoubleAttribute` | |
+| `unum_hasAttribute` | |
 | `unum_parse` | |
 | `unum_parseDecimal` | |
 | `unum_parseDouble` | |
@@ -394,11 +396,8 @@
 | | `unumf_resultNextFieldPosition` |
 | | `unumf_resultToString` |
 | `unumf_close` | |
-| `unumf_closeResult` | |
 | `unumf_formatDouble` | |
 | `unumf_formatInt` | |
-| `unumf_resultAsValue` | |
-| `unumf_resultToDecimalNumber` | |
 
 # Header: `upluralrules.h`
 

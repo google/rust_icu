@@ -1,13 +1,6 @@
 unumf_close
-unumf_closeResult
 unumf_formatDecimal
 unumf_formatDouble
 unumf_formatInt
 unumf_openForSkeletonAndLocale
 unumf_openForSkeletonAndLocaleWithError
-unumf_openResult
-unumf_resultAsValue
-unumf_resultGetAllFieldPositions
-unumf_resultNextFieldPosition
-unumf_resultToDecimalNumber
-unumf_resultToString

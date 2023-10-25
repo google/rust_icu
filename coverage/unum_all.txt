@@ -16,6 +16,7 @@ unum_getDoubleAttribute
 unum_getLocaleByType
 unum_getSymbol
 unum_getTextAttribute
+unum_hasAttribute
 unum_open
 unum_parse
 unum_parseDecimal
