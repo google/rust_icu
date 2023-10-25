@@ -780,6 +780,7 @@ mod tests {
         Ok(())
     }
 
+    #[cfg(features = "icu_version_64_plus")]
     #[test]
     fn test_name() -> Result<(), Error> {
         let loc = ULoc::try_from("en-US")?;
@@ -1146,6 +1147,7 @@ mod tests {
         assert_eq!(ULoc::for_language_tag("sr-u-tz-uslax").unwrap(), loc);
     }
 
+    #[cfg(features = "icu_version_64_plus")]
     #[test]
     fn test_for_language_error() {
         let loc = ULoc::for_language_tag("en_US").unwrap();
@@ -1153,6 +1155,7 @@ mod tests {
         assert_eq!(loc.country(), None);
     }
 
+    #[cfg(features = "icu_version_64_plus")]
     #[test]
     fn test_iso3_language() {
         let loc = ULoc::for_language_tag("en-US").unwrap();
@@ -1163,6 +1166,7 @@ mod tests {
         assert_eq!(iso_lang, None);
     }
 
+    #[cfg(features = "icu_version_64_plus")]
     #[test]
     fn test_iso3_country() {
         let loc = ULoc::for_language_tag("en-US").unwrap();
@@ -1173,6 +1177,7 @@ mod tests {
         assert_eq!(iso_country, None);
     }
 
+    #[cfg(features = "icu_version_64_plus")]
     #[test]
     fn test_display_language() {
         let english_locale = ULoc::for_language_tag("en").unwrap();
@@ -1186,6 +1191,7 @@ mod tests {
         assert_eq!(root_locale.display_language(&french_locale).unwrap().as_string_debug(), "langue indéterminée");
     }
 
+    #[cfg(features = "icu_version_64_plus")]
     #[test]
     fn test_display_script() {
         let english_latin_locale = ULoc::for_language_tag("en-latg").unwrap();
@@ -1226,6 +1232,7 @@ mod tests {
         assert_eq!(calendar_value_in_french.unwrap().as_string_debug(), "calendrier hébraïque");
     }
 
+    #[cfg(features = "icu_version_64_plus")]
     #[test]
     fn test_display_name() {
         let loc = ULoc::for_language_tag("az-Cyrl-AZ-u-ca-hebrew-t-it-x-whatever").unwrap();
