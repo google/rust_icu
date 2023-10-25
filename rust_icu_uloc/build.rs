@@ -76,7 +76,7 @@ mod inner {
         pub fn version(&mut self) -> Result<String> {
             self.rep
                 .run(&["--modversion", "icu-i18n"])
-                .with_context(|| "while getting ICU version; is icu-config in $PATH?")
+                .with_context(|| "while getting ICU version; is pkg-config in $PATH?")
         }
 
         /// Returns the config major number.  For example, will return "64" for
