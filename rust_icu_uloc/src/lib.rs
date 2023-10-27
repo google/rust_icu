@@ -13,6 +13,7 @@
 // limitations under the License.
 
 use {
+    once_cell::sync::OnceCell,
     rust_icu_common as common,
     rust_icu_common::buffered_string_method_with_retry,
     rust_icu_sys as sys,
@@ -37,7 +38,7 @@ const LOCALE_CAPACITY: usize = 158;
 /// [ULocMut] is a mutable companion to [ULoc].
 ///
 /// It has methods that allow one to create a different [ULoc] by adding and
-/// removing keywords to the locale identifier.  You can only creates a `ULocMut`
+/// removing keywords to the locale identifier.  You can only create a `ULocMut`
 /// by converting from an existing `ULoc` by calling `ULocMut::from`.  And once
 /// you are done changing it, you can only convert it back with `ULoc::from`.
 ///
@@ -359,6 +360,23 @@ impl ULoc {
             self.as_c_str().as_ptr(),
             display_locale.as_c_str().as_ptr(),
         )
+    }
+
+    /// Returns the collection of available locales via 'uloc_countAvailable'/'uloc_getAvailable'
+    pub fn get_available_locales() -> &'static Vec<ULoc> {
+        static LOCALES: OnceCell<Vec<ULoc>> = OnceCell::new();
+        LOCALES.get_or_init(|| {
+            let count = unsafe { versioned_function!(uloc_countAvailable)() };
+            let mut vec = Vec::with_capacity(count as usize);
+            let mut index: i32 = 0;
+            while index < count {
+                let label = unsafe { ffi::CStr::from_ptr(versioned_function!(uloc_getAvailable)(index)).to_str().unwrap() };
+                let locale = ULoc::try_from(label).unwrap();
+                vec.push(locale);
+                index += 1;
+            }
+            vec
+        })
     }
 
     /// Implements `uloc_addLikelySubtags` from ICU4C.
@@ -1243,5 +1261,10 @@ mod tests {
             display_name_in_french.unwrap().as_string_debug(),
             "azerbaïdjanais (cyrillique, Azerbaïdjan, calendrier=calendrier hébraïque, t=it, usage privé=whatever)"
         );
+    }
+    #[test]
+    fn test_get_available_locales() {
+        let locales = ULoc::get_available_locales();
+        assert!(locales.len() > 0);
     }
 }
