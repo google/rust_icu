@@ -13,7 +13,6 @@
 // limitations under the License.
 
 use {
-    once_cell::sync::OnceCell,
     rust_icu_common as common,
     rust_icu_common::buffered_string_method_with_retry,
     rust_icu_sys as sys,
@@ -28,6 +27,7 @@ use {
         convert::{From, TryFrom, TryInto},
         ffi, fmt,
         os::raw,
+        sync::OnceLock,
     },
 };
 
@@ -364,7 +364,7 @@ impl ULoc {
 
     /// Returns the collection of available locales via 'uloc_countAvailable'/'uloc_getAvailable'
     pub fn get_available_locales() -> &'static Vec<ULoc> {
-        static LOCALES: OnceCell<Vec<ULoc>> = OnceCell::new();
+        static LOCALES: OnceLock<Vec<ULoc>> = OnceLock::new();
         LOCALES.get_or_init(|| {
             let count = unsafe { versioned_function!(uloc_countAvailable)() };
             let mut vec = Vec::with_capacity(count as usize);
