@@ -362,11 +362,17 @@ impl ULoc {
         )
     }
 
-    /// Returns the collection of available locales via 'uloc_countAvailable'/'uloc_getAvailable'
-    pub fn get_available_locales() -> &'static Vec<ULoc> {
+    /// Implements `uloc_countAvailable`.
+    pub fn count_available() -> i32 {
+        let count = unsafe { versioned_function!(uloc_countAvailable)() };
+        count
+    }
+
+    /// Implements `uloc_getAvailable`.
+    pub fn get_available() -> &'static Vec<ULoc> {
         static LOCALES: OnceLock<Vec<ULoc>> = OnceLock::new();
         LOCALES.get_or_init(|| {
-            let count = unsafe { versioned_function!(uloc_countAvailable)() };
+            let count = ULoc::count_available();
             let mut vec = Vec::with_capacity(count as usize);
             let mut index: i32 = 0;
             while index < count {
@@ -1263,8 +1269,13 @@ mod tests {
         );
     }
     #[test]
-    fn test_get_available_locales() {
-        let locales = ULoc::get_available_locales();
-        assert!(locales.len() > 0);
+    fn test_get_available() {
+        let locales = ULoc::get_available();
+        assert!(locales.contains(&ULoc::try_from("en").unwrap()));
+        assert!(locales.contains(&ULoc::try_from("en-US").unwrap()));
+        assert!(locales.contains(&ULoc::try_from("fr").unwrap()));
+        assert!(locales.contains(&ULoc::try_from("fr-FR").unwrap()));
+        assert_eq!(ULoc::count_available() as usize, locales.capacity());
+        assert_eq!(locales.len(), locales.capacity());
     }
 }
