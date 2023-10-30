@@ -32,7 +32,7 @@ ICU_INCLUDE_PATH="$(icu-config --cppflags-searchpath | sed -e 's/-I//' | sed -e 
 for header_basename in ${C_API_HEADER_NAMES[@]}; do
   header_fullname="${ICU_INCLUDE_PATH}/unicode/${header_basename}.h"
   echo $header_basename: $header_fullname
-  ctags -x --c-kinds=fp $header_fullname | sed -e 's/\s.*$//' \
+  ctags -x --c-kinds=fp $header_fullname | sed -e 's/ .*$//' \
     | grep -v U_DEFINE | sort | uniq \
     > "${TOP_DIR}/coverage/${header_basename}_all.txt"
 
@@ -56,7 +56,7 @@ EOF
 for header_basename in ${C_API_HEADER_NAMES[@]}; do
   total_functions="$(cat "${TOP_DIR}"/coverage/${header_basename}_all.txt | wc -l)"
   implemented_functions="$(cat "${TOP_DIR}"/coverage/${header_basename}_implemented.txt | wc -l)"
-  echo "| \`${header_basename}.h\` | ${implemented_functions} / ${total_functions} | " >> "${REPORT_FILE}"
+  printf "| \`%s.h\` | %s / %s | \n" ${header_basename} ${implemented_functions} ${total_functions} >> "${REPORT_FILE}"
 done
 
 cat <<EOF >>"${REPORT_FILE}"
@@ -71,15 +71,18 @@ for header_basename in ${C_API_HEADER_NAMES[@]}; do
 | Unimplemented | Implemented |
 | ------------- | ----------- |
 EOF
-  for fun in $(cat "${TOP_DIR}/coverage/${header_basename}_implemented.txt"); do
+  for fun in $(cat "${TOP_DIR}/coverage/${header_basename}_implemented.txt" | sort -fs); do
     echo "| | \`${fun}\` |" >>"${REPORT_FILE}"
   done
 
   unimplemented="$(comm -23 \
     "${TOP_DIR}/coverage/${header_basename}_all.txt" \
-    "${TOP_DIR}/coverage/${header_basename}_implemented.txt" | sort | uniq)"
+    "${TOP_DIR}/coverage/${header_basename}_implemented.txt" | sort -fs | uniq)"
   for fun in ${unimplemented}; do
     echo "| \`${fun}\` | |" >>"${REPORT_FILE}"
   done
+
+  sort -fs -o "${TOP_DIR}/coverage/${header_basename}_all.txt" "${TOP_DIR}/coverage/${header_basename}_all.txt"
+  sort -fs -o "${TOP_DIR}/coverage/${header_basename}_implemented.txt" "${TOP_DIR}/coverage/${header_basename}_implemented.txt"
 done
 
