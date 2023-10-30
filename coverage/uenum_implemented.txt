@@ -1,8 +1,8 @@
 ucal_openCountryTimeZones
 ucal_openTimeZoneIDEnumeration
 ucal_openTimeZones
-uenum_close
 UEnumeration
+uenum_close
 uenum_next
 uenum_openCharStringsEnumeration
 uloc_openKeywords
