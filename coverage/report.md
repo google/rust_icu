@@ -10,7 +10,7 @@
 | `uenum.h` | 8 / 8 | 
 | `uformattable.h` | 6 / 13 | 
 | `ulistformatter.h` | 2 / 8 | 
-| `uloc.h` | 28 / 42 | 
+| `uloc.h` | 30 / 42 | 
 | `umsg.h` | 6 / 20 | 
 | `unum.h` | 14 / 32 | 
 | `unumberformatter.h` | 7 / 6 | 
@@ -279,7 +279,9 @@
 | | `uloc_acceptLanguage` |
 | | `uloc_addLikelySubtags` |
 | | `uloc_canonicalize` |
+| | `uloc_countAvailable` |
 | | `uloc_forLanguageTag` |
+| | `uloc_getAvailable` |
 | | `uloc_getBaseName` |
 | | `uloc_getCountry` |
 | | `uloc_getDefault` |
@@ -303,8 +305,6 @@
 | | `uloc_toUnicodeLocaleKey` |
 | | `uloc_toUnicodeLocaleType` |
 | `uloc_acceptLanguageFromHTTP` | |
-| `uloc_countAvailable` | |
-| `uloc_getAvailable` | |
 | `uloc_getCharacterOrientation` | |
 | `uloc_getISO3Country` | |
 | `uloc_getISO3Language` | |
