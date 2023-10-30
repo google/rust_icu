@@ -3,7 +3,9 @@ icu::Locale::getUnicodeKeywordValue()
 uloc_acceptLanguage
 uloc_addLikelySubtags
 uloc_canonicalize
+uloc_countAvailable
 uloc_forLanguageTag
+uloc_getAvailable
 uloc_getBaseName
 uloc_getCountry
 uloc_getDefault
