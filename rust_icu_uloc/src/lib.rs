@@ -386,6 +386,7 @@ impl ULoc {
     }
 
     /// Implements `uloc_openAvailableByType`.
+    #[cfg(feature = "icu_version_65_plus")]
     pub fn open_available_by_type(locale_type: ULocAvailableType) -> Result<Enumeration, common::Error> {
         let mut status = common::Error::OK_CODE;
         unsafe {
@@ -396,6 +397,7 @@ impl ULoc {
     }
 
     /// Returns a vector of locales of the requested type.
+    #[cfg(feature = "icu_version_65_plus")]
     pub fn get_available_by_type(locale_type: ULocAvailableType) -> &'static Vec<ULoc> {
         static LEGACY_ALIASES: OnceLock<Vec<ULoc>> = OnceLock::new();
         static ALL_LOCALES: OnceLock<Vec<ULoc>> = OnceLock::new();
@@ -830,7 +832,7 @@ mod tests {
 
     // This test yields a different result in ICU versions prior to 64:
     // "zh-Latn@collation=pinyin".
-    #[cfg(features = "icu_version_64_plus")]
+    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_variant() -> Result<(), Error> {
         let loc = ULoc::try_from("zh-Latn-pinyin")?;
@@ -850,7 +852,7 @@ mod tests {
         Ok(())
     }
 
-    #[cfg(features = "icu_version_64_plus")]
+    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_name() -> Result<(), Error> {
         let loc = ULoc::try_from("en-US")?;
@@ -1217,7 +1219,7 @@ mod tests {
         assert_eq!(ULoc::for_language_tag("sr-u-tz-uslax").unwrap(), loc);
     }
 
-    #[cfg(features = "icu_version_64_plus")]
+    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_for_language_error() {
         let loc = ULoc::for_language_tag("en_US").unwrap();
@@ -1225,7 +1227,7 @@ mod tests {
         assert_eq!(loc.country(), None);
     }
 
-    #[cfg(features = "icu_version_64_plus")]
+    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_iso3_language() {
         let loc = ULoc::for_language_tag("en-US").unwrap();
@@ -1236,7 +1238,7 @@ mod tests {
         assert_eq!(iso_lang, None);
     }
 
-    #[cfg(features = "icu_version_64_plus")]
+    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_iso3_country() {
         let loc = ULoc::for_language_tag("en-US").unwrap();
@@ -1247,7 +1249,7 @@ mod tests {
         assert_eq!(iso_country, None);
     }
 
-    #[cfg(features = "icu_version_64_plus")]
+    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_display_language() {
         let english_locale = ULoc::for_language_tag("en").unwrap();
@@ -1261,7 +1263,7 @@ mod tests {
         assert_eq!(root_locale.display_language(&french_locale).unwrap().as_string_debug(), "langue indéterminée");
     }
 
-    #[cfg(features = "icu_version_64_plus")]
+    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_display_script() {
         let english_latin_locale = ULoc::for_language_tag("en-latg").unwrap();
@@ -1302,7 +1304,7 @@ mod tests {
         assert_eq!(calendar_value_in_french.unwrap().as_string_debug(), "calendrier hébraïque");
     }
 
-    #[cfg(features = "icu_version_64_plus")]
+    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_display_name() {
         let loc = ULoc::for_language_tag("az-Cyrl-AZ-u-ca-hebrew-t-it-x-whatever").unwrap();
@@ -1326,6 +1328,7 @@ mod tests {
         assert_eq!(locales.len(), locales.capacity());
     }
 
+    #[cfg(feature = "icu_version_65_plus")]
     #[test]
     fn test_get_available_by_type() {
         let locales1 = ULoc::get_available_by_type(ULocAvailableType::ULOC_AVAILABLE_DEFAULT);
@@ -1351,6 +1354,7 @@ mod tests {
         assert!(alias_locales.contains(&ULoc::try_from("ars").unwrap()));
     }
 
+    #[cfg(feature = "icu_version_65_plus")]
     #[test]
     #[should_panic(expected = "ULOC_AVAILABLE_COUNT is for internal use only")]
     fn test_get_available_by_type_panic() {
