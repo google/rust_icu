@@ -129,6 +129,24 @@ icu_version_64_plus = [
   "rust_icu_utext/icu_version_64_plus",
   "rust_icu_utrans/icu_version_64_plus",
 ]
+icu_version_65_plus = [
+  "rust_icu_common/icu_version_65_plus",
+  "rust_icu_sys/icu_version_65_plus",
+  "rust_icu_ubrk/icu_version_65_plus",
+  "rust_icu_ucal/icu_version_65_plus",
+  "rust_icu_ucol/icu_version_65_plus",
+  "rust_icu_ucsdet/icu_version_65_plus",
+  "rust_icu_udat/icu_version_65_plus",
+  "rust_icu_udata/icu_version_65_plus",
+  "rust_icu_uenum/icu_version_65_plus",
+  "rust_icu_ulistformatter/icu_version_65_plus",
+  "rust_icu_uloc/icu_version_65_plus",
+  "rust_icu_umsg/icu_version_65_plus",
+  "rust_icu_unorm2/icu_version_65_plus",
+  "rust_icu_ustring/icu_version_65_plus",
+  "rust_icu_utext/icu_version_65_plus",
+  "rust_icu_utrans/icu_version_65_plus",
+]
 icu_version_67_plus = [
   "rust_icu_common/icu_version_67_plus",
   "rust_icu_sys/icu_version_67_plus",
