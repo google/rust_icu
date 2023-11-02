@@ -369,8 +369,8 @@ impl ULoc {
 
     /// Implements `uloc_getAvailable`.
     pub fn get_available(n: i32) -> Result<ULoc, common::Error> {
-        if n >= Self::count_available() {
-            panic!("n is greater than or equal to the value returned from count_available()");
+        if (0 > n) || (n >= Self::count_available()) {
+            panic!("n is negative or greater than or equal to the value returned from count_available()");
         }
         let label = unsafe { ffi::CStr::from_ptr(versioned_function!(uloc_getAvailable)(n)).to_str().unwrap() };
         ULoc::try_from(label)
@@ -1311,8 +1311,14 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "n is greater than or equal to the value returned from count_available()")]
-    fn test_get_available_error() {
+    #[should_panic(expected = "n is negative or greater than or equal to the value returned from count_available()")]
+    fn test_get_available_negative() {
+        let _ = ULoc::get_available(-1);
+    }
+
+    #[test]
+    #[should_panic(expected = "n is negative or greater than or equal to the value returned from count_available()")]
+    fn test_get_available_overrun() {
         let index = ULoc::count_available();
         let _ = ULoc::get_available(index);
     }
