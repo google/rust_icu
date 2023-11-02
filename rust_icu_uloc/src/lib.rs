@@ -27,7 +27,6 @@ use {
         convert::{From, TryFrom, TryInto},
         ffi, fmt,
         os::raw,
-        sync::OnceLock,
     },
 };
 
@@ -369,20 +368,26 @@ impl ULoc {
     }
 
     /// Implements `uloc_getAvailable`.
-    pub fn get_available() -> &'static Vec<ULoc> {
-        static LOCALES: OnceLock<Vec<ULoc>> = OnceLock::new();
-        LOCALES.get_or_init(|| {
-            let count = ULoc::count_available();
-            let mut vec = Vec::with_capacity(count as usize);
-            let mut index: i32 = 0;
-            while index < count {
-                let label = unsafe { ffi::CStr::from_ptr(versioned_function!(uloc_getAvailable)(index)).to_str().unwrap() };
-                let locale = ULoc::try_from(label).unwrap();
-                vec.push(locale);
-                index += 1;
-            }
-            vec
-        })
+    pub fn get_available(n: i32) -> Result<ULoc, common::Error> {
+        if n >= Self::count_available() {
+            panic!("n is greater than or equal to the value returned from count_available()");
+        }
+        let label = unsafe { ffi::CStr::from_ptr(versioned_function!(uloc_getAvailable)(n)).to_str().unwrap() };
+        ULoc::try_from(label)
+    }
+
+    /// Returns a vector of available locales
+    pub fn get_available_locales() -> Vec<ULoc> {
+        let count = ULoc::count_available();
+        let mut vec = Vec::with_capacity(count as usize);
+        let mut index: i32 = 0;
+        while index < count {
+            let label = unsafe { ffi::CStr::from_ptr(versioned_function!(uloc_getAvailable)(index)).to_str().unwrap() };
+            let locale = ULoc::try_from(label).unwrap();
+            vec.push(locale);
+            index += 1;
+        }
+        vec
     }
 
     /// Implements `uloc_openAvailableByType`.
@@ -398,23 +403,11 @@ impl ULoc {
 
     /// Returns a vector of locales of the requested type.
     #[cfg(feature = "icu_version_65_plus")]
-    pub fn get_available_by_type(locale_type: ULocAvailableType) -> &'static Vec<ULoc> {
-        static LEGACY_ALIASES: OnceLock<Vec<ULoc>> = OnceLock::new();
-        static ALL_LOCALES: OnceLock<Vec<ULoc>> = OnceLock::new();
-        match locale_type {
-            ULocAvailableType::ULOC_AVAILABLE_DEFAULT => Self::get_available(),
-            ULocAvailableType::ULOC_AVAILABLE_ONLY_LEGACY_ALIASES => {
-                LEGACY_ALIASES.get_or_init(|| {
-                    Self::open_available_by_type(locale_type).unwrap().map(|x| ULoc::try_from(x.unwrap().as_str()).unwrap()).collect()
-                })
-            },
-            ULocAvailableType::ULOC_AVAILABLE_WITH_LEGACY_ALIASES => {
-                ALL_LOCALES.get_or_init(|| {
-                    Self::open_available_by_type(locale_type).unwrap().map(|x| ULoc::try_from(x.unwrap().as_str()).unwrap()).collect()
-                })
-            },
-            ULocAvailableType::ULOC_AVAILABLE_COUNT => panic!("ULOC_AVAILABLE_COUNT is for internal use only"),
+    pub fn get_available_locales_by_type(locale_type: ULocAvailableType) -> Vec<ULoc> {
+        if locale_type == ULocAvailableType::ULOC_AVAILABLE_COUNT {
+            panic!("ULOC_AVAILABLE_COUNT is for internal use only");
         }
+        Self::open_available_by_type(locale_type).unwrap().map(|x| ULoc::try_from(x.unwrap().as_str()).unwrap()).collect()
     }
 
     /// Implements `uloc_addLikelySubtags` from ICU4C.
@@ -1318,8 +1311,15 @@ mod tests {
     }
 
     #[test]
-    fn test_get_available() {
-        let locales = ULoc::get_available();
+    #[should_panic(expected = "n is greater than or equal to the value returned from count_available()")]
+    fn test_get_available_error() {
+        let index = ULoc::count_available();
+        let _ = ULoc::get_available(index);
+    }
+
+    #[test]
+    fn test_get_available_locales() {
+        let locales = ULoc::get_available_locales();
         assert!(locales.contains(&ULoc::try_from("en").unwrap()));
         assert!(locales.contains(&ULoc::try_from("en-US").unwrap()));
         assert!(locales.contains(&ULoc::try_from("fr").unwrap()));
@@ -1330,17 +1330,17 @@ mod tests {
 
     #[cfg(feature = "icu_version_65_plus")]
     #[test]
-    fn test_get_available_by_type() {
-        let locales1 = ULoc::get_available_by_type(ULocAvailableType::ULOC_AVAILABLE_DEFAULT);
-        let locales2 = ULoc::get_available();
+    fn test_get_available_locales_by_type() {
+        let locales1 = ULoc::get_available_locales_by_type(ULocAvailableType::ULOC_AVAILABLE_DEFAULT);
+        let locales2 = ULoc::get_available_locales();
         assert_eq!(locales1, locales2);
-        let alias_locales = ULoc::get_available_by_type(ULocAvailableType::ULOC_AVAILABLE_ONLY_LEGACY_ALIASES);
-        let all_locales = ULoc::get_available_by_type(ULocAvailableType::ULOC_AVAILABLE_WITH_LEGACY_ALIASES);
-        for locale in alias_locales {
+        let alias_locales = ULoc::get_available_locales_by_type(ULocAvailableType::ULOC_AVAILABLE_ONLY_LEGACY_ALIASES);
+        let all_locales = ULoc::get_available_locales_by_type(ULocAvailableType::ULOC_AVAILABLE_WITH_LEGACY_ALIASES);
+        for locale in &alias_locales {
             assert!(all_locales.contains(&locale));
             assert!(!locales1.contains(&locale));
         }
-        for locale in locales1 {
+        for locale in &locales1 {
             assert!(all_locales.contains(&locale));
             assert!(!alias_locales.contains(&locale));
         }
@@ -1357,8 +1357,13 @@ mod tests {
     #[cfg(feature = "icu_version_65_plus")]
     #[test]
     #[should_panic(expected = "ULOC_AVAILABLE_COUNT is for internal use only")]
-    fn test_get_available_by_type_panic() {
+    fn test_get_available_locales_by_type_panic() {
+        ULoc::get_available_locales_by_type(ULocAvailableType::ULOC_AVAILABLE_COUNT);
+    }
+
+    #[cfg(feature = "icu_version_65_plus")]
+    #[test]
+    fn test_get_available_locales_by_type_error() {
         assert!(!ULoc::open_available_by_type(ULocAvailableType::ULOC_AVAILABLE_COUNT).is_ok());
-        ULoc::get_available_by_type(ULocAvailableType::ULOC_AVAILABLE_COUNT);
     }
 }
