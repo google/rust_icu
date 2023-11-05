@@ -1,5 +1,3 @@
-icu::Locale::getUnicodeKeywords()
-icu::Locale::getUnicodeKeywordValue()
 uloc_acceptLanguage
 uloc_addLikelySubtags
 uloc_canonicalize
@@ -16,13 +14,13 @@ uloc_getDisplayLanguage
 uloc_getDisplayName
 uloc_getDisplayScript
 uloc_getDisplayVariant
-uloc_getKeywordValue()
+uloc_getKeywordValue
 uloc_getLanguage
 uloc_getName
 uloc_getScript
 uloc_getVariant
 uloc_minimizeSubtags
-uloc_openKeywords()
+uloc_openKeywords
 uloc_setDefault
 uloc_toLanguageTag
 uloc_toLegacyKey

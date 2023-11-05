@@ -416,14 +416,30 @@ impl ULoc {
         )
     }
 
+    pub fn open_keywords(&self) -> Result<Enumeration, common::Error> {
+        let mut status = common::Error::OK_CODE;
+        let asciiz_locale = self.as_c_str();
+        let raw_enum = unsafe {
+            assert!(common::Error::is_ok(status));
+            versioned_function!(uloc_openKeywords)(asciiz_locale.as_ptr(), &mut status)
+        };
+        common::Error::ok_or_warning(status)?;
+        // "No error but null" means that there are no keywords
+        if raw_enum.is_null() {
+            Ok(Enumeration::empty())
+        } else {
+            Ok(unsafe { Enumeration::from_raw_parts(None, raw_enum) })
+        }
+    }
+
     /// Implements `uloc_openKeywords()` from ICU4C.
     pub fn keywords(&self) -> impl Iterator<Item = String> {
-        rust_icu_uenum::uloc_open_keywords(&self.repr)
+        self.open_keywords()
             .unwrap()
             .map(|result| result.unwrap())
     }
 
-    /// Implements `icu::Locale::getUnicodeKeywords()` from the C++ API.
+    /// Implementation of `icu::Locale::getUnicodeKeywords()` from the C++ API.
     pub fn unicode_keywords(&self) -> impl Iterator<Item = String> {
         self.keywords().filter_map(|s| to_unicode_locale_key(&s))
     }
@@ -447,7 +463,7 @@ impl ULoc {
         .map(|value| if value.is_empty() { None } else { Some(value) })
     }
 
-    /// Implements `icu::Locale::getUnicodeKeywordValue()` from ICU4C.
+    /// Implementation of `icu::Locale::getUnicodeKeywordValue()` from the C++ API.
     pub fn unicode_keyword_value(
         &self,
         unicode_keyword: &str,
