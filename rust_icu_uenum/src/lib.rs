@@ -224,9 +224,8 @@ pub fn open_time_zones() -> Result<Enumeration, common::Error> {
 }
 
 #[doc(hidden)]
-/// Implements `uloc_openKeywords`.
-// This should be in the `uloc` crate, but this is not possible because of the raw enum
-// initialization. Tested in `uloc`.
+// This has been moved to the `uloc` crate
+#[deprecated(since="4.2.4", note="please use `ULoc::open_keywords` instead")]
 pub fn uloc_open_keywords(locale: &str) -> Result<Enumeration, common::Error> {
     let mut status = common::Error::OK_CODE;
     let asciiz_locale = ffi::CString::new(locale)?;
@@ -276,5 +275,22 @@ mod tests {
         let invalid_utf8 = unsafe { str::from_utf8_unchecked(&destroyed_sparkle_heart) };
         let e = Enumeration::try_from(&vec!["hello", "world", "💖", invalid_utf8][..]);
         assert!(e.is_err(), "was: {:?}", e);
+    }
+
+    #[test]
+    fn test_uloc_open_keywords() -> Result<(), common::Error> {
+        let loc = "az-Cyrl-AZ-u-ca-hebrew-fw-sunday-nu-deva-tz-usnyc";
+        #[allow(deprecated)]
+        let keywords: Vec<String> = uloc_open_keywords(loc).unwrap().map(|result| result.unwrap()).collect();
+        assert_eq!(
+            keywords,
+            vec![
+                "calendar".to_string(),
+                "fw".to_string(),
+                "numbers".to_string(),
+                "timezone".to_string()
+            ]
+        );
+        Ok(())
     }
 }

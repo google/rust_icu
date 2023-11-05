@@ -40,7 +40,7 @@ for header_basename in ${C_API_HEADER_NAMES[@]}; do
   # rust docs of the form "/// Implements `utext_close` ... ".  This is
   # simplistic but quite enough with a little bit of care.
   find . -path "*rust_icu_${header_basename}/src/*.rs" | \
-    xargs grep "/// Implements \`" | sed -e 's/.*`\(.*\)`.*$/\1/' | \
+    xargs grep "/// Implements \`" | sed -e 's/.*`\(.*\)`.*$/\1/' | sed -e 's/\(.*\)()$/\1/' | \
     sort | uniq > "${TOP_DIR}/coverage/${header_basename}_implemented.txt"
 done
 
@@ -71,7 +71,9 @@ for header_basename in ${C_API_HEADER_NAMES[@]}; do
 | Unimplemented | Implemented |
 | ------------- | ----------- |
 EOF
-  for fun in $(cat "${TOP_DIR}/coverage/${header_basename}_implemented.txt" | sort -fs); do
+  all=`cat ${TOP_DIR}/coverage/${header_basename}_all.txt | sort -fs`
+  implemented=`cat "${TOP_DIR}/coverage/${header_basename}_implemented.txt" | sort -fs`
+  for fun in ${implemented}; do
     echo "| | \`${fun}\` |" >>"${REPORT_FILE}"
   done
 
@@ -81,6 +83,30 @@ EOF
   for fun in ${unimplemented}; do
     echo "| \`${fun}\` | |" >>"${REPORT_FILE}"
   done
+
+  total_cnt=`echo ${all} | wc -w`
+  implemented_cnt=`echo ${implemented} | wc -w`
+  unimplemented_cnt=`echo ${unimplemented} | wc -w`
+  computed_total_cnt=`expr ${unimplemented_cnt} + ${implemented_cnt}`
+  if [ ${computed_total_cnt} -ne ${total_cnt} ]
+  then
+    printf "Warning: Implemented + Unimplemented != Total\n" >> ${REPORT_FILE}
+    printf "Total: %s Implemented: %s Unimplemented: %s\n" ${total_cnt} ${implemented_cnt} ${unimplemented_cnt} >> "${REPORT_FILE}"
+    for impl_fn in ${implemented}; do
+      found="false"
+      for all_fn in ${all}; do
+        if [ ${impl_fn} = ${all_fn} ]
+        then
+          found="true"
+          break
+        fi
+      done
+      if [ "false" = ${found} ]
+      then
+        printf "Function %s was designated as implemented but not found in the API\n" ${impl_fn} >> "${REPORT_FILE}"
+      fi
+    done
+  fi
 
   sort -fs -o "${TOP_DIR}/coverage/${header_basename}_all.txt" "${TOP_DIR}/coverage/${header_basename}_all.txt"
   sort -fs -o "${TOP_DIR}/coverage/${header_basename}_implemented.txt" "${TOP_DIR}/coverage/${header_basename}_implemented.txt"

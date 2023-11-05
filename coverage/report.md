@@ -7,10 +7,10 @@
 | `ucol.h` | 8 / 51 | 
 | `udat.h` | 10 / 38 | 
 | `udata.h` | 4 / 8 | 
-| `uenum.h` | 8 / 8 | 
+| `uenum.h` | 7 / 8 | 
 | `uformattable.h` | 6 / 13 | 
 | `ulistformatter.h` | 2 / 8 | 
-| `uloc.h` | 30 / 42 | 
+| `uloc.h` | 28 / 42 | 
 | `umsg.h` | 6 / 20 | 
 | `unum.h` | 14 / 32 | 
 | `unumberformatter.h` | 7 / 6 | 
@@ -205,6 +205,13 @@
 | `udat_toPatternRelativeDate` | |
 | `udat_toPatternRelativeTime` | |
 | `udat_unregisterOpener` | |
+Warning: Implemented + Unimplemented != Total
+Total: 38 Implemented: 10 Unimplemented: 33
+Function UDateFormat was designated as implemented but not found in the API
+Function UDateTimePatternGenerator was designated as implemented but not found in the API
+Function udatpg_clone was designated as implemented but not found in the API
+Function udatpg_getBestPattern was designated as implemented but not found in the API
+Function udatpg_open was designated as implemented but not found in the API
 
 # Header: `udata.h`
 
@@ -220,6 +227,10 @@
 | `udata_openChoice` | |
 | `udata_setAppData` | |
 | `udata_setFileAccess` | |
+Warning: Implemented + Unimplemented != Total
+Total: 8 Implemented: 4 Unimplemented: 6
+Function UDataMemory was designated as implemented but not found in the API
+Function u_setDataDirectory was designated as implemented but not found in the API
 
 # Header: `uenum.h`
 
@@ -232,12 +243,17 @@
 | | `uenum_close` |
 | | `uenum_next` |
 | | `uenum_openCharStringsEnumeration` |
-| | `uloc_openKeywords` |
 | `uenum_count` | |
 | `uenum_openFromStringEnumeration` | |
 | `uenum_openUCharStringsEnumeration` | |
 | `uenum_reset` | |
 | `uenum_unext` | |
+Warning: Implemented + Unimplemented != Total
+Total: 8 Implemented: 7 Unimplemented: 5
+Function ucal_openCountryTimeZones was designated as implemented but not found in the API
+Function ucal_openTimeZoneIDEnumeration was designated as implemented but not found in the API
+Function ucal_openTimeZones was designated as implemented but not found in the API
+Function UEnumeration was designated as implemented but not found in the API
 
 # Header: `uformattable.h`
 
@@ -274,8 +290,6 @@
 
 | Unimplemented | Implemented |
 | ------------- | ----------- |
-| | `icu::Locale::getUnicodeKeywords()` |
-| | `icu::Locale::getUnicodeKeywordValue()` |
 | | `uloc_acceptLanguage` |
 | | `uloc_addLikelySubtags` |
 | | `uloc_canonicalize` |
@@ -292,13 +306,13 @@
 | | `uloc_getDisplayName` |
 | | `uloc_getDisplayScript` |
 | | `uloc_getDisplayVariant` |
-| | `uloc_getKeywordValue()` |
+| | `uloc_getKeywordValue` |
 | | `uloc_getLanguage` |
 | | `uloc_getName` |
 | | `uloc_getScript` |
 | | `uloc_getVariant` |
 | | `uloc_minimizeSubtags` |
-| | `uloc_openKeywords()` |
+| | `uloc_openKeywords` |
 | | `uloc_setDefault` |
 | | `uloc_toLanguageTag` |
 | | `uloc_toLegacyKey` |
@@ -310,14 +324,12 @@
 | `uloc_getISO3Language` | |
 | `uloc_getISOCountries` | |
 | `uloc_getISOLanguages` | |
-| `uloc_getKeywordValue` | |
 | `uloc_getLCID` | |
 | `uloc_getLineOrientation` | |
 | `uloc_getLocaleForLCID` | |
 | `uloc_getParent` | |
 | `uloc_isRightToLeft` | |
 | `uloc_openAvailableByType` | |
-| `uloc_openKeywords` | |
 | `uloc_setKeywordValue` | |
 | `uloc_toLegacyType` | |
 
@@ -346,6 +358,9 @@
 | `u_vformatMessageWithError` | |
 | `u_vparseMessage` | |
 | `u_vparseMessageWithError` | |
+Warning: Implemented + Unimplemented != Total
+Total: 20 Implemented: 6 Unimplemented: 15
+Function UMessageFormat was designated as implemented but not found in the API
 
 # Header: `unum.h`
 
@@ -398,6 +413,12 @@
 | `unumf_close` | |
 | `unumf_formatDouble` | |
 | `unumf_formatInt` | |
+Warning: Implemented + Unimplemented != Total
+Total: 6 Implemented: 7 Unimplemented: 3
+Function unumf_openResult was designated as implemented but not found in the API
+Function unumf_resultGetAllFieldPositions was designated as implemented but not found in the API
+Function unumf_resultNextFieldPosition was designated as implemented but not found in the API
+Function unumf_resultToString was designated as implemented but not found in the API
 
 # Header: `upluralrules.h`
 
@@ -478,6 +499,9 @@
 | `u_uastrncpy` | |
 | `u_unescape` | |
 | `u_unescapeAt` | |
+Warning: Implemented + Unimplemented != Total
+Total: 61 Implemented: 3 Unimplemented: 59
+Function UChar* was designated as implemented but not found in the API
 
 # Header: `utext.h`
 
@@ -512,6 +536,9 @@
 | `utext_replace` | |
 | `utext_setNativeIndex` | |
 | `utext_setup` | |
+Warning: Implemented + Unimplemented != Total
+Total: 28 Implemented: 3 Unimplemented: 26
+Function utext_open was designated as implemented but not found in the API
 
 # Header: `utrans.h`
 
