@@ -1,3 +1,2 @@
-UChar*
 u_strFromUTF8
 u_strToUTF8

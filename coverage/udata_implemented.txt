@@ -1,4 +1,2 @@
-UDataMemory
 udata_open
 udata_setCommonData
-u_setDataDirectory

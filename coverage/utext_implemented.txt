@@ -1,3 +1,2 @@
 utext_clone
 utext_close
-utext_open
