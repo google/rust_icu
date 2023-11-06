@@ -1,7 +1,3 @@
-ucal_openCountryTimeZones
-ucal_openTimeZoneIDEnumeration
-ucal_openTimeZones
-UEnumeration
 uenum_close
 uenum_next
 uenum_openCharStringsEnumeration

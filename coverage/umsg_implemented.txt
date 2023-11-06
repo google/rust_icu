@@ -1,4 +1,3 @@
-UMessageFormat
 umsg_clone
 umsg_close
 umsg_format

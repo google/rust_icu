@@ -439,7 +439,7 @@ impl ULoc {
             .map(|result| result.unwrap())
     }
 
-    /// Implementation of `icu::Locale::getUnicodeKeywords()` from the C++ API.
+    /// Implements `icu::Locale::getUnicodeKeywords()` from the C++ API.
     pub fn unicode_keywords(&self) -> impl Iterator<Item = String> {
         self.keywords().filter_map(|s| to_unicode_locale_key(&s))
     }
@@ -463,7 +463,7 @@ impl ULoc {
         .map(|value| if value.is_empty() { None } else { Some(value) })
     }
 
-    /// Implementation of `icu::Locale::getUnicodeKeywordValue()` from the C++ API.
+    /// Implements `icu::Locale::getUnicodeKeywordValue()` from the C++ API.
     pub fn unicode_keyword_value(
         &self,
         unicode_keyword: &str,
