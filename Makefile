@@ -78,7 +78,7 @@ macos-test:
 	brew install icu4c
 	RUST_ICU_LINK_SEARCH_DIR="$(shell brew --prefix)/opt/icu4c/lib" \
 	RUST_ICU_MAJOR_VERSION_NUMBER=${RUST_ICU_MAJOR_VERSION_NUMBER} \
-	cargo test --no-default-features --features=icu_version_64_plus,icu_version_65_plus,icu_version_67_plus,icu_version_68_plus,icu_version_in_env,renaming,static
+	cargo test --no-default-features --features=icu_version_64_plus,icu_version_67_plus,icu_version_68_plus,icu_version_in_env,renaming,static
 .PHONY: macos-test
 
 # Refreshes the static bindgen output (contents of ./rust_icu_sys/bindgen) based

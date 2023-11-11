@@ -26,8 +26,8 @@ jobs:
       matrix:
         icu_version: [71, 72, 73]
         feature_set:
-          - "renaming,icu_version_in_env,icu_version_64_plus,icu_version_65_plus,icu_version_67_plus,icu_version_68_plus"
-          - "renaming,icu_version_64_plus,icu_version_65_plus,icu_version_67_plus,icu_version_68_plus,icu_config,use-bindgen"
+          - "renaming,icu_version_in_env,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus"
+          - "renaming,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus,icu_config,use-bindgen"
     steps:
       - uses: actions/checkout@v2
       - name: 'Test ICU version ${{ matrix.icu_version }}'

@@ -32,10 +32,6 @@ icu_version_64_plus = [
   "rust_icu_common/icu_version_64_plus",
   "rust_icu_sys/icu_version_64_plus",
 ]
-icu_version_65_plus = [
-  "rust_icu_common/icu_version_65_plus",
-  "rust_icu_sys/icu_version_65_plus",
-]
 icu_version_67_plus = [
   "rust_icu_common/icu_version_67_plus",
   "rust_icu_sys/icu_version_67_plus",
