@@ -385,6 +385,36 @@ impl ULoc {
         })
     }
 
+    /// Implements `uloc_openAvailableByType`.
+    pub fn open_available_by_type(locale_type: ULocAvailableType) -> Result<Enumeration, common::Error> {
+        let mut status = common::Error::OK_CODE;
+        unsafe {
+            let iter = Enumeration::from_raw_parts(None, versioned_function!(uloc_openAvailableByType)(locale_type, &mut status));
+            common::Error::ok_or_warning(status)?;
+            Ok(iter)
+        }
+    }
+
+    /// Returns a vector of locales of the requested type.
+    pub fn get_available_by_type(locale_type: ULocAvailableType) -> &'static Vec<ULoc> {
+        static LEGACY_ALIASES: OnceLock<Vec<ULoc>> = OnceLock::new();
+        static ALL_LOCALES: OnceLock<Vec<ULoc>> = OnceLock::new();
+        match locale_type {
+            ULocAvailableType::ULOC_AVAILABLE_DEFAULT => Self::get_available(),
+            ULocAvailableType::ULOC_AVAILABLE_ONLY_LEGACY_ALIASES => {
+                LEGACY_ALIASES.get_or_init(|| {
+                    Self::open_available_by_type(locale_type).unwrap().map(|x| ULoc::try_from(x.unwrap().as_str()).unwrap()).collect()
+                })
+            },
+            ULocAvailableType::ULOC_AVAILABLE_WITH_LEGACY_ALIASES => {
+                ALL_LOCALES.get_or_init(|| {
+                    Self::open_available_by_type(locale_type).unwrap().map(|x| ULoc::try_from(x.unwrap().as_str()).unwrap()).collect()
+                })
+            },
+            ULocAvailableType::ULOC_AVAILABLE_COUNT => panic!("ULOC_AVAILABLE_COUNT is for internal use only"),
+        }
+    }
+
     /// Implements `uloc_addLikelySubtags` from ICU4C.
     pub fn add_likely_subtags(&self) -> Result<ULoc, common::Error> {
         self.call_buffered_string_method(versioned_function!(uloc_addLikelySubtags))
@@ -1284,6 +1314,7 @@ mod tests {
             "azerbaïdjanais (cyrillique, Azerbaïdjan, calendrier=calendrier hébraïque, t=it, usage privé=whatever)"
         );
     }
+
     #[test]
     fn test_get_available() {
         let locales = ULoc::get_available();
@@ -1293,5 +1324,37 @@ mod tests {
         assert!(locales.contains(&ULoc::try_from("fr-FR").unwrap()));
         assert_eq!(ULoc::count_available() as usize, locales.capacity());
         assert_eq!(locales.len(), locales.capacity());
+    }
+
+    #[test]
+    fn test_get_available_by_type() {
+        let locales1 = ULoc::get_available_by_type(ULocAvailableType::ULOC_AVAILABLE_DEFAULT);
+        let locales2 = ULoc::get_available();
+        assert_eq!(locales1, locales2);
+        let alias_locales = ULoc::get_available_by_type(ULocAvailableType::ULOC_AVAILABLE_ONLY_LEGACY_ALIASES);
+        let all_locales = ULoc::get_available_by_type(ULocAvailableType::ULOC_AVAILABLE_WITH_LEGACY_ALIASES);
+        for locale in alias_locales {
+            assert!(all_locales.contains(&locale));
+            assert!(!locales1.contains(&locale));
+        }
+        for locale in locales1 {
+            assert!(all_locales.contains(&locale));
+            assert!(!alias_locales.contains(&locale));
+        }
+        assert!(alias_locales.len() > 0);
+        assert!(locales1.len() > alias_locales.len());
+        assert!(all_locales.len() > locales1.len());
+        assert!(alias_locales.contains(&ULoc::try_from("iw").unwrap()));
+        assert!(alias_locales.contains(&ULoc::try_from("mo").unwrap()));
+        assert!(alias_locales.contains(&ULoc::try_from("zh-CN").unwrap()));
+        assert!(alias_locales.contains(&ULoc::try_from("sr-BA").unwrap()));
+        assert!(alias_locales.contains(&ULoc::try_from("ars").unwrap()));
+    }
+
+    #[test]
+    #[should_panic(expected = "ULOC_AVAILABLE_COUNT is for internal use only")]
+    fn test_get_available_by_type_panic() {
+        assert!(!ULoc::open_available_by_type(ULocAvailableType::ULOC_AVAILABLE_COUNT).is_ok());
+        ULoc::get_available_by_type(ULocAvailableType::ULOC_AVAILABLE_COUNT);
     }
 }
