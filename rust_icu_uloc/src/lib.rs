@@ -13,6 +13,7 @@
 // limitations under the License.
 
 use {
+    anyhow::anyhow,
     rust_icu_common as common,
     rust_icu_common::buffered_string_method_with_retry,
     rust_icu_sys as sys,
@@ -370,10 +371,10 @@ impl ULoc {
     /// Implements `uloc_getAvailable`.
     pub fn get_available(n: i32) -> Result<ULoc, common::Error> {
         if (0 > n) || (n >= Self::count_available()) {
-            panic!("{n} is negative or greater than or equal to the value returned from count_available()");
+            panic!("{} is negative or greater than or equal to the value returned from count_available()", n);
         }
         let ptr = unsafe { versioned_function!(uloc_getAvailable)(n) };
-        if ptr == std::prt::null() {
+        if ptr == std::ptr::null() {
             return Err(common::Error::Wrapper(anyhow!("uloc_getAvailable() returned a null pointer")));
         }
         let label = unsafe { ffi::CStr::from_ptr(ptr).to_str().unwrap() };
@@ -386,7 +387,7 @@ impl ULoc {
         let mut vec = Vec::with_capacity(count as usize);
         let mut index: i32 = 0;
         while index < count {
-            let locale = get_available(index).unwrap();
+            let locale = Self::get_available(index).unwrap();
             vec.push(locale);
             index += 1;
         }
@@ -1314,16 +1315,16 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "n is negative or greater than or equal to the value returned from count_available()")]
+    #[should_panic(expected = "-1 is negative or greater than or equal to the value returned from count_available()")]
     fn test_get_available_negative() {
         let _ = ULoc::get_available(-1);
     }
 
     #[test]
-    #[should_panic(expected = "n is negative or greater than or equal to the value returned from count_available()")]
     fn test_get_available_overrun() {
         let index = ULoc::count_available();
-        let _ = ULoc::get_available(index);
+        let result = std::panic::catch_unwind(|| ULoc::get_available(index));
+        assert!(result.is_err());
     }
 
     #[test]
