@@ -10,7 +10,7 @@
 | `uenum.h` | 3 / 8 | 
 | `uformattable.h` | 6 / 13 | 
 | `ulistformatter.h` | 2 / 8 | 
-| `uloc.h` | 28 / 42 | 
+| `uloc.h` | 29 / 42 | 
 | `umsg.h` | 5 / 20 | 
 | `unum.h` | 14 / 32 | 
 | `unumberformatter.h` | 3 / 6 | 
@@ -284,6 +284,7 @@
 | | `uloc_getScript` |
 | | `uloc_getVariant` |
 | | `uloc_minimizeSubtags` |
+| | `uloc_openAvailableByType` |
 | | `uloc_openKeywords` |
 | | `uloc_setDefault` |
 | | `uloc_toLanguageTag` |
@@ -301,7 +302,6 @@
 | `uloc_getLocaleForLCID` | |
 | `uloc_getParent` | |
 | `uloc_isRightToLeft` | |
-| `uloc_openAvailableByType` | |
 | `uloc_setKeywordValue` | |
 | `uloc_toLegacyType` | |
 
