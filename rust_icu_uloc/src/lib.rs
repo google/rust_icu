@@ -370,9 +370,13 @@ impl ULoc {
     /// Implements `uloc_getAvailable`.
     pub fn get_available(n: i32) -> Result<ULoc, common::Error> {
         if (0 > n) || (n >= Self::count_available()) {
-            panic!("n is negative or greater than or equal to the value returned from count_available()");
+            panic!("{n} is negative or greater than or equal to the value returned from count_available()");
         }
-        let label = unsafe { ffi::CStr::from_ptr(versioned_function!(uloc_getAvailable)(n)).to_str().unwrap() };
+        let ptr = unsafe { versioned_function!(uloc_getAvailable)(n) };
+        if ptr == std::prt::null() {
+            return Err(common::Error::Wrapper(anyhow!("uloc_getAvailable() returned a null pointer")));
+        }
+        let label = unsafe { ffi::CStr::from_ptr(ptr).to_str().unwrap() };
         ULoc::try_from(label)
     }
 
@@ -382,8 +386,7 @@ impl ULoc {
         let mut vec = Vec::with_capacity(count as usize);
         let mut index: i32 = 0;
         while index < count {
-            let label = unsafe { ffi::CStr::from_ptr(versioned_function!(uloc_getAvailable)(index)).to_str().unwrap() };
-            let locale = ULoc::try_from(label).unwrap();
+            let locale = get_available(index).unwrap();
             vec.push(locale);
             index += 1;
         }
@@ -391,7 +394,7 @@ impl ULoc {
     }
 
     /// Implements `uloc_openAvailableByType`.
-    #[cfg(feature = "icu_version_65_plus")]
+    #[cfg(feature = "icu_version_67_plus")]
     pub fn open_available_by_type(locale_type: ULocAvailableType) -> Result<Enumeration, common::Error> {
         let mut status = common::Error::OK_CODE;
         unsafe {
@@ -402,7 +405,7 @@ impl ULoc {
     }
 
     /// Returns a vector of locales of the requested type.
-    #[cfg(feature = "icu_version_65_plus")]
+    #[cfg(feature = "icu_version_67_plus")]
     pub fn get_available_locales_by_type(locale_type: ULocAvailableType) -> Vec<ULoc> {
         if locale_type == ULocAvailableType::ULOC_AVAILABLE_COUNT {
             panic!("ULOC_AVAILABLE_COUNT is for internal use only");
@@ -1334,7 +1337,7 @@ mod tests {
         assert_eq!(locales.len(), locales.capacity());
     }
 
-    #[cfg(feature = "icu_version_65_plus")]
+    #[cfg(feature = "icu_version_67_plus")]
     #[test]
     fn test_get_available_locales_by_type() {
         let locales1 = ULoc::get_available_locales_by_type(ULocAvailableType::ULOC_AVAILABLE_DEFAULT);
@@ -1360,14 +1363,14 @@ mod tests {
         assert!(alias_locales.contains(&ULoc::try_from("ars").unwrap()));
     }
 
-    #[cfg(feature = "icu_version_65_plus")]
+    #[cfg(feature = "icu_version_67_plus")]
     #[test]
     #[should_panic(expected = "ULOC_AVAILABLE_COUNT is for internal use only")]
     fn test_get_available_locales_by_type_panic() {
         ULoc::get_available_locales_by_type(ULocAvailableType::ULOC_AVAILABLE_COUNT);
     }
 
-    #[cfg(feature = "icu_version_65_plus")]
+    #[cfg(feature = "icu_version_67_plus")]
     #[test]
     fn test_get_available_locales_by_type_error() {
         assert!(!ULoc::open_available_by_type(ULocAvailableType::ULOC_AVAILABLE_COUNT).is_ok());

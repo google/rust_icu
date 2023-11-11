@@ -106,9 +106,6 @@ fn main() -> anyhow::Result<()> {
     if icu_major_version >= 64 {
         println!("cargo:rustc-cfg=feature=\"icu_version_64_plus\"");
     }
-    if icu_major_version >= 65 {
-        println!("cargo:rustc-cfg=feature=\"icu_version_65_plus\"");
-    }
     if icu_major_version >= 67 {
         println!("cargo:rustc-cfg=feature=\"icu_version_67_plus\"");
     }
