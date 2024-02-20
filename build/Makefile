@@ -93,3 +93,6 @@ latest.stamp: push-buildenv.stamp v74.stamp
 v%.stamp: push-maint-%.stamp push-testenv-%.stamp
 	touch $@
 
+test: tag-maint-74.stamp tag-testenv-74.stamp
+.PHONY: test
+
