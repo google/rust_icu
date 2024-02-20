@@ -22,6 +22,7 @@ DOCKER_REPO ?= filipfilmar
 all: \
 	push-buildenv.stamp \
 	latest.stamp \
+	v74.stamp \
 	v73.stamp \
 	v72.stamp \
 	v71.stamp \
@@ -70,13 +71,15 @@ push-%.stamp: tag-%.stamp
 	docker push ${DOCKER_REPO}/rust_icu_$*:${VERSION}
 	touch $@
 
-latest.stamp: push-buildenv.stamp v72.stamp
+latest.stamp: push-buildenv.stamp v74.stamp
 	touch $@
 
 # These intermediate files will not be removed. Ideally we'd want all *.stamp
 # files to be preserved, but it seems that only explicitly named files can be
 # preserved. I.e. %.stamp doesn't work.
 .PRECIOUS: \
+	push-maint-74.stamp push-testenv-74.stamp \
+	build-testenv-74.stamp tag-testenv-74.stamp \
 	push-maint-73.stamp push-testenv-73.stamp \
 	build-testenv-73.stamp tag-testenv-73.stamp \
 	push-maint-72.stamp push-testenv-72.stamp \
