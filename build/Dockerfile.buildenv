@@ -1,5 +1,5 @@
 # rust_icu_buildenv.
-FROM rust:1.71.0 AS buildenv
+FROM rust:1.75.0 AS buildenv
 
 RUN mkdir -p /src
 
