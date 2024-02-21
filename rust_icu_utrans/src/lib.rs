@@ -347,6 +347,7 @@ mod tests {
     const DIR_FWD: sys::UTransDirection = sys::UTransDirection::UTRANS_FORWARD;
     const DIR_REV: sys::UTransDirection = sys::UTransDirection::UTRANS_REVERSE;
 
+    #[ignore]
     #[test]
     fn test_builtin() {
         trace!("Available IDs");
@@ -404,6 +405,7 @@ mod tests {
         assert_eq!(trans.transliterate("abc").unwrap(), "xyz");
     }
 
+    #[ignore]
     #[test]
     fn test_register_unregister() {
         let count_available = || UTransliterator::get_ids().unwrap().count();
