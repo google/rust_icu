@@ -1,0 +1,6 @@
+load("@buildifier_prebuilt//:rules.bzl", "buildifier")
+
+# bazel run //:buildifier
+buildifier(
+    name = "buildifier",
+)
