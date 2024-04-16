@@ -1,0 +1,56 @@
+load("@rules_foreign_cc//foreign_cc:configure.bzl", "configure_make")
+
+licenses(["notice"])  # Apache v2.0
+
+# We need to label this for configure_make.
+filegroup(
+    name = "all",
+    srcs = glob([
+        # This will *not* glob any files beneath any BUILD.bazel files found
+        # when globbing.
+        "icu4c/**",
+    ])
+)
+
+_CFLAGS = "-fPIC"
+_CXXFLAGS = _CFLAGS
+
+configure_make(
+    name = "icu",
+    configure_command = "source/configure",
+    env = select({
+        "@platforms//os:macos": {
+            "AR": "",
+            "CXXFLAGS": _CXXFLAGS,
+            "CFLAGS": _CFLAGS,
+        },
+        "//conditions:default": {
+            "CXXFLAGS": _CXXFLAGS,
+            "CFLAGS": _CFLAGS,
+        },
+    }),
+    configure_options = [
+        "--enable-static",
+    ],
+    lib_source = "//:all",
+    out_static_libs = [
+        "libicui18n.a",
+        "libicuio.a",
+        "libicuuc.a",
+        "libicudata.a",
+    ],
+    out_shared_libs = [
+        "libicui18n.so",
+        "libicuio.so",
+        "libicuuc.so",
+        "libicudata.so",
+    ],
+    targets = ["-j", "install"],
+    visibility = [
+        "//visibility:public",
+    ],
+)
+
+exports_files([
+    "icu4c/LICENSE",
+])
