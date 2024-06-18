@@ -1,7 +1,36 @@
-diff '--color=auto' -u -r --new-file icu-release-74-2/icu4c/source/common/BUILD.bazel icu-release-74-2.new/icu4c/source/common/BUILD.bazel
---- icu-release-74-2/icu4c/source/common/BUILD.bazel	2023-12-08 18:30:05.000000000 -0800
-+++ icu-release-74-2.new/icu4c/source/common/BUILD.bazel	1969-12-31 16:00:00.000000000 -0800
-@@ -1,1218 +0,0 @@
+From 840e5a307a0f76449dd46dce8183b96e1b5ba99b Mon Sep 17 00:00:00 2001
+From: Filip Filmar <fmil@google.com>
+Date: Mon, 17 Jun 2024 14:00:30 -0700
+Subject: [PATCH] fix: removes BUILD files
+
+this allows external compilation with bazel in an external repo
+---
+ icu4c/source/common/BUILD.bazel             | 1214 -------------------
+ icu4c/source/data/unidata/norm2/BUILD.bazel |   13 -
+ icu4c/source/i18n/BUILD.bazel               |  130 --
+ icu4c/source/stubdata/BUILD.bazel           |   24 -
+ icu4c/source/tools/gennorm2/BUILD.bazel     |   39 -
+ icu4c/source/tools/toolutil/BUILD.bazel     |  126 --
+ tools/unicode/c/genprops/BUILD.bazel        |   50 -
+ tools/unicode/c/genuca/BUILD.bazel          |   52 -
+ vendor/double-conversion/upstream/BUILD     |   78 --
+ 9 files changed, 1726 deletions(-)
+ delete mode 100644 icu4c/source/common/BUILD.bazel
+ delete mode 100644 icu4c/source/data/unidata/norm2/BUILD.bazel
+ delete mode 100644 icu4c/source/i18n/BUILD.bazel
+ delete mode 100644 icu4c/source/stubdata/BUILD.bazel
+ delete mode 100644 icu4c/source/tools/gennorm2/BUILD.bazel
+ delete mode 100644 icu4c/source/tools/toolutil/BUILD.bazel
+ delete mode 100644 tools/unicode/c/genprops/BUILD.bazel
+ delete mode 100644 tools/unicode/c/genuca/BUILD.bazel
+ delete mode 100644 vendor/double-conversion/upstream/BUILD
+
+diff --git a/icu4c/source/common/BUILD.bazel b/icu4c/source/common/BUILD.bazel
+deleted file mode 100644
+index 47d3d24bf51..00000000000
+--- a/icu4c/source/common/BUILD.bazel
++++ /dev/null
+@@ -1,1214 +0,0 @@
 -# © 2021 and later: Unicode, Inc. and others.
 -# License & terms of use: http://www.unicode.org/copyright.html
 -
@@ -607,16 +636,12 @@ diff '--color=auto' -u -r --new-file icu-release-74-2/icu4c/source/common/BUILD.
 -        "locbased.cpp",
 -        "locid.cpp",
 -        "loclikely.cpp",
--        "loclikelysubtags.cpp",
 -        "locmap.cpp",
--        "lsr.cpp",
 -        "resbund.cpp",
 -        "resource.cpp",
 -        "uloc.cpp",
 -        "uloc_tag.cpp",
 -        "uloc_keytype.cpp",
--        "ulocale.cpp",
--        "ulocbuilder.cpp",
 -        "uresbund.cpp",
 -        "uresdata.cpp",
 -        "wintz.cpp",
@@ -1220,9 +1245,11 @@ diff '--color=auto' -u -r --new-file icu-release-74-2/icu4c/source/common/BUILD.
 -        "U_COMMON_IMPLEMENTATION",  
 -    ],
 -)
-diff '--color=auto' -u -r --new-file icu-release-74-2/icu4c/source/data/unidata/norm2/BUILD.bazel icu-release-74-2.new/icu4c/source/data/unidata/norm2/BUILD.bazel
---- icu-release-74-2/icu4c/source/data/unidata/norm2/BUILD.bazel	2023-12-08 18:30:05.000000000 -0800
-+++ icu-release-74-2.new/icu4c/source/data/unidata/norm2/BUILD.bazel	1969-12-31 16:00:00.000000000 -0800
+diff --git a/icu4c/source/data/unidata/norm2/BUILD.bazel b/icu4c/source/data/unidata/norm2/BUILD.bazel
+deleted file mode 100644
+index 049e19bd41a..00000000000
+--- a/icu4c/source/data/unidata/norm2/BUILD.bazel
++++ /dev/null
 @@ -1,13 +0,0 @@
 -# © 2021 and later: Unicode, Inc. and others.
 -# License & terms of use: http://www.unicode.org/copyright.html
@@ -1235,11 +1262,13 @@ diff '--color=auto' -u -r --new-file icu-release-74-2/icu4c/source/data/unidata/
 -)
 -
 -exports_files([
--    "nfc.txt", "nfkc.txt", "nfkc_cf.txt", "nfkc_scf.txt", "uts46.txt",
+-    "nfc.txt", "nfkc.txt", "nfkc_cf.txt", "uts46.txt",
 -])
-diff '--color=auto' -u -r --new-file icu-release-74-2/icu4c/source/i18n/BUILD.bazel icu-release-74-2.new/icu4c/source/i18n/BUILD.bazel
---- icu-release-74-2/icu4c/source/i18n/BUILD.bazel	2023-12-08 18:30:05.000000000 -0800
-+++ icu-release-74-2.new/icu4c/source/i18n/BUILD.bazel	1969-12-31 16:00:00.000000000 -0800
+diff --git a/icu4c/source/i18n/BUILD.bazel b/icu4c/source/i18n/BUILD.bazel
+deleted file mode 100644
+index 2d85cdb180e..00000000000
+--- a/icu4c/source/i18n/BUILD.bazel
++++ /dev/null
 @@ -1,130 +0,0 @@
 -# © 2021 and later: Unicode, Inc. and others.
 -# License & terms of use: http://www.unicode.org/copyright.html
@@ -1371,9 +1400,11 @@ diff '--color=auto' -u -r --new-file icu-release-74-2/icu4c/source/i18n/BUILD.ba
 -        "U_I18N_IMPLEMENTATION",
 -    ],
 -)
-diff '--color=auto' -u -r --new-file icu-release-74-2/icu4c/source/stubdata/BUILD.bazel icu-release-74-2.new/icu4c/source/stubdata/BUILD.bazel
---- icu-release-74-2/icu4c/source/stubdata/BUILD.bazel	2023-12-08 18:30:05.000000000 -0800
-+++ icu-release-74-2.new/icu4c/source/stubdata/BUILD.bazel	1969-12-31 16:00:00.000000000 -0800
+diff --git a/icu4c/source/stubdata/BUILD.bazel b/icu4c/source/stubdata/BUILD.bazel
+deleted file mode 100644
+index 20344ef4991..00000000000
+--- a/icu4c/source/stubdata/BUILD.bazel
++++ /dev/null
 @@ -1,24 +0,0 @@
 -# © 2021 and later: Unicode, Inc. and others.
 -# License & terms of use: http://www.unicode.org/copyright.html
@@ -1399,9 +1430,11 @@ diff '--color=auto' -u -r --new-file icu-release-74-2/icu4c/source/stubdata/BUIL
 -        "U_COMMON_IMPLEMENTATION",
 -    ],
 -)
-diff '--color=auto' -u -r --new-file icu-release-74-2/icu4c/source/tools/gennorm2/BUILD.bazel icu-release-74-2.new/icu4c/source/tools/gennorm2/BUILD.bazel
---- icu-release-74-2/icu4c/source/tools/gennorm2/BUILD.bazel	2023-12-08 18:30:05.000000000 -0800
-+++ icu-release-74-2.new/icu4c/source/tools/gennorm2/BUILD.bazel	1969-12-31 16:00:00.000000000 -0800
+diff --git a/icu4c/source/tools/gennorm2/BUILD.bazel b/icu4c/source/tools/gennorm2/BUILD.bazel
+deleted file mode 100644
+index c602897bafc..00000000000
+--- a/icu4c/source/tools/gennorm2/BUILD.bazel
++++ /dev/null
 @@ -1,39 +0,0 @@
 -# © 2021 and later: Unicode, Inc. and others.
 -# License & terms of use: http://www.unicode.org/copyright.html
@@ -1442,9 +1475,11 @@ diff '--color=auto' -u -r --new-file icu-release-74-2/icu4c/source/tools/gennorm
 -    ],
 -    linkopts = ["-pthread"],
 -)
-diff '--color=auto' -u -r --new-file icu-release-74-2/icu4c/source/tools/toolutil/BUILD.bazel icu-release-74-2.new/icu4c/source/tools/toolutil/BUILD.bazel
---- icu-release-74-2/icu4c/source/tools/toolutil/BUILD.bazel	2023-12-08 18:30:05.000000000 -0800
-+++ icu-release-74-2.new/icu4c/source/tools/toolutil/BUILD.bazel	1969-12-31 16:00:00.000000000 -0800
+diff --git a/icu4c/source/tools/toolutil/BUILD.bazel b/icu4c/source/tools/toolutil/BUILD.bazel
+deleted file mode 100644
+index 276c857f124..00000000000
+--- a/icu4c/source/tools/toolutil/BUILD.bazel
++++ /dev/null
 @@ -1,126 +0,0 @@
 -# © 2021 and later: Unicode, Inc. and others.
 -# License & terms of use: http://www.unicode.org/copyright.html
@@ -1572,9 +1607,11 @@ diff '--color=auto' -u -r --new-file icu-release-74-2/icu4c/source/tools/tooluti
 -        "//icu4c/source/i18n:headers",
 -    ],
 -)
-diff '--color=auto' -u -r --new-file icu-release-74-2/tools/unicode/c/genprops/BUILD.bazel icu-release-74-2.new/tools/unicode/c/genprops/BUILD.bazel
---- icu-release-74-2/tools/unicode/c/genprops/BUILD.bazel	2023-12-08 18:30:05.000000000 -0800
-+++ icu-release-74-2.new/tools/unicode/c/genprops/BUILD.bazel	1969-12-31 16:00:00.000000000 -0800
+diff --git a/tools/unicode/c/genprops/BUILD.bazel b/tools/unicode/c/genprops/BUILD.bazel
+deleted file mode 100644
+index a7c3b270499..00000000000
+--- a/tools/unicode/c/genprops/BUILD.bazel
++++ /dev/null
 @@ -1,50 +0,0 @@
 -# © 2021 and later: Unicode, Inc. and others.
 -# License & terms of use: http://www.unicode.org/copyright.html
@@ -1626,9 +1663,11 @@ diff '--color=auto' -u -r --new-file icu-release-74-2/tools/unicode/c/genprops/B
 -    ],
 -    linkopts = ["-pthread"],
 -)
-diff '--color=auto' -u -r --new-file icu-release-74-2/tools/unicode/c/genuca/BUILD.bazel icu-release-74-2.new/tools/unicode/c/genuca/BUILD.bazel
---- icu-release-74-2/tools/unicode/c/genuca/BUILD.bazel	2023-12-08 18:30:05.000000000 -0800
-+++ icu-release-74-2.new/tools/unicode/c/genuca/BUILD.bazel	1969-12-31 16:00:00.000000000 -0800
+diff --git a/tools/unicode/c/genuca/BUILD.bazel b/tools/unicode/c/genuca/BUILD.bazel
+deleted file mode 100644
+index 7da631d3408..00000000000
+--- a/tools/unicode/c/genuca/BUILD.bazel
++++ /dev/null
 @@ -1,52 +0,0 @@
 -# © 2021 and later: Unicode, Inc. and others.
 -# License & terms of use: http://www.unicode.org/copyright.html
@@ -1682,3 +1721,90 @@ diff '--color=auto' -u -r --new-file icu-release-74-2/tools/unicode/c/genuca/BUI
 -    #   errCode=@0x7fffffffd738: U_ZERO_ERROR) at icu4c/source/common/umutex.h:143
 -    linkopts = ["-pthread"],
 -)
+diff --git a/vendor/double-conversion/upstream/BUILD b/vendor/double-conversion/upstream/BUILD
+deleted file mode 100644
+index 8c2eee564be..00000000000
+--- a/vendor/double-conversion/upstream/BUILD
++++ /dev/null
+@@ -1,78 +0,0 @@
+-# Bazel(http://bazel.io) BUILD file
+-
+-load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+-
+-licenses(["notice"])
+-
+-exports_files(["LICENSE"])
+-
+-cc_library(
+-    name = "double-conversion",
+-    srcs = [
+-        "double-conversion/bignum.cc",
+-        "double-conversion/bignum-dtoa.cc",
+-        "double-conversion/cached-powers.cc",
+-        "double-conversion/double-to-string.cc",
+-        "double-conversion/fast-dtoa.cc",
+-        "double-conversion/fixed-dtoa.cc",
+-        "double-conversion/string-to-double.cc",
+-        "double-conversion/strtod.cc",
+-    ],
+-    hdrs = [
+-        "double-conversion/bignum.h",
+-        "double-conversion/bignum-dtoa.h",
+-        "double-conversion/cached-powers.h",
+-        "double-conversion/diy-fp.h",
+-        "double-conversion/double-conversion.h",
+-        "double-conversion/double-to-string.h",
+-        "double-conversion/fast-dtoa.h",
+-        "double-conversion/fixed-dtoa.h",
+-        "double-conversion/ieee.h",
+-        "double-conversion/string-to-double.h",
+-        "double-conversion/strtod.h",
+-        "double-conversion/utils.h",
+-    ],
+-    linkopts = [
+-        "-lm",
+-    ],
+-    visibility = ["//visibility:public"],
+-)
+-
+-cc_test(
+-    name = "cctest",
+-    srcs = [
+-        "test/cctest/cctest.cc",
+-        "test/cctest/cctest.h",
+-        "test/cctest/checks.h",
+-        "test/cctest/gay-fixed.cc",
+-        "test/cctest/gay-fixed.h",
+-        "test/cctest/gay-precision.cc",
+-        "test/cctest/gay-precision.h",
+-        "test/cctest/gay-shortest.cc",
+-        "test/cctest/gay-shortest.h",
+-        "test/cctest/gay-shortest-single.cc",
+-        "test/cctest/gay-shortest-single.h",
+-        "test/cctest/test-bignum.cc",
+-        "test/cctest/test-bignum-dtoa.cc",
+-        "test/cctest/test-conversions.cc",
+-        "test/cctest/test-diy-fp.cc",
+-        "test/cctest/test-dtoa.cc",
+-        "test/cctest/test-fast-dtoa.cc",
+-        "test/cctest/test-fixed-dtoa.cc",
+-        "test/cctest/test-ieee.cc",
+-        "test/cctest/test-strtod.cc",
+-    ],
+-    args = [
+-        "test-bignum",
+-        "test-bignum-dtoa",
+-        "test-conversions",
+-        "test-diy-fp",
+-        "test-dtoa",
+-        "test-fast-dtoa",
+-        "test-fixed-dtoa",
+-        "test-ieee",
+-        "test-strtod",
+-    ],
+-    visibility = ["//visibility:public"],
+-    deps = [":double-conversion"],
+-)
+-- 
+2.45.2.627.g7a2c4fd464-goog
+
