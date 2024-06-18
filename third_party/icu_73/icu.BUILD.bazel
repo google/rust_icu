@@ -31,7 +31,6 @@ configure_make(
     }),
     configure_options = [
         "--enable-static",
-        "--with-data-packaging=archive",
     ],
     lib_source = "//:all",
     out_static_libs = [
@@ -45,9 +44,6 @@ configure_make(
         "libicuio.so",
         "libicuuc.so",
         "libicudata.so",
-    ],
-    out_data_dirs = [
-        "share",
     ],
     targets = ["-j", "install"],
     visibility = [
@@ -63,7 +59,7 @@ filegroup(
     name = "icudtl",
     output_group = "gen_dir",
     srcs = [
-        "share/icu/74.2/icudt74l.dat",
+        "share/icu/73.1/icudt73l.dat",
     ],
     visibility = [
         "//visibility:public",
