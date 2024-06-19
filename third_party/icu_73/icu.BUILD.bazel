@@ -9,7 +9,7 @@ filegroup(
         # This will *not* glob any files beneath any BUILD.bazel files found
         # when globbing.
         "icu4c/**",
-    ])
+    ]),
 )
 
 _CFLAGS = "-fPIC"
