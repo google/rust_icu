@@ -18,6 +18,8 @@
 // Please refer to README.md for instructions on how to build the library for
 // your use.
 
+use anyhow::Result;
+
 /// This is all a no-op if `use-bindgen` disabled.
 #[cfg(feature = "use-bindgen")]
 mod inner {
@@ -261,7 +263,7 @@ mod inner {
     /// This is the recommended way to bind complex libraries at the moment.  Returns
     /// the relative path of the generated wrapper header file with respect to some
     /// path from the include dir path (`-I`).
-    fn generate_wrapper_header(out_dir_path: &Path, bindgen_source_modules: &[&str]) -> String {
+    pub fn generate_wrapper_header(out_dir_path: &Path, bindgen_source_modules: &[&str]) -> String {
         let wrapper_path = out_dir_path.join("wrapper.h");
         let mut wrapper_file = File::create(&wrapper_path).unwrap();
         wrapper_file
@@ -286,7 +288,7 @@ mod inner {
             })
             .map(|f| {
                 let file_path_str = format!("#include \"{}\"\n", f);
-                println!("include-file: '{}'", f);
+                println!("icu:include-file: '{}'", f);
                 file_path_str
             })
             .collect::<String>();
@@ -352,7 +354,7 @@ mod inner {
 
     // Generates the library renaming macro: this allows us to use renamed function
     // names in the resulting low-level bindings library.
-    fn run_renamegen(out_dir_path: &Path) -> Result<()> {
+    pub fn run_renamegen(out_dir_path: &Path) -> Result<()> {
         let output_file_path = out_dir_path.join("macros.rs");
         let mut macro_file = File::create(&output_file_path)
             .with_context(|| format!("while opening {:?}", output_file_path))?;
@@ -435,7 +437,7 @@ macro_rules! versioned_function {
             println!("cargo:rustc-cfg=feature=\"icu_version_in_env\"");
         }
         let icu_major_version = ICUConfig::version_major_int()?;
-        println!("icu-version-major: {}", icu_major_version);
+        println!("icu:version-major: {}", icu_major_version);
         if icu_major_version >= 64 {
             println!("cargo:rustc-cfg=feature=\"icu_version_64_plus\"");
         }
@@ -454,19 +456,21 @@ macro_rules! versioned_function {
         Ok(())
     }
 
-    pub fn icu_config_autodetect() -> Result<()> {
-        println!("icu-version: {}", ICUConfig::new().version()?);
-        println!("icu-cppflags: {}", ICUConfig::new().cppflags()?);
-        println!("icu-ldflags: {}", ICUConfig::new().ldflags()?);
-        println!("icu-has-renaming: {}", has_renaming()?);
-
+    pub fn write_bindgen_header() -> Result<()> {
         // The path to the directory where cargo will add the output artifacts.
         let out_dir = env::var("OUT_DIR").unwrap();
         let out_dir_path = Path::new(&out_dir);
 
         let header_file = generate_wrapper_header(&out_dir_path, &BINDGEN_SOURCE_MODULES);
         run_bindgen(&header_file, out_dir_path).with_context(|| "while running bindgen")?;
-        run_renamegen(out_dir_path).with_context(|| "while running renamegen")?;
+        run_renamegen(out_dir_path).with_context(|| "while running renamegen")
+    }
+
+    pub fn icu_config_autodetect() -> Result<()> {
+        println!("icu:version: {}", ICUConfig::new().version()?);
+        println!("icu:cppflags: {}", ICUConfig::new().cppflags()?);
+        println!("icu:ldflags: {}", ICUConfig::new().ldflags()?);
+        println!("icu:has-renaming: {}", has_renaming()?);
 
         println!("cargo:install-dir={}", ICUConfig::new().install_dir()?);
 
@@ -478,8 +482,8 @@ macro_rules! versioned_function {
     }
 }
 
-fn rustc_link_libs() {
-    if cfg!(feature = "static") {
+fn rustc_link_libs() -> Result<()> {
+    if is_cargo_feature("CARGO_FEATURE_STATIC") {
         println!("cargo:rustc-link-lib=static=icuuc");
         println!("cargo:rustc-link-lib=static=icui18n");
         println!("cargo:rustc-link-lib=static:+whole-archive,-bundle=icudata");
@@ -489,32 +493,37 @@ fn rustc_link_libs() {
         } else {
             println!("cargo:rustc-link-lib=dylib=stdc++");
         }
+        if is_cargo_feature("CARGO_FEATURE_BINDGEN") {
+            inner::write_bindgen_header()?;
+        }
     } else {
         println!("cargo:rustc-link-lib=dylib=icuuc");
         println!("cargo:rustc-link-lib=dylib=icui18n");
         println!("cargo:rustc-link-lib=dylib=icudata");
     }
-}
-
-#[cfg(feature = "use-bindgen")]
-fn main() -> Result<(), anyhow::Error> {
-    std::env::set_var("RUST_BACKTRACE", "full");
-    inner::copy_features()?;
-    if std::env::var_os("CARGO_FEATURE_ICU_CONFIG").is_none() {
-        return Ok(());
-    }
-    inner::icu_config_autodetect()?;
-    rustc_link_libs();
-    println!("done:true");
     Ok(())
 }
 
-/// No-op if use-bindgen is disabled.
-#[cfg(not(feature = "use-bindgen"))]
-fn main() {
-    // can be used to provide an extra path to find libicuuc, libicui18n and libicudata
-    if let Ok(lib_dir) = std::env::var("RUST_ICU_LINK_SEARCH_DIR") {
-        println!("cargo:rustc-link-search=native={}", lib_dir);
-    }
-    rustc_link_libs();
+fn is_cargo_feature(f: &str) -> bool {
+    std::env::var_os(f).is_some()
 }
+
+fn main() -> Result<()> {
+    std::env::set_var("RUST_BACKTRACE", "full");
+    if is_cargo_feature("CARGO_FEATURE_BINDGEN") {
+        println!("icu:bindgen");
+        inner::copy_features()?;
+        if is_cargo_feature("CARGO_FEATURE_ICU_CONFIG") {
+            inner::icu_config_autodetect()?;
+        }
+    } else {
+        // can be used to provide an extra path to find libicuuc, libicui18n and libicudata
+        if let Ok(lib_dir) = std::env::var("RUST_ICU_LINK_SEARCH_DIR") {
+            println!("cargo:rustc-link-search=native={}", lib_dir);
+        }
+    }
+    rustc_link_libs()?;
+    println!("icu:done: true");
+    Ok(())
+}
+
