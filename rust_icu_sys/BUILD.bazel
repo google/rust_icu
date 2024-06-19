@@ -1,0 +1,59 @@
+load("@crate_index//:defs.bzl", "aliases", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+load("@rules_rust//cargo:defs.bzl", "cargo_build_script")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_library(
+    name = "rust_icu_sys",
+    srcs = [
+        "src/lib.rs",
+        "tests/hygiene.rs",
+        ":macros_rs",
+    ],
+    crate_name = "rust_icu_sys",
+    edition = "2021",
+    proc_macro_deps = [
+        "@crate_index//:paste",
+    ],
+    deps = [
+        "@crate_index//:libc",
+        ":build_script",
+        "@icu_74//:icu",
+    ],
+)
+
+cargo_build_script(
+    name = "build_script",
+    srcs = [ "build.rs" ],
+    crate_features = [
+        "use-bindgen", "bindgen", "renaming", "icu-config", "static",
+    ],
+    deps = [
+        "@crate_index//:anyhow",
+        "@crate_index//:bindgen",
+        "@crate_index//:lazy_static",
+    ],
+)
+
+filegroup(
+    name = "g1",
+    output_group = "streams",
+    srcs = [ ":build_script" ],
+)
+
+filegroup(
+    name = "g2",
+    output_group = "out_dir",
+    srcs = [ ":build_script" ],
+)
+
+genrule(
+    name = "macros_rs",
+    srcs = [
+        ":g2",
+    ],
+    cmd = "cp $</macros.rs $@",
+    outs = [ "macros.rs", ],
+
+)

@@ -21,7 +21,6 @@ go_deps.from_file(go_mod = "//:go.mod")
 use_repo(go_deps)
 
 bazel_dep(name = "rules_foreign_cc", version = "0.10.1")
-
 bazel_dep(name = "toolchains_llvm", version = "1.0.0")
 
 # Configure and register the toolchain.
@@ -31,7 +30,6 @@ llvm.toolchain(
     # work with just any version of LLVM.
     llvm_version = "15.0.6",
 )
-
 use_repo(llvm, "llvm_toolchain")
 
 register_toolchains("@llvm_toolchain//:all")
