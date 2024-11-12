@@ -8,6 +8,14 @@ README         | https://github.com/google/rust_icu/blob/main/README.md
 Coverage       | [View report](/coverage/report.md)
 Docs           | https://docs.rs/crate/rust_icu
 
+![Quintus Junius Rusticus from Crabb's Historical Dictionary (lived c. 100-c. 170 AD), consul in 133 (consul suffectus) and 162 (consul ordinarius) - https://commons.wikimedia.org/wiki/File:Quintus_Junius_Rusticus_from_Crabb%27s_Historical_Dictionary.jpg#filelinks](docs/204px-Quintus_Junius_Rusticus_from_Crabbs_Historical_Dictionary.jpg)
+
+*Project mascot: Quintus Junius Rusticus from Crabb's Historical Dictionary
+(lived c. 100-c. 170 AD), consul in 133 (consul suffectus) and 162 (consul
+ordinarius). Source: [Wikimedia Commons][wmc]*
+
+[wmc]: https://commons.wikimedia.org/wiki/File:Quintus_Junius_Rusticus_from_Crabb%27s_Historical_Dictionary.jpg#filelinks
+
 This is a library of low level native rust language bindings for the
 International Components for Unicode (ICU) library for C (a.k.a. ICU4C).
 
