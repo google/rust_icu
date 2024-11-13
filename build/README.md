@@ -30,9 +30,29 @@ cd build
 make DOCKER_REPO=yourrepo all
 ```
 
-Omitting `DOCKER_REPO` will cause the push to happen to the default repository, 
+Omitting `DOCKER_REPO` will cause the push to happen to the default repository,
 which you may not be allowed to write to.
 
 # Building the images locally
 
-It is possible to build the images locally with `docker`
+It is possible to build the images locally with `docker`.
+
+From the top level directory:
+
+```
+make -C build test
+```
+
+This will build and tag docker images locally.  Note the resulting image
+tag: `filipfilmar/rust_icu_testenv-74:1.4.2-120-g6ac9feb-dirty`
+
+## Using the built image
+
+You can now use the suffix of that tag, the bits after `:` to run
+a local docker target like so:
+
+```
+make docker-test-current \
+     USED_BUILDENV_VERSION=1.4.2-120-g6ac9feb-dirty
+```
+
