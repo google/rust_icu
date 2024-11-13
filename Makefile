@@ -75,7 +75,6 @@ docker-test:
 
 # Compiles and tests rust_icu code with the current head at ICU
 docker-test-current:
-	make -C build tag-current.stamp
 	mkdir -p ${CARGO_TARGET_DIR}
 	echo top_dir: ${TOP_DIR}
 	echo pwd: $(shell pwd)

@@ -62,3 +62,14 @@ jobs:
         run: make macos-test
       - if: matrix.runs-on == 'ubuntu-latest'
         run: make test
+  test-main-branch:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        icu_version: [74]
+    steps:
+      - uses: actions/checkout@v2
+      - name: 'Test ICU `main`'
+        run: |
+          make DOCKER_TEST_ENV=rust_icu_testenv-current RUST_ICU_MAJOR_VERSION_NUMBER=${{matrix.icu_version}} docker-test-current
+
