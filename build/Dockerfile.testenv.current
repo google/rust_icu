@@ -3,11 +3,14 @@
 ARG DOCKER_REPO=filipfilmar
 ARG VERSION=0.0.0
 ARG ICU_VERSION_TAG=maint-72
-FROM $DOCKER_REPO/rust_icu_$ICU_VERSION_TAG:$VERSION AS buildenv
+FROM $DOCKER_REPO/rust_icu_buildenv:$VERSION AS buildenv
 ARG DOCKER_REPO
 ARG VERSION
 ARG ICU_VERSION_TAG
 ARG BINDGEN_CLI_VERSION=0.69.5
+
+ENV CARGO_BUILD_DIR=/build/cargo
+RUN mkdir -p $CARGO_BUILD_DIR
 
 # Mount the rust_icu source top level directory here.
 ENV RUST_ICU_SOURCE_DIR=/src/rust_icu
@@ -19,12 +22,12 @@ RUN mkdir -p $RUST_ICU_SOURCE_DIR && \
 		  /build \
 		  /usr/local/cargo
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod a+rwx /entrypoint.sh
+COPY entrypoint-test-current.sh /entrypoint-test-current.sh
+RUN chmod a+rwx /entrypoint-test-current.sh
 
 RUN cargo install --force --version $BINDGEN_CLI_VERSION bindgen-cli
 
 ENV CARGO_TEST_ARGS=""
 ENV RUST_ICU_MAJOR_VERSION_NUMBER=""
-ENTRYPOINT /entrypoint.sh
+ENTRYPOINT /entrypoint-test-current.sh
 

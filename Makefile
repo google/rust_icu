@@ -73,6 +73,23 @@ docker-test:
 			${DOCKER_REPO}/${DOCKER_TEST_ENV}:${USED_BUILDENV_VERSION}
 .PHONY: docker-test
 
+# Compiles and tests rust_icu code with the current head at ICU
+docker-test-current:
+	make -C build tag-current.stamp
+	mkdir -p ${CARGO_TARGET_DIR}
+	echo top_dir: ${TOP_DIR}
+	echo pwd: $(shell pwd)
+	docker run ${TTY} \
+			--user=${UID}:${GID} \
+			--volume=${TOP_DIR}:/src/rust_icu \
+			--volume=${CARGO_TARGET_DIR}:/build/cargo \
+			--volume=${LOGNAME_HOME}/.cargo:/usr/local/cargo \
+			--env="CARGO_TEST_ARGS=${DOCKER_TEST_CARGO_TEST_ARGS}" \
+			--env="RUST_ICU_MAJOR_VERSION_NUMBER=${RUST_ICU_MAJOR_VERSION_NUMBER}"\
+			--env="RUST_BACKTRACE=full" \
+			${DOCKER_REPO}/rust_icu_testenv-current:${USED_BUILDENV_VERSION}
+.PHONY: docker-test-current
+
 # Test with the homebrew version of icu4c on macOS with static linking (the default way of linking for distribution on Apple platforms)
 macos-test:
 	brew install icu4c

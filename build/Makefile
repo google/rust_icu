@@ -28,6 +28,7 @@ all: \
 	v71.stamp \
 	v63.stamp \
 	push-testenv.stamp \
+	push-current.stamp \
 	push-hermetic.stamp
 	echo "buildenv-version: ${VERSION}"
 .PHONY: all
@@ -55,7 +56,26 @@ build-maint-%.stamp: Dockerfile.maint Dockerfile.buildenv
 			-f $< -t rust_icu_maint-$*:${VERSION} .
 	touch $@
 
-build-testenv-%.stamp: Dockerfile.testenv Dockerfile.buildenv entrypoint.sh
+push-current.stamp: tag-current.stamp
+	docker push ${DOCKER_REPO}/rust_icu_testenv-current:${VERSION}
+	touch $@
+
+tag-current.stamp: Makefile build-current.stamp
+	docker tag rust_icu_testenv-current:${VERSION} ${DOCKER_REPO}/rust_icu_testenv-current:${VERSION}
+	touch $@
+
+build-current.stamp: Dockerfile.testenv.current \
+	Dockerfile.buildenv Makefile \
+	entrypoint.sh entrypoint-test-current.sh
+	docker build \
+			--build-arg DOCKER_REPO=${DOCKER_REPO} \
+			--build-arg VERSION=${VERSION} \
+			--build-arg ICU_VERSION_TAG=maint-74 \
+			-f $< -t rust_icu_testenv-current:${VERSION} .
+	touch $@
+
+build-testenv-%.stamp: Dockerfile.testenv Dockerfile.buildenv \
+	entrypoint.sh entrypoint-test-current.sh
 	docker build \
 			--build-arg DOCKER_REPO=${DOCKER_REPO} \
 			--build-arg VERSION=${VERSION} \
@@ -87,12 +107,18 @@ latest.stamp: push-buildenv.stamp v74.stamp
 	push-maint-71.stamp push-testenv-71.stamp \
 	build-testenv-71.stamp tag-testenv-71.stamp \
 	push-maint-63.stamp push-testenv-63.stamp \
-	build-testenv-63.stamp tag-testenv-63.stamp
+	build-testenv-63.stamp tag-testenv-63.stamp \
+	build-current.stamp push-current.stamp
 
 
 v%.stamp: push-maint-%.stamp push-testenv-%.stamp
 	touch $@
 
-test: tag-maint-74.stamp tag-testenv-74.stamp
+# Use `make test` to test building various environments with local
+# changes, and an unofficial tag.  This target should not push.
+test: Makefile \
+	build-buildenv.stamp tag-buildenv.stamp \
+	build-maint-74.stamp tag-maint-74.stamp \
+	build-current.stamp tag-current.stamp
 .PHONY: test
 
