@@ -5,6 +5,7 @@ set -x
 echo "${0}"
 
 ICU_LIBRARY_PATH="${ICU_LIBRARY_PATH:-/build/icu-install}"
+NUMCPU="${NUMCPU:-4}"
 
 # Needed to take icu-config from ICU_LIBRARY_PATH, not the default
 # /usr/local/bin.
@@ -48,7 +49,7 @@ function run_cargo_doc() {
             --enable-static \
             --prefix="${ICU_LIBRARY_PATH}" \
             --enable-debug && \
-        make -j && \
+        make -j${NUMCPU} && \
         make install && \
         icu-config --version
 )
