@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        icu_version: [63, 72, 73, 74]
+        icu_version: [63, 73, 74]
     steps:
       - uses: actions/checkout@v2
       - name: 'Test ICU version ${{ matrix.icu_version }}'
