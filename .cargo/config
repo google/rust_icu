@@ -1,8 +1,1 @@
-# These flags are the only way to tell cargo to add directories to the library
-# search path.  When `build.rs` script is used, this is not needed since the
-# script will set the library paths correctly.  But when it isn't used,
-# something still needs to produce these flags.  With cargo, this is the only
-# way.
-[build]
-rustflags=["-L", "/usr/local/lib"]
-rustdocflags=["-L", "/usr/local/lib"]
+config.toml
