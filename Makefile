@@ -247,8 +247,8 @@ publish: publish.stamp
 # A helper to up-rev the cargo crate versions.
 # NOTE: The cargo crate version number is completely independent of the Docker
 # build environment version number.
-UPREV_OLD_VERSION ?= 5.0.0
-UPREV_NEW_VERSION ?= 5.1.0
+UPREV_OLD_VERSION ?= $(shell cat LAST_RELEASED_VERSION)
+UPREV_NEW_VERSION ?= $(shell cat NEXT_VERSION)
 define uprevfn
 	( \
 		cd $(1) && \
