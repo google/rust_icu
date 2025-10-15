@@ -57,6 +57,12 @@ function populate-and-run () {
 
 check-requirements
 
+ICU_TGZ_URL="https://github.com/unicode-org/icu/releases/download/release-77-1/icu4c-77_1-Ubuntu22.04-x64.tgz"
+ICU_DOWNLOAD_NAME="icu4c-77_1-Ubuntu22.04-x64.tgz"
+ICU_SHA256="80383a0c1fdab88783d20851e7ec942236b6cca97b793b1edd156b73ef7a582d"
+ICU_VERSION="77.1"
+populate-and-run
+
 ICU_TGZ_URL="https://github.com/unicode-org/icu/releases/download/release-73-2/icu4c-73_2-Ubuntu22.04-x64.tgz"
 ICU_DOWNLOAD_NAME="icu4c-73_2-Ubuntu22.04-x64.tgz"
 ICU_SHA256="ce669c2a36d735dfc36375e8536e030b0b79c5f0bc67025a6413fc1404b07e8b"
