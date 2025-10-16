@@ -179,7 +179,7 @@ publish-rust_icu_release.stamp:
 	touch $@
 
 # Everyone's dependency.
-publish-rust_icu_sys.stamp:
+publish-rust_icu_sys.stamp: publish-rust_icu_release.stamp
 	$(call publishfn,rust_icu_sys)
 	touch $@
 
