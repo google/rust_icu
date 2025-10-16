@@ -211,13 +211,21 @@ publish-rust_icu_uloc.stamp: \
 	$(call publishfn,rust_icu_uloc)
 	touch $@
 
+publish-rust_icu_ucal.stamp: \
+	publish-rust_icu_common.stamp \
+	publish-rust_icu_sys.stamp \
+	publish-rust_icu_ustring.stamp \
+	publish-rust_icu_uenum.stamp
+	$(call publishfn,rust_icu_ucal)
+	touch $@
+
 publish-rust_icu.stamp: \
 	publish-rust_icu_sys.stamp \
 	publish-rust_icu_common.stamp \
 	publish-rust_icu_uenum.stamp \
 	publish-rust_icu_utext.stamp \
-	publish-rust_icu_uloc.stamp
-	$(call publishfn,rust_icu_ucal)
+	publish-rust_icu_uloc.stamp \
+	publish-rust_icu_ucal.stamp
 	$(call publishfn,rust_icu_udat)
 	$(call publishfn,rust_icu_udata)
 	$(call publishfn,rust_icu_ucol)
