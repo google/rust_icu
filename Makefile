@@ -168,7 +168,9 @@ clean:
 # not found by cargo immediately after a publish.  Sleeping on this is bad,
 # but there doesn't seem to be a much better option available.
 define publishfn
-	( cd $(1) && cargo publish && sleep 30)
+	( cd $(1) \
+		&& env PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) cargo publish \
+		&& sleep 30)
 endef
 
 ######################################################################
