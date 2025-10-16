@@ -20,7 +20,7 @@
 //!
 //! Please refer to README.md for instructions on how to build the library for your use.
 
-use anyhow::{Result, Context};
+use anyhow::{Result, Context, anyhow};
 use std::process;
 
 
@@ -90,7 +90,7 @@ impl ICUConfig {
 
     pub fn version_major_int() -> Result<i32> {
         let version_str = ICUConfig::version_major().context("while getting ICU version")?;
-        Ok(version_str.parse().unwrap())
+        version_str.parse().map_err(|err| anyhow!("could not parse version from string: '{version_str}': {err:?}"))
     }
 
     /// Obtains the prefix directory, e.g. `$HOME/local`
