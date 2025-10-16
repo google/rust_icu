@@ -22,15 +22,15 @@
 #[cfg(feature = "use-bindgen")]
 mod inner {
     use {
-        anyhow::{anyhow, Context, Ok, Result},
+        anyhow::{Context, Ok, Result},
         bindgen,
         lazy_static::lazy_static,
         std::env,
         std::fs::File,
         std::io::Write,
         std::path::Path,
-        std::process,
     };
+    use rust_icu_release::ICUConfig;
 
     lazy_static! {
         // The modules for which bindings will be generated.  Add more if you need them.  The list
@@ -141,113 +141,6 @@ mod inner {
         ];
     }
 
-    /// A `Command` that also knows its name.
-    struct Command {
-        name: String,
-        rep: process::Command,
-    }
-
-    impl Command {
-        /// Creates a new command to run, with the executable `name`.
-        pub fn new(name: &'static str) -> Self {
-            let rep = process::Command::new(&name);
-            let name = String::from(name);
-            Command { name, rep }
-        }
-
-        /// Runs this command with `args` as arguments.
-        pub fn run(&mut self, args: &[&str]) -> Result<String> {
-            self.rep.args(args);
-            let stdout = self.stdout()?;
-            Ok(String::from(&stdout).trim().to_string())
-        }
-
-        // Captures the stdout of the command.
-        fn stdout(&mut self) -> Result<String> {
-            let output = self
-                .rep
-                .output()
-                .with_context(|| format!("could not execute command: {}", self.name))?;
-            let result = String::from_utf8(output.stdout)
-                .with_context(|| "could not convert output to UTF8")?;
-            Ok(result.trim().to_string())
-        }
-    }
-
-    /// A command representing an auto-configuration detector.  Use `ICUConfig::new()` to create.
-    struct ICUConfig {
-        rep: Command,
-    }
-
-    impl ICUConfig {
-        /// Creates a new ICUConfig.
-        fn new() -> Self {
-            ICUConfig {
-                rep: Command::new("pkg-config"),
-            }
-        }
-        /// Obtains the prefix directory, e.g. `$HOME/local`
-        fn prefix(&mut self) -> Result<String> {
-            self.rep
-                .run(&["--variable=prefix", "icu-i18n"])
-                .with_context(|| "could not get config prefix")
-        }
-
-        /// Obtains the default library path for the libraries.
-        fn libdir(&mut self) -> Result<String> {
-            self.rep
-                .run(&["--variable=libdir", "icu-i18n"])
-                .with_context(|| "could not get library directory")
-        }
-
-        /// Obtains the needed flags for the linker.
-        fn ldflags(&mut self) -> Result<String> {
-            self.rep
-                .run(&["--libs", "icu-i18n"])
-                .with_context(|| "could not get the ld flags")
-        }
-
-        /// Obtains the needed flags for the C++ compiler.
-        fn cppflags(&mut self) -> Result<String> {
-            self.rep
-                .run(&["--cflags", "icu-i18n"])
-                .with_context(|| "while getting the cpp flags")
-        }
-
-        /// Obtains the major-minor version number for the library. Returns a string like `64.2`.
-        fn version(&mut self) -> Result<String> {
-            self.rep
-                .run(&["--modversion", "icu-i18n"])
-                .and_then(|str| {
-                    if str.is_empty() {
-                        Err(anyhow!("empty version string"))
-                    } else {
-                        Ok(str)
-                    }
-                })
-                .with_context(|| "failed to get ICU version; please ensure pkg-config in $PATH")
-        }
-
-        fn install_dir(&mut self) -> Result<String> {
-            self.prefix()
-        }
-
-        /// Returns the config major number.  For example, will return "64" for
-        /// version "64.2"
-        fn version_major() -> Result<String> {
-            let version = ICUConfig::new().version()?;
-            let components = version.split('.');
-            let last = components
-                .take(1)
-                .last()
-                .with_context(|| format!("could not parse version number: {}", version))?;
-            Ok(last.to_string())
-        }
-        fn version_major_int() -> Result<i32> {
-            let version_str = ICUConfig::version_major()?;
-            Ok(version_str.parse().unwrap())
-        }
-    }
 
     /// Returns true if the ICU library was compiled with renaming enabled.
     fn has_renaming() -> Result<bool> {
@@ -498,12 +391,14 @@ fn rustc_link_libs() {
 
 #[cfg(feature = "use-bindgen")]
 fn main() -> Result<(), anyhow::Error> {
+    use anyhow::Context;
+
     std::env::set_var("RUST_BACKTRACE", "full");
-    inner::copy_features()?;
+    inner::copy_features().context("while copying features")?;
     if std::env::var_os("CARGO_FEATURE_ICU_CONFIG").is_none() {
         return Ok(());
     }
-    inner::icu_config_autodetect()?;
+    inner::icu_config_autodetect().context("while autodetecting ICU")?;
     rustc_link_libs();
     println!("done:true");
     Ok(())
