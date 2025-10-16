@@ -81,6 +81,7 @@ icu_version_69_max = [
 
 [build-dependencies]
 anyhow = "1.0"
+rust_icu_release = { path = "../rust_icu_release" }
 
 [badges]
 maintenance = { status = "actively-developed" }

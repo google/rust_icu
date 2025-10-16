@@ -24,6 +24,7 @@ paste = "1.0"
 anyhow = "1.0.72"
 bindgen = { version = "0.69.5", optional = true }
 lazy_static = "1.4"
+rust_icu_release = { path = "../rust_icu_release" }
 
 [lib]
 # Indented documentation text in the generated library is prose, not rust code.

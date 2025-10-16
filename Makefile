@@ -30,7 +30,7 @@ CARGO_FEATURE_VERSION :=
 ICU_VERSION ?= $(shell icu-config --version)
 ICU_MAJOR_VERSION ?= $(basename ${ICU_VERSION})
 ICU_LIBDIR := $(shell icu-config --libdir)
-PKG_CONFIG_PATH := "${HOME}/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
+PKG_CONFIG_PATH := "${HOME}/.local/lib/pkgconfig:${HOME}/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
 LD_LIBRARY_PATH := "${ICU_LIBDIR}"
 test:
 	       echo "ICU version detected:       ${ICU_VERSION}" \
@@ -174,6 +174,10 @@ endef
 ######################################################################
 ## Targets for publishing crates to crates.io
 
+publish-rust_icu_release.stamp:
+	$(call publishfn,rust_icu_release)
+	touch $@
+
 # Everyone's dependency.
 publish-rust_icu_sys.stamp:
 	$(call publishfn,rust_icu_sys)
@@ -258,6 +262,7 @@ endef
 
 uprev:
 	$(call uprevfn,rust_icu)
+	$(call uprevfn,rust_icu_release)
 	$(call uprevfn,rust_icu_common)
 	$(call uprevfn,rust_icu_intl)
 	$(call uprevfn,rust_icu_sys)
