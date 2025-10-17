@@ -1,6 +1,6 @@
 [package]
 name = "rust_icu_sys"
-version = "5.3.0"
+version = "5.4.0"
 authors = ["Google Inc."]
 license = "Apache-2.0"
 readme = "README.md"
@@ -24,7 +24,7 @@ paste = "1.0"
 anyhow = "1.0.72"
 bindgen = { version = "0.69.5", optional = true }
 lazy_static = "1.4"
-rust_icu_release = { path = "../rust_icu_release", version = "5.3.0" }
+rust_icu_release = { path = "../rust_icu_release", version = "5.4.0" }
 
 [lib]
 # Indented documentation text in the generated library is prose, not rust code.
