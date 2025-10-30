@@ -114,17 +114,12 @@ The limitations we know of today are as follows:
 
 # Compatibility
 
-The compatibility guarantee is as follows:
+Automated tests are executed for last three major ICU library versions in all
+feature combinations of interest.
 
-1. Automated tests are executed for last three major ICU library versions in all
-   feature combinations of interest.
-2. Automated tests are executed for the ICU library version in use by the docs.rs
-   system (so the documentation could be built).
-
-`rust_icu` version   | ICU 63.x | ICU 73.1 | ICU 74.1 | ICU 75.0 | ICU 76.0 | ICU 77.0 |
--------------------- | -------- | -------- | -------- | -------- | -------- | -------- |
-4.0                  |    ✅    |    ✅    |          |          |          |          |
-5.x                  |    ✅    |    ✅    |    ✅    |          |    ✅    |    ✅    |
+`rust_icu` version   | ICU 74.1 | ICU 75.0 | ICU 76.0 | ICU 77.0 |
+-------------------- | -------- | -------- | -------- | -------- |
+5.4.x                |    ✅    |          |    ✅    |    ✅    |
 
 # Features
 
