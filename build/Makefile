@@ -22,6 +22,8 @@ DOCKER_REPO ?= filipfilmar
 all: \
 	push-buildenv.stamp \
 	latest.stamp \
+	v77.stamp \
+	v76.stamp \
 	v74.stamp \
 	v73.stamp \
 	v72.stamp \
@@ -45,7 +47,9 @@ build-%.stamp: Dockerfile.%
 	docker build \
 			--build-arg DOCKER_REPO=${DOCKER_REPO} \
 			--build-arg VERSION=${VERSION} \
-			-f $< -t rust_icu_$*:${VERSION} .
+			-f $< \
+			-t rust_icu_$*:${VERSION} \
+			.
 	touch $@
 
 build-maint-%.stamp: Dockerfile.maint Dockerfile.buildenv
@@ -53,7 +57,9 @@ build-maint-%.stamp: Dockerfile.maint Dockerfile.buildenv
 			--build-arg DOCKER_REPO=${DOCKER_REPO} \
 			--build-arg VERSION=${VERSION} \
 			--build-arg ICU_VERSION_TAG=maint/maint-$* \
-			-f $< -t rust_icu_maint-$*:${VERSION} .
+			-f $< \
+			-t rust_icu_maint-$*:${VERSION} \
+			.
 	touch $@
 
 push-current.stamp: tag-current.stamp
@@ -71,7 +77,9 @@ build-current.stamp: Dockerfile.testenv.current \
 			--build-arg DOCKER_REPO=${DOCKER_REPO} \
 			--build-arg VERSION=${VERSION} \
 			--build-arg ICU_VERSION_TAG=maint-74 \
-			-f $< -t rust_icu_testenv-current:${VERSION} .
+			-f $< \
+			-t rust_icu_testenv-current:${VERSION} \
+			.
 	touch $@
 
 build-testenv-%.stamp: Dockerfile.testenv Dockerfile.buildenv \
@@ -80,7 +88,9 @@ build-testenv-%.stamp: Dockerfile.testenv Dockerfile.buildenv \
 			--build-arg DOCKER_REPO=${DOCKER_REPO} \
 			--build-arg VERSION=${VERSION} \
 			--build-arg ICU_VERSION_TAG=maint-$* \
-			-f $< -t rust_icu_testenv-$*:${VERSION} .
+			-f $< \
+			-t rust_icu_testenv-$*:${VERSION} \
+			.
 	touch $@
 
 tag-%.stamp: build-%.stamp
@@ -98,6 +108,10 @@ latest.stamp: push-buildenv.stamp v74.stamp
 # files to be preserved, but it seems that only explicitly named files can be
 # preserved. I.e. %.stamp doesn't work.
 .PRECIOUS: \
+	push-maint-77.stamp push-testenv-77.stamp \
+	build-testenv-77.stamp tag-testenv-77.stamp \
+	push-maint-76.stamp push-testenv-76.stamp \
+	build-testenv-76.stamp tag-testenv-76.stamp \
 	push-maint-74.stamp push-testenv-74.stamp \
 	build-testenv-74.stamp tag-testenv-74.stamp \
 	push-maint-73.stamp push-testenv-73.stamp \
@@ -118,7 +132,7 @@ v%.stamp: push-maint-%.stamp push-testenv-%.stamp
 # changes, and an unofficial tag.  This target should not push.
 test: Makefile \
 	build-buildenv.stamp tag-buildenv.stamp \
-	build-maint-74.stamp tag-maint-74.stamp \
+	build-maint-77.stamp tag-maint-77.stamp \
 	build-current.stamp tag-current.stamp
 .PHONY: test
 
