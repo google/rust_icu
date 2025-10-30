@@ -121,10 +121,10 @@ The compatibility guarantee is as follows:
 2. Automated tests are executed for the ICU library version in use by the docs.rs
    system (so the documentation could be built).
 
-`rust_icu` version   | ICU 63.x | ICU 73.1 | ICU 74.1 | ICU 75.0 | ICU 76.0 |
--------------------- | -------- | -------- | -------- | -------- | -------- |
-4.0                  |    ✅    |    ✅    |          |          |          |
-5.0                  |    ✅    |    ✅    |    ✅    |    X     |    ✅    |
+`rust_icu` version   | ICU 63.x | ICU 73.1 | ICU 74.1 | ICU 75.0 | ICU 76.0 | ICU 77.0 |
+-------------------- | -------- | -------- | -------- | -------- | -------- | -------- |
+4.0                  |    ✅    |    ✅    |          |          |          |          |
+5.x                  |    ✅    |    ✅    |    ✅    |          |    ✅    |    ✅    |
 
 # Features
 
