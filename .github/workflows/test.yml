@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        icu_version: [63, 73, 74]
+        icu_version: [74, 76, 77]
     steps:
       - uses: actions/checkout@v2
       - name: 'Test ICU version ${{ matrix.icu_version }}'
@@ -24,21 +24,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        icu_version: [72, 73, 74]
+        icu_version: [74, 76, 77]
         feature_set:
           - "renaming,icu_version_in_env,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus"
           - "renaming,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus,icu_config,use-bindgen"
-    steps:
-      - uses: actions/checkout@v2
-      - name: 'Test ICU version ${{ matrix.icu_version }}'
-        run: 'make DOCKER_TEST_ENV=rust_icu_testenv-${{ matrix.icu_version }} RUST_ICU_MAJOR_VERSION_NUMBER=${{ matrix.icu_version }} DOCKER_TEST_CARGO_TEST_ARGS="--no-default-features --features ${{ matrix.feature_set }}" docker-test'
-  test-nondefault-features:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        icu_version: [63]
-        feature_set:
-          - "renaming,icu_version_in_env,icu_version_69_max"
     steps:
       - uses: actions/checkout@v2
       - name: 'Test ICU version ${{ matrix.icu_version }}'
@@ -66,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        icu_version: [74]
+        icu_version: [77]
     steps:
       - uses: actions/checkout@v2
       - name: 'Test ICU `main`'
