@@ -15,3 +15,29 @@ keywords = ["icu", "unicode", "i18n", "l10n"]
 
 [dependencies]
 anyhow = "1.0"
+
+[features]
+default = ["use-bindgen", "renaming", "icu_config"]
+
+use-bindgen = [
+]
+renaming = [
+]
+icu_config = [
+]
+icu_version_in_env = [
+]
+icu_version_64_plus = [
+]
+icu_version_67_plus = [
+]
+icu_version_68_plus = [
+]
+icu_version_69_max = [
+]
+
+[badges]
+maintenance = { status = "actively-developed" }
+is-it-maintained-issue-resolution = { repository = "google/rust_icu" }
+is-it-maintained-open-issues = { repository = "google/rust_icu" }
+travis-ci = { repository = "google/rust_icu", branch = "main" }
