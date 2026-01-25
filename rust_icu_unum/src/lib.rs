@@ -771,10 +771,10 @@ mod tests {
 
         let tests = vec![
             TestCase {
-                locale: "sr-RS",
+                locale: "nl-NL",
                 number: 42,
                 style: sys::UNumberFormatStyle::UNUM_CURRENCY,
-                expected: "42\u{a0}RSD",
+                expected: "€\u{a0}42,00",
             },
             TestCase {
                 locale: "sr-RS",
@@ -808,22 +808,30 @@ mod tests {
         }
 
         let tests = vec![TestCase {
-            locale: "sr-RS",
+            locale: "nl-NL",
             number: 42.1,
             style: sys::UNumberFormatStyle::UNUM_CURRENCY,
-            expected: "42\u{a0}RSD",
+            expected: "€\u{a0}42,10",
             expected_iter: vec![
-                // "42"
-                UFieldPositionType {
-                    field_type: 0,
-                    begin_index: 0,
-                    past_end_index: 2,
-                },
-                // "RSD"
                 UFieldPositionType {
                     field_type: 7,
-                    begin_index: 3,
-                    past_end_index: 6,
+                    begin_index: 0,
+                    past_end_index: 1,
+                },
+                UFieldPositionType {
+                    field_type: 0,
+                    begin_index: 2,
+                    past_end_index: 4,
+                },
+                UFieldPositionType {
+                    field_type: 2,
+                    begin_index: 4,
+                    past_end_index: 5,
+                },
+                UFieldPositionType {
+                    field_type: 1,
+                    begin_index: 5,
+                    past_end_index: 7,
                 },
             ],
         }];
@@ -854,10 +862,10 @@ mod tests {
         }
 
         let tests = vec![TestCase {
-            locale: "sr-RS",
+            locale: "nl-NL",
             number: "1300.55",
             style: sys::UNumberFormatStyle::UNUM_CURRENCY,
-            expected: "1.301\u{a0}RSD",
+            expected: "€\u{a0}1.300,55",
         }];
         for test in tests {
             let locale = uloc::ULoc::try_from(test.locale).expect("locale exists");
