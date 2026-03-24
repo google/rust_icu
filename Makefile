@@ -23,7 +23,7 @@ endif
 #   make USED_BUILDENV_VERSION=whatever-you-want docker-test
 #
 # NOTE: This version number is completely independent of the crate version.
-USED_BUILDENV_VERSION ?= 1.90.0
+USED_BUILDENV_VERSION ?= 1.91.0
 
 CARGO_FEATURE_VERSION :=
 
@@ -138,13 +138,13 @@ static-bindgen-special-%.stamp: rust_icu_sys/bindgen_special/run_bindgen.sh
 	docker run ${TTY} \
 			--user=${UID}:${GID} \
 			--volume=${TOP_DIR}:/src/rust_icu \
-			--volume=${LOGNAME_HOME}/.cargo:/usr/local/cargo \
 			--volume=${LOGNAME_HOME}/code/icu:/src/icu \
 			--env="RUST_ICU_MAJOR_VERSION_NUMBER=$*" \
 			--entrypoint="/bin/bash" \
 			${DOCKER_REPO}/rust_icu_testenv-$*:${USED_BUILDENV_VERSION} \
-			  "-c" "env OUTPUT_DIR=./rust_icu/rust_icu_sys/bindgen_special \
+			  "-l" "-c" "env OUTPUT_DIR=./rust_icu/rust_icu_sys/bindgen_special \
 			  ./rust_icu/rust_icu_sys/bindgen_special/run_bindgen.sh"
+
 	touch $@
 
 # Keep only the latest version of the library in the static-bindgen target,

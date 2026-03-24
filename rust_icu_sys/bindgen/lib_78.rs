@@ -4192,6 +4192,8 @@ pub enum UDateFormatSymbolType {
     UDAT_ZODIAC_NAMES_NARROW = 27,
     UDAT_NARROW_QUARTERS = 28,
     UDAT_STANDALONE_NARROW_QUARTERS = 29,
+    UDAT_AM_PMS_NARROW = 30,
+    UDAT_AM_PMS_WIDE = 31,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
