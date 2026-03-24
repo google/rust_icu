@@ -3,8 +3,8 @@
 | Header | Implemented |
 | ------ | ----------- |
 | `ubrk.h` | 19 / 23 | 
-| `ucal.h` | 15 / 47 | 
-| `ucol.h` | 8 / 51 | 
+| `ucal.h` | 15 / 48 | 
+| `ucol.h` | 8 / 54 | 
 | `udat.h` | 5 / 38 | 
 | `udata.h` | 2 / 8 | 
 | `uenum.h` | 3 / 8 | 
@@ -18,7 +18,7 @@
 | `ustring.h` | 2 / 61 | 
 | `utext.h` | 2 / 28 | 
 | `utrans.h` | 10 / 20 | 
-| `unorm2.h` | 8 / 22 | 
+| `unorm2.h` | 8 / 23 | 
 # Unimplemented functions per header
 
 
@@ -83,6 +83,7 @@
 | `ucal_getFieldDifference` | |
 | `ucal_getGregorianChange` | |
 | `ucal_getHostTimeZone` | |
+| `ucal_getIanaTimeZoneID` | |
 | `ucal_getKeywordValuesForLocale` | |
 | `ucal_getLimit` | |
 | `ucal_getLocaleByType` | |
@@ -114,6 +115,9 @@
 | | `ucol_setStrength` |
 | | `ucol_strcoll` |
 | | `ucol_strcollUTF8` |
+| `match` | |
+| `operator` | |
+| `Predicate` | |
 | `ucol_clone` | |
 | `ucol_cloneBinary` | |
 | `ucol_close` | |
@@ -314,6 +318,8 @@
 | | `umsg_format` |
 | | `umsg_open` |
 | | `umsg_vformat` |
+| `u_formatMessage` | |
+| `u_formatMessageWithError` | |
 | `umsg_applyPattern` | |
 | `umsg_autoQuoteApostrophe` | |
 | `umsg_getLocale` | |
@@ -321,8 +327,6 @@
 | `umsg_setLocale` | |
 | `umsg_toPattern` | |
 | `umsg_vparse` | |
-| `u_formatMessage` | |
-| `u_formatMessageWithError` | |
 | `u_parseMessage` | |
 | `u_parseMessageWithError` | |
 | `u_vformatMessage` | |
@@ -531,6 +535,7 @@
 | `unorm2_getCombiningClass` | |
 | `unorm2_getDecomposition` | |
 | `unorm2_getInstance` | |
+| `unorm2_getNFKCSimpleCasefoldInstance` | |
 | `unorm2_getRawDecomposition` | |
 | `unorm2_hasBoundaryAfter` | |
 | `unorm2_hasBoundaryBefore` | |
