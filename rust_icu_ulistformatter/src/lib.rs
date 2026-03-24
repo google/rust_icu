@@ -284,24 +284,24 @@ mod testing {
     }
 
     #[test]
-    fn test_formatting_sr() {
-        let array = ["Раја", "Гаја", "Влаја"]; // Huey, Dewey, and Louie.
-        let formatter = crate::UListFormatter::try_new("sr-RS").expect("has list format");
+    fn test_formatting_nl() {
+        let array = ["Kwik", "Kwek", "Kwak"]; // Huey, Dewey, and Louie.
+        let formatter = crate::UListFormatter::try_new("nl").expect("has list format");
         let result = formatter.format(&array).expect("formatting succeeds");
-        assert_eq!("Раја, Гаја и Влаја", result);
+        assert_eq!("Kwik, Kwek en Kwak", result);
     }
 
     #[test]
     #[cfg(feature = "icu_version_67_plus")]
     fn test_formatting_styled() {
-        let array = ["Раја", "Гаја", "Влаја"];
+        let array = ["Kwik", "Kwek", "Kwak"];
         let formatter = crate::UListFormatter::try_new_styled(
-            "sr-RS",
+            "nl",
             sys::UListFormatterType::ULISTFMT_TYPE_OR,
             sys::UListFormatterWidth::ULISTFMT_WIDTH_WIDE,
         )
         .expect("has list format");
         let result = formatter.format(&array).expect("formatting succeeds");
-        assert_eq!("Раја, Гаја или Влаја", result);
+        assert_eq!("Kwik, Kwek of Kwak", result);
     }
 }

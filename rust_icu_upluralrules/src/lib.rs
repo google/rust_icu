@@ -156,25 +156,25 @@ mod testing {
     }
 
     #[test]
-    fn plurals_sr_rs() -> Result<(), common::Error> {
-        let pl = crate::UPluralRules::try_new("sr_RS").expect("locale sr_RS exists");
+    fn plurals_nl() -> Result<(), common::Error> {
+        let pl = crate::UPluralRules::try_new("nl").expect("locale nl exists");
         assert_eq!("other", pl.select(0 as f64)?);
         assert_eq!("one", pl.select(1 as f64)?);
-        assert_eq!("few", pl.select(2 as f64)?);
-        assert_eq!("few", pl.select(4 as f64)?);
+        assert_eq!("other", pl.select(2 as f64)?);
+        assert_eq!("other", pl.select(4 as f64)?);
         assert_eq!("other", pl.select(5 as f64)?);
         assert_eq!("other", pl.select(6 as f64)?);
         assert_eq!("other", pl.select(18 as f64)?);
         assert_eq!("other", pl.select(11 as f64)?);
 
-        assert_eq!("one", pl.select(21 as f64)?);
+        assert_eq!("other", pl.select(21 as f64)?);
         Ok(())
     }
 
     #[test]
-    fn plurals_sr_rs_styled() -> Result<(), common::Error> {
-        let pl = crate::UPluralRules::try_new_styled("sr_RS", UPluralType::UPLURAL_TYPE_ORDINAL)
-            .expect("locale sr_RS exists");
+    fn plurals_nl_styled() -> Result<(), common::Error> {
+        let pl = crate::UPluralRules::try_new_styled("nl", UPluralType::UPLURAL_TYPE_ORDINAL)
+            .expect("locale nl exists");
         assert_eq!("other", pl.select(0 as f64)?);
         assert_eq!("other", pl.select(1 as f64)?);
         assert_eq!("other", pl.select(2 as f64)?);
@@ -185,17 +185,17 @@ mod testing {
 
     #[test]
     fn all_keywords() -> Result<(), common::Error> {
-        let pl = crate::UPluralRules::try_new("sr_RS").expect("locale sr_RS exists");
+        let pl = crate::UPluralRules::try_new("nl").expect("locale nl exists");
         let e = pl.get_keywords()?;
         let all: Vec<String> = e.into_iter().map(|r| r.unwrap()).collect();
-        assert_eq!(vec!["few", "one", "other"], all);
+        assert_eq!(vec!["one", "other"], all);
         Ok(())
     }
 
     #[test]
     fn all_keywords_styled() -> Result<(), common::Error> {
-        let pl = crate::UPluralRules::try_new_styled("sr_RS", UPluralType::UPLURAL_TYPE_ORDINAL)
-            .expect("locale sr_RS exists");
+        let pl = crate::UPluralRules::try_new_styled("nl", UPluralType::UPLURAL_TYPE_ORDINAL)
+            .expect("locale nl exists");
         let e = pl.get_keywords()?;
         let all: Vec<String> = e.into_iter().map(|r| r.unwrap()).collect();
         assert_eq!(vec!["other"], all);
