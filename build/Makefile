@@ -22,6 +22,7 @@ DOCKER_REPO ?= filipfilmar
 all: \
 	push-buildenv.stamp \
 	latest.stamp \
+	v78.stamp \
 	v77.stamp \
 	v76.stamp \
 	v74.stamp \
@@ -108,6 +109,8 @@ latest.stamp: push-buildenv.stamp v74.stamp
 # files to be preserved, but it seems that only explicitly named files can be
 # preserved. I.e. %.stamp doesn't work.
 .PRECIOUS: \
+	push-maint-78.stamp push-testenv-78.stamp \
+	build-testenv-78.stamp tag-testenv-78.stamp \
 	push-maint-77.stamp push-testenv-77.stamp \
 	build-testenv-77.stamp tag-testenv-77.stamp \
 	push-maint-76.stamp push-testenv-76.stamp \
@@ -132,7 +135,7 @@ v%.stamp: push-maint-%.stamp push-testenv-%.stamp
 # changes, and an unofficial tag.  This target should not push.
 test: Makefile \
 	build-buildenv.stamp tag-buildenv.stamp \
-	build-maint-77.stamp tag-maint-77.stamp \
+	build-maint-78.stamp tag-maint-78.stamp \
 	build-current.stamp tag-current.stamp
 .PHONY: test
 
