@@ -2,16 +2,19 @@
 
 ## General project information
 
-General information is available in the file README.md.
+* General information is available in the file README.md.
+
+* Prefer using `git rebase` to `git merge` when taking in new changes. This
+  keeps the commit history simple for analysis.
 
 ## Commit rules
 
-Every commit created by Gemini must end with the following note:
+* Every commit created by Gemini must end with the following note:
 
-```
-This commit was created by an automated coding assistant, with human
-supervision.
-```
+  ```
+  This commit was created by an automated coding assistant, with human
+  supervision.
+  ```
 
 ## Publishing a new release
 
@@ -40,7 +43,8 @@ supervision.
 * Add a git tag to the current commit equal to the content of the file
   `NEXT_VERSION`.
 
-* Run `make publish` to publish all crates to `crates.io`.
+* Run `make publish` to publish all crates to `crates.io`. Do not use `cargo`
+  as we have a custom publication process.
 
 * If the previous step was a success, copy the contents of the file
   `NEXT_VERSION` into the file `LAST_RELEASED_VERSION`. After that, increment
