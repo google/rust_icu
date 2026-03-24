@@ -777,10 +777,10 @@ mod tests {
                 expected: "€\u{a0}42,00",
             },
             TestCase {
-                locale: "sr-RS",
+                locale: "nl-NL",
                 number: 42,
                 style: sys::UNumberFormatStyle::UNUM_SPELLOUT,
-                expected: "четрдесет и два",
+                expected: "twee\u{ad}ën\u{ad}veertig",
             },
         ];
         for test in tests {
