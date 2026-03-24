@@ -125,7 +125,8 @@ static-bindgen: \
     static-bindgen-73.stamp \
     static-bindgen-74.stamp \
     static-bindgen-76.stamp \
-    static-bindgen-77.stamp
+    static-bindgen-77.stamp \
+    static-bindgen-78.stamp
 .PHONY: static-bindgen
 
 
@@ -153,7 +154,8 @@ static-bindgen-special: \
     static-bindgen-special-73.stamp \
     static-bindgen-special-74.stamp \
     static-bindgen-special-76.stamp \
-    static-bindgen-special-77.stamp
+    static-bindgen-special-77.stamp \
+    static-bindgen-special-78.stamp
 .PHONY: static-bindgen-special
 
 # Builds and pushes the build environment containers.  You would not normally
