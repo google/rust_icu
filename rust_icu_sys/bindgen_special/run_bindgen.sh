@@ -25,6 +25,9 @@
 
 set -eo pipefail
 
+# Cargo needs to be in path as well.
+PATH=$PATH:/usr/local/cargo/bin
+
 # The directory into which the rust bindings file will be written.  If left
 # unset, the current directory is the default.
 OUTPUT_DIR=${OUTPUT_DIR:-.}
@@ -122,7 +125,7 @@ function main() {
   local _icu_version_major="${_icu_version_major%.*}"
 
   # Respectful code hack.
-  local _allowlist="$(echo "d2hpdGVsaXN0Cg==" | base64 -d -)"
+  local _allowlist="allowlist"
 
 
   local _output_file="${OUTPUT_DIR}/lib_${_icu_version_major}.rs"
