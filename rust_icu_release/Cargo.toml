@@ -1,6 +1,6 @@
 [package]
 name = "rust_icu_release"
-version = "5.5.0"
+version = "5.6.0"
 edition = "2024"
 authors = ["Google Inc."]
 license = "Apache-2.0"
