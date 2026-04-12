@@ -15,7 +15,7 @@
 | `unum.h` | 14 / 32 | 
 | `unumberformatter.h` | 3 / 6 | 
 | `upluralrules.h` | 3 / 8 | 
-| `ures.h` | 0 / 34 | 
+| `ures.h` | 21 / 34 | 
 | `ustring.h` | 2 / 61 | 
 | `utext.h` | 2 / 28 | 
 | `utrans.h` | 10 / 20 | 
@@ -400,25 +400,30 @@
 
 | Unimplemented | Implemented |
 | ------------- | ----------- |
-| `ures_close` | |
+| | `ures_close` |
+| | `ures_getBinary` |
+| | `ures_getByIndex` |
+| | `ures_getByKey` |
+| | `ures_getInt` |
+| | `ures_getIntVector` |
+| | `ures_getKey` |
+| | `ures_getLocaleByType` |
+| | `ures_getNextResource` |
+| | `ures_getNextString` |
+| | `ures_getSize` |
+| | `ures_getString` |
+| | `ures_getStringByIndex` |
+| | `ures_getStringByKey` |
+| | `ures_getType` |
+| | `ures_getUInt` |
+| | `ures_hasNext` |
+| | `ures_open` |
+| | `ures_openAvailableLocales` |
+| | `ures_openDirect` |
+| | `ures_resetIterator` |
 | `ures_countArrayItems` | |
-| `ures_getBinary` | |
-| `ures_getByIndex` | |
-| `ures_getByKey` | |
-| `ures_getInt` | |
-| `ures_getIntVector` | |
-| `ures_getKey` | |
 | `ures_getLocale` | |
-| `ures_getLocaleByType` | |
-| `ures_getNextResource` | |
-| `ures_getNextString` | |
 | `ures_getNextUnicodeString` | |
-| `ures_getSize` | |
-| `ures_getString` | |
-| `ures_getStringByIndex` | |
-| `ures_getStringByKey` | |
-| `ures_getType` | |
-| `ures_getUInt` | |
 | `ures_getUnicodeString` | |
 | `ures_getUnicodeStringByIndex` | |
 | `ures_getUnicodeStringByKey` | |
@@ -427,13 +432,8 @@
 | `ures_getUTF8StringByKey` | |
 | `ures_getVersion` | |
 | `ures_getVersionNumber` | |
-| `ures_hasNext` | |
-| `ures_open` | |
-| `ures_openAvailableLocales` | |
-| `ures_openDirect` | |
 | `ures_openFillIn` | |
 | `ures_openU` | |
-| `ures_resetIterator` | |
 
 # Header: `ustring.h`
 
