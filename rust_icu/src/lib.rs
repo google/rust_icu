@@ -39,6 +39,7 @@
 //! | rust_icu_uloc | icu::loc |
 //! | rust_icu_umsg | icu::msg |
 //! | rust_icu_unorm | unorm |
+//! | rust_icu_ures | ures |
 //! | rust_icu_ustring | icu::string |
 //! | rust_icu_utext | text |
 //! | rust_icu_utrans | trans |
@@ -54,6 +55,7 @@ pub use rust_icu_uenum as enums;
 pub use rust_icu_ulistformatter as listformatter;
 pub use rust_icu_uloc as loc;
 pub use rust_icu_umsg as msg;
+pub use rust_icu_ures   as ures;
 pub use rust_icu_ustring as string;
 pub use rust_icu_utext as text;
 pub use rust_icu_utrans as trans;

@@ -93,6 +93,7 @@ mod inner {
             "usrc_.*",
             "umutablecp.*",
             "ucp.*",
+            "ures_.*",
         ];
 
         // Functions that take a C va_list argument cannot be called from Rust, so we
