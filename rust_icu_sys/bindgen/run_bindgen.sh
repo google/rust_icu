@@ -146,6 +146,27 @@ readonly BINDGEN_ALLOWLIST_FUNCTIONS=(
         "ucp.*"
 )
 
+# Functions that take a C va_list argument cannot be called from Rust, so we
+# blocklist them to avoid generating platform-dependent va_list type definitions
+# (e.g. __va_list_tag on Linux x86_64 vs char* on macOS) in the output.
+# This list is intended to be kept in sync with the static variable by the same
+# name in the build.rs file.
+readonly BINDGEN_BLOCKLIST_FUNCTIONS=(
+        "u_vformatMessage.*"
+        "u_vparseMessage.*"
+        "umsg_vformat.*"
+        "umsg_vparse.*"
+)
+
+# Types leaked from system headers (<stdarg.h>) that are not needed in the
+# output and would otherwise vary across platforms.
+# This list is intended to be kept in sync with the static variable by the same
+# name in the build.rs file.
+readonly BINDGEN_BLOCKLIST_TYPES=(
+        "va_list"
+        "__builtin_va_list"
+)
+
 _bindgen="bindgen"
 
 function check_requirements() {
@@ -208,6 +229,10 @@ function main() {
     echo ${BINDGEN_ALLOWLIST_TYPES[@]} | tr ' ' '|')"
   local _functions_concat="$(\
     echo ${BINDGEN_ALLOWLIST_FUNCTIONS[@]} | tr ' ' '|')"
+  local _blocklist_functions_concat="$(\
+    echo ${BINDGEN_BLOCKLIST_FUNCTIONS[@]} | tr ' ' '|')"
+  local _blocklist_types_concat="$(\
+    echo ${BINDGEN_BLOCKLIST_TYPES[@]} | tr ' ' '|')"
 
   set -x
 
@@ -227,6 +252,8 @@ function main() {
     --with-derive-partialeq \
     --allowlist-type="${_allowlist_types_concat}" \
     --allowlist-function="${_functions_concat}" \
+    --blocklist-function="${_blocklist_functions_concat}" \
+    --blocklist-type="${_blocklist_types_concat}" \
     --opaque-type="" \
     --output="${_output_file}" \
     "${MAIN_HEADER_FILE}" \
