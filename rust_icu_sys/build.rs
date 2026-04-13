@@ -95,6 +95,27 @@ mod inner {
             "ucp.*",
         ];
 
+        // Functions that take a C va_list argument cannot be called from Rust, so we
+        // blocklist them to avoid generating platform-dependent va_list type definitions
+        // (e.g. __va_list_tag on Linux x86_64 vs char* on macOS) in the output.
+        // This list is intended to be kept in sync with the static variable by the same
+        // name in run_bindgen.sh.
+        static ref BINDGEN_BLOCKLIST_FUNCTIONS: Vec<&'static str> = vec![
+            "u_vformatMessage.*",
+            "u_vparseMessage.*",
+            "umsg_vformat.*",
+            "umsg_vparse.*",
+        ];
+
+        // Types leaked from system headers (<stdarg.h>) that are not needed in the
+        // output and would otherwise vary across platforms.
+        // This list is intended to be kept in sync with the static variable by the same
+        // name in run_bindgen.sh.
+        static ref BINDGEN_BLOCKLIST_TYPES: Vec<&'static str> = vec![
+            "va_list",
+            "__builtin_va_list",
+        ];
+
         // C types that will be made available to rust code.  Add more to this list if you want to
         // generate more bindings.
         static ref BINDGEN_ALLOWLIST_TYPES: Vec<&'static str> = vec![
@@ -213,6 +234,19 @@ mod inner {
         // Add all functions that should be exposed to rust code.
         for bindgen_function in BINDGEN_ALLOWLIST_FUNCTIONS.iter() {
             builder = builder.allowlist_function(bindgen_function);
+        }
+
+        // Blocklist functions that take a C va_list argument, as they cannot be
+        // called from Rust and their signatures produce platform-dependent type
+        // definitions in the output.
+        for blocklist_function in BINDGEN_BLOCKLIST_FUNCTIONS.iter() {
+            builder = builder.blocklist_function(blocklist_function);
+        }
+
+        // Blocklist va_list types leaked from system headers; they are not needed
+        // and vary across platforms.
+        for blocklist_type in BINDGEN_BLOCKLIST_TYPES.iter() {
+            builder = builder.blocklist_type(blocklist_type);
         }
 
         // Add the correct clang settings.
