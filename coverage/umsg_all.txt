@@ -1,5 +1,3 @@
-u_formatMessage
-u_formatMessageWithError
 umsg_applyPattern
 umsg_autoQuoteApostrophe
 umsg_clone
@@ -12,6 +10,8 @@ umsg_setLocale
 umsg_toPattern
 umsg_vformat
 umsg_vparse
+u_formatMessage
+u_formatMessageWithError
 u_parseMessage
 u_parseMessageWithError
 u_vformatMessage
