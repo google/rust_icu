@@ -283,7 +283,6 @@ impl UMessageFormat {
 /// ```
 ///
 /// Implements `umsg_format`.
-/// Implements `umsg_vformat`.
 #[macro_export]
 macro_rules! message_format {
     ($dest:expr $(,)?) => {

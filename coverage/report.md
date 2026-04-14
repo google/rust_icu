@@ -11,10 +11,11 @@
 | `uformattable.h` | 6 / 13 | 
 | `ulistformatter.h` | 2 / 8 | 
 | `uloc.h` | 29 / 42 | 
-| `umsg.h` | 5 / 20 | 
+| `umsg.h` | 4 / 20 | 
 | `unum.h` | 14 / 32 | 
 | `unumberformatter.h` | 3 / 6 | 
 | `upluralrules.h` | 3 / 8 | 
+| `ures.h` | 0 / 34 | 
 | `ustring.h` | 2 / 61 | 
 | `utext.h` | 2 / 28 | 
 | `utrans.h` | 10 / 20 | 
@@ -317,16 +318,16 @@
 | | `umsg_close` |
 | | `umsg_format` |
 | | `umsg_open` |
-| | `umsg_vformat` |
-| `u_formatMessage` | |
-| `u_formatMessageWithError` | |
 | `umsg_applyPattern` | |
 | `umsg_autoQuoteApostrophe` | |
 | `umsg_getLocale` | |
 | `umsg_parse` | |
 | `umsg_setLocale` | |
 | `umsg_toPattern` | |
+| `umsg_vformat` | |
 | `umsg_vparse` | |
+| `u_formatMessage` | |
+| `u_formatMessageWithError` | |
 | `u_parseMessage` | |
 | `u_parseMessageWithError` | |
 | `u_vformatMessage` | |
@@ -394,6 +395,45 @@
 | `uplrules_selectFormatted` | |
 | `uplrules_selectForRange` | |
 | `uplrules_selectWithFormat` | |
+
+# Header: `ures.h`
+
+| Unimplemented | Implemented |
+| ------------- | ----------- |
+| `ures_close` | |
+| `ures_countArrayItems` | |
+| `ures_getBinary` | |
+| `ures_getByIndex` | |
+| `ures_getByKey` | |
+| `ures_getInt` | |
+| `ures_getIntVector` | |
+| `ures_getKey` | |
+| `ures_getLocale` | |
+| `ures_getLocaleByType` | |
+| `ures_getNextResource` | |
+| `ures_getNextString` | |
+| `ures_getNextUnicodeString` | |
+| `ures_getSize` | |
+| `ures_getString` | |
+| `ures_getStringByIndex` | |
+| `ures_getStringByKey` | |
+| `ures_getType` | |
+| `ures_getUInt` | |
+| `ures_getUnicodeString` | |
+| `ures_getUnicodeStringByIndex` | |
+| `ures_getUnicodeStringByKey` | |
+| `ures_getUTF8String` | |
+| `ures_getUTF8StringByIndex` | |
+| `ures_getUTF8StringByKey` | |
+| `ures_getVersion` | |
+| `ures_getVersionNumber` | |
+| `ures_hasNext` | |
+| `ures_open` | |
+| `ures_openAvailableLocales` | |
+| `ures_openDirect` | |
+| `ures_openFillIn` | |
+| `ures_openU` | |
+| `ures_resetIterator` | |
 
 # Header: `ustring.h`
 
