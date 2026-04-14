@@ -21,6 +21,7 @@ C_API_HEADER_NAMES=(
   "unum"
   "unumberformatter"
   "upluralrules"
+  "ures"
   "ustring"
   "utext"
   "utrans"
@@ -51,7 +52,7 @@ for header_basename in ${C_API_HEADER_NAMES[@]}; do
   : > "${TOP_DIR}/coverage/${header_basename}_implemented.txt"
   header_fullname="${ICU_INCLUDE_PATH}/unicode/${header_basename}.h"
   all=$(ctags -x --c-kinds=fp $header_fullname | sed -e 's/ .*$//' \
-    | grep -v U_DEFINE | sort -fs | uniq)
+    | grep -v U_DEFINE | LC_ALL=C sort -fs | uniq)
   for fn in ${all}; do
     printf "%s\n" ${fn} >> "${TOP_DIR}/coverage/${header_basename}_all.txt"
   done
@@ -64,7 +65,7 @@ for header_basename in ${C_API_HEADER_NAMES[@]}; do
   unimpl_fns=""
   for file in ${files}; do
     echo $header_basename: $header_fullname ${file}
-    found_fns="$(grep "/// Implements \`" ${file} | sed -e 's/.*`\(.*\)`.*$/\1/' | sed -e 's/\(.*\)()$/\1/' | sort -fs | uniq)"
+    found_fns="$(grep "/// Implements \`" ${file} | sed -e 's/.*`\(.*\)`.*$/\1/' | sed -e 's/\(.*\)()$/\1/' | LC_ALL=C sort -fs | uniq)"
     # Match the extracted function to a function in the header being processed
     # (in case the "/// Implements `" comment is used in another context)
     for impl_fn in ${found_fns}; do
@@ -78,7 +79,7 @@ for header_basename in ${C_API_HEADER_NAMES[@]}; do
     done
   done
   # Sort again in case we process multiple source files
-  impl_fns="$(echo ${impl_fns} | sort -fs | uniq)"
+  impl_fns="$(echo ${impl_fns} | LC_ALL=C sort -fs | uniq)"
   for impl_fn in ${impl_fns}; do
     printf "%s\n" ${impl_fn} >> "${TOP_DIR}/coverage/${header_basename}_implemented.txt"
   done
@@ -117,8 +118,8 @@ EOF
     printf "| \`%s\` | |\n"  ${fun} >>"${REPORT_FILE_DETAIL}"
   done
 
-  sort -fs -o "${TOP_DIR}/coverage/${header_basename}_all.txt" "${TOP_DIR}/coverage/${header_basename}_all.txt"
-  sort -fs -o "${TOP_DIR}/coverage/${header_basename}_implemented.txt" "${TOP_DIR}/coverage/${header_basename}_implemented.txt"
+  LC_ALL=C sort -fs -o "${TOP_DIR}/coverage/${header_basename}_all.txt" "${TOP_DIR}/coverage/${header_basename}_all.txt"
+  LC_ALL=C sort -fs -o "${TOP_DIR}/coverage/${header_basename}_implemented.txt" "${TOP_DIR}/coverage/${header_basename}_implemented.txt"
 done
 
 cat ${REPORT_FILE_HEADER} ${REPORT_FILE_DETAIL} > ${REPORT_FILE}
