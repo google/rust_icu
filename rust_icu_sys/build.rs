@@ -376,10 +376,16 @@ macro_rules! versioned_function {
 }
 
 fn rustc_link_libs() {
+    let (icuuc, icui18n, icudata) = if cfg!(target_os = "windows") {
+        ("icuuc", "icuin", "icudt")
+    } else {
+        ("icuuc", "icui18n", "icudata")
+    };
+
     if cfg!(feature = "static") {
-        println!("cargo:rustc-link-lib=static=icuuc");
-        println!("cargo:rustc-link-lib=static=icui18n");
-        println!("cargo:rustc-link-lib=static:+whole-archive,-bundle=icudata");
+        println!("cargo:rustc-link-lib=static={icuuc}");
+        println!("cargo:rustc-link-lib=static={icui18n}");
+        println!("cargo:rustc-link-lib=static:+whole-archive,-bundle={icudata}");
         // On systems such as macOS, libc++ is the default library
         if cfg!(target_vendor = "apple") {
             println!("cargo:rustc-link-lib=dylib=c++");
@@ -387,9 +393,9 @@ fn rustc_link_libs() {
             println!("cargo:rustc-link-lib=dylib=stdc++");
         }
     } else {
-        println!("cargo:rustc-link-lib=dylib=icuuc");
-        println!("cargo:rustc-link-lib=dylib=icui18n");
-        println!("cargo:rustc-link-lib=dylib=icudata");
+        println!("cargo:rustc-link-lib=dylib={icuuc}");
+        println!("cargo:rustc-link-lib=dylib={icui18n}");
+        println!("cargo:rustc-link-lib=dylib={icudata}");
     }
 }
 
