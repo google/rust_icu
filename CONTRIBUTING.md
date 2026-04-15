@@ -22,6 +22,16 @@ use GitHub pull requests for this purpose. Consult
 [GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
 information on using pull requests.
 
+### Contribution Guidelines
+
+The advice here is intended to make contributions easier to review and merge.
+
+It is maintained on an as-needed basis, with the intention to keep the long 
+term health of the repository.
+
+* Please keep PRs limited to a single topic of change. This makes the PR easier to
+  review, and easier to roll back, if that becomes necessary.
+
 ## Community Guidelines
 
 This project follows [Google's Open Source Community
