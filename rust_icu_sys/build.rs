@@ -114,6 +114,7 @@ mod inner {
         static ref BINDGEN_BLOCKLIST_TYPES: Vec<&'static str> = vec![
             "va_list",
             "__builtin_va_list",
+            "__gnuc_va_list",
         ];
 
         // C types that will be made available to rust code.  Add more to this list if you want to
