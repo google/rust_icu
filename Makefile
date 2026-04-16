@@ -217,6 +217,11 @@ publish-rust_icu_uloc.stamp: \
 	$(call publishfn,rust_icu_uloc)
 	touch $@
 
+publish-rust_icu_ures.stamp: \
+	publish-rust_icu_uenum.stamp
+	$(call publishfn,rust_icu_ures)
+	touch $@
+
 publish-rust_icu_ucal.stamp: \
 	publish-rust_icu_common.stamp \
 	publish-rust_icu_sys.stamp \
@@ -229,6 +234,7 @@ publish-rust_icu.stamp: \
 	publish-rust_icu_sys.stamp \
 	publish-rust_icu_common.stamp \
 	publish-rust_icu_uenum.stamp \
+	publish-rust_icu_ures.stamp \
 	publish-rust_icu_utext.stamp \
 	publish-rust_icu_uloc.stamp \
 	publish-rust_icu_ucal.stamp
@@ -292,6 +298,7 @@ uprev:
 	$(call uprevfn,rust_icu_uloc)
 	$(call uprevfn,rust_icu_umsg)
 	$(call uprevfn,rust_icu_upluralrules)
+	$(call uprevfn,rust_icu_ures)
 	$(call uprevfn,rust_icu_ustring)
 	$(call uprevfn,rust_icu_utext)
 	$(call uprevfn,rust_icu_uformattable)
