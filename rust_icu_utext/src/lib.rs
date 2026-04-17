@@ -156,12 +156,17 @@ mod test {
 
         // Shallow clone shares the same underlying context pointer, so
         // utext_equals returns true and the two objects compare as equal.
-        // A deep clone allocates new string storage, changing the context
-        // pointer, which causes utext_equals to return false.
         assert_eq!(
             foo,
             foo.try_clone(false, false).expect("clone is a success"),
-            "a clone should be the same as its source"
+            "a shallow clone should be the same as its source"
+        );
+        // A deep clone allocates new string storage, changing the context
+        // pointer, which causes utext_equals to return false.
+        assert_ne!(
+            foo,
+            foo.try_clone(true, false).expect("clone is a success"),
+            "a deep clone should not be the same as its source"
         );
     }
 }
