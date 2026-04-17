@@ -43,36 +43,51 @@ impl TryFrom<String> for Text {
     ///
     /// The conversion may fail if the string is not well formed, and may result in an error.
     ///
-    /// Implements `utext_open` from ICU4C.
+    /// Implements `utext_openUTF8` from ICU4C.
     fn try_from(s: String) -> Result<Self, Self::Error> {
-        let len: i64 = s.len() as i64;
-        let bytes = s.as_ptr() as *const raw::c_char;
-        // bytes and len must be compatible.  Ensured by the two lines just above.
-        unsafe { Self::from_raw_bytes(bytes, len) }
+        let len = s.len() as i64;
+        let mut bytes = s.into_bytes();
+        bytes.push(0); // NUL terminator; utext_clone deep reads len+1 bytes
+        // SAFETY: bytes is valid and alive; open_utf8_owned deep-clones into ICU storage
+        // before bytes is dropped at the end of this function.
+        unsafe { Self::open_utf8_owned(bytes.as_ptr() as *const raw::c_char, len) }
     }
 }
 
 impl TryFrom<&str> for Text {
     type Error = common::Error;
-    /// Implements `utext_open`
+
+    /// Implements `utext_openUTF8` from ICU4C.
     fn try_from(s: &str) -> Result<Self, Self::Error> {
         let len = s.len() as i64;
-        let bytes = s.as_ptr() as *const raw::c_char;
-        // bytes and len must be compatible.  Ensured by the two lines just above.
-        unsafe { Self::from_raw_bytes(bytes, len) }
+        let mut bytes = s.as_bytes().to_vec();
+        bytes.push(0);
+        unsafe { Self::open_utf8_owned(bytes.as_ptr() as *const raw::c_char, len) }
     }
 }
 
 impl Text {
-    /// Constructs the Text from raw byte contents.
+    /// Opens a temporary UText over `buffer`, immediately deep-clones it so that ICU
+    /// allocates and owns a copy of the string data (`UTEXT_PROVIDER_OWNS_TEXT`), then
+    /// closes the temporary.  The buffer need only remain valid for the duration of this
+    /// call; the returned Text is fully self-contained.
     ///
-    /// The expectation is that the buffer and length are valid and compatible.  That is,
-    /// that buffer is a valid pointer, that it points to an allocated buffer and that the length
-    /// of the allocated buffer is exactly `len`.
-    unsafe fn from_raw_bytes(buffer: *const raw::c_char, len: i64) -> Result<Self, common::Error> {
+    /// `buffer` must point to at least `len + 1` bytes with `buffer[len] == 0`, because
+    /// `utext_clone` deep-copies `len + 1` bytes via `uprv_memcpy`.
+    unsafe fn open_utf8_owned(buffer: *const raw::c_char, len: i64) -> Result<Self, common::Error> {
         let mut status = common::Error::OK_CODE;
-        // Requires that 'bytes' is a valid pointer and len is the correct length of 'bytes'.
-        let rep = versioned_function!(utext_openUTF8)(0 as *mut UText, buffer, len, &mut status);
+        let temp =
+            versioned_function!(utext_openUTF8)(0 as *mut UText, buffer, len, &mut status);
+        common::Error::ok_or_warning(status)?;
+        let mut status = common::Error::OK_CODE;
+        let rep = versioned_function!(utext_clone)(
+            0 as *mut UText,
+            temp,
+            true as sys::UBool,
+            false as sys::UBool,
+            &mut status,
+        );
+        versioned_function!(utext_close)(temp);
         common::Error::ok_or_warning(status)?;
         Ok(Text { rep })
     }
@@ -139,9 +154,13 @@ mod test {
         assert_ne!(foo, baz);
         assert_ne!(bar, baz);
 
+        // Shallow clone shares the same underlying context pointer, so
+        // utext_equals returns true and the two objects compare as equal.
+        // A deep clone allocates new string storage, changing the context
+        // pointer, which causes utext_equals to return false.
         assert_eq!(
             foo,
-            foo.try_clone(true, true).expect("clone is a success"),
+            foo.try_clone(false, false).expect("clone is a success"),
             "a clone should be the same as its source"
         );
     }
