@@ -17,7 +17,7 @@ jobs:
       matrix:
         icu_version: [74, 76, 77]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: 'Test ICU version ${{ matrix.icu_version }}'
         run: 'make DOCKER_TEST_ENV=rust_icu_testenv-${{ matrix.icu_version}} docker-test'
   test-with-features:
@@ -29,13 +29,13 @@ jobs:
           - "renaming,icu_version_in_env,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus"
           - "renaming,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus,icu_config,use-bindgen"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: 'Test ICU version ${{ matrix.icu_version }}'
         run: 'make DOCKER_TEST_ENV=rust_icu_testenv-${{ matrix.icu_version }} RUST_ICU_MAJOR_VERSION_NUMBER=${{ matrix.icu_version }} DOCKER_TEST_CARGO_TEST_ARGS="--no-default-features --features ${{ matrix.feature_set }}" docker-test'
   test-bindgen:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: 'Test static-bindgen'
         run: 'make static-bindgen'
   test-static-linking:
@@ -46,7 +46,7 @@ jobs:
         # runs-on: [ubuntu-latest, macos-latest]
         runs-on: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - if: matrix.runs-on == 'macos-latest'
         run: make macos-test
       - if: matrix.runs-on == 'ubuntu-latest'
@@ -57,7 +57,7 @@ jobs:
       matrix:
         icu_version: [77]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: 'Test ICU `main`'
         run: |
           make DOCKER_TEST_ENV=rust_icu_testenv-current RUST_ICU_MAJOR_VERSION_NUMBER=${{matrix.icu_version}} docker-test-current
