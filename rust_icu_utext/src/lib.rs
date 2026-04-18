@@ -92,6 +92,13 @@ impl Text {
         Ok(Text { rep })
     }
 
+    /// Returns whether this Text supports in-place modification.
+    ///
+    /// Implements `utext_isWritable` from ICU4C.
+    pub fn is_writable(&self) -> bool {
+        unsafe { versioned_function!(utext_isWritable)(self.rep) != 0 }
+    }
+
     /// Tries to produce a clone of this Text.
     ///
     /// If `deep` is set, a deep clone is made.   This is not a Clone trait since
@@ -138,17 +145,8 @@ mod test {
         let baz = Text::try_from("baz").expect("conversion from literal succeeds");
 
         // Should all be equal to themselves.
-        assert_eq!(1i8, unsafe {
-            versioned_function!(utext_equals)(foo.rep, foo.rep)
-        });
-        assert_eq!(1i8, unsafe {
-            versioned_function!(utext_equals)(bar.rep, bar.rep)
-        });
-
-        // Should not be equal since not the same text and position.
-        assert_ne!(1i8, unsafe {
-            versioned_function!(utext_equals)(foo.rep, bar.rep)
-        });
+        assert_eq!(foo, foo);
+        assert_eq!(bar, bar);
 
         assert_ne!(foo, bar);
         assert_ne!(foo, baz);
@@ -156,17 +154,25 @@ mod test {
 
         // Shallow clone shares the same underlying context pointer, so
         // utext_equals returns true and the two objects compare as equal.
-        assert_eq!(
-            foo,
-            foo.try_clone(false, false).expect("clone is a success"),
-            "a shallow clone should be the same as its source"
-        );
+        let clone = foo.try_clone(false, false).expect("clone is a success");
+        assert_eq!(foo, clone);
+        assert!(!foo.is_writable(), "utext_openUTF8 source is not writable");
+        assert!(!clone.is_writable(), "shallow read-write clone is not writable (provider has no write support)");
+
+        // Shallow clone that is read-only also compares as equal.
+        let clone = foo.try_clone(false, true).expect("clone is a success");
+        assert_eq!(foo, clone);
+        assert!(!clone.is_writable(), "shallow read-only clone is not writable");
+
         // A deep clone allocates new string storage, changing the context
         // pointer, which causes utext_equals to return false.
-        assert_ne!(
-            foo,
-            foo.try_clone(true, false).expect("clone is a success"),
-            "a deep clone should not be the same as its source"
-        );
+        let clone = foo.try_clone(true, false).expect("clone is a success");
+        assert_ne!(foo, clone);
+        assert!(!clone.is_writable(), "deep read-write clone is not writable (provider has no write support)");
+
+        // Deep clone that is read-only also does not compare as equal.
+        let clone = foo.try_clone(true, true).expect("clone is a success");
+        assert_ne!(foo, clone);
+        assert!(!clone.is_writable(), "deep read-only clone is not writable");
     }
 }
