@@ -125,14 +125,14 @@ impl Converter {
         self.converter.reset_to_uchars();
         self.utf8.reset_from_uchars();
         self.pivot_to_source = self.pivot_to.start;
-        self.pivot_to_target = self.pivot_to_target;
+        self.pivot_to_target = self.pivot_to.start;
     }
 
     pub fn reset_from_utf8(&mut self) {
         self.utf8.reset_to_uchars();
         self.converter.reset_from_uchars();
         self.pivot_from_source = self.pivot_from.start;
-        self.pivot_from_target = self.pivot_from_target;
+        self.pivot_from_target = self.pivot_from.start;
     }
 
     pub fn feed_to_utf8(&mut self, dst: &mut [u8], src: &[u8]) -> FeedResult {
