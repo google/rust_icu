@@ -222,12 +222,17 @@ mod inner {
                 non_exhaustive: false,
             })
             // Bindings are pretty much unreadable without rustfmt.
-            .rustfmt_bindings(true)
+            .formatter(bindgen::Formatter::Rustfmt)
             // These attributes are useful to have around for generated types.
             .derive_default(true)
             .derive_hash(true)
             .derive_partialord(true)
-            .derive_partialeq(true);
+            .derive_partialeq(true)
+            // These structs contain function pointers; comparing them is meaningless
+            // and triggers a compiler warning since Rust 1.85.
+            .no_partialeq("UTextFuncs")
+            .no_partialeq("UReplaceableCallbacks")
+            .no_partialeq("UCharIterator");
 
         // Add all types that should be exposed to rust code.
         for bindgen_type in BINDGEN_ALLOWLIST_TYPES.iter() {
