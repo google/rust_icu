@@ -404,7 +404,14 @@ macro_rules! versioned_function {
 
         let lib_dir = ICUConfig::new().libdir()?;
         println!("cargo:rustc-link-search=native={}", lib_dir);
-        println!("cargo:rustc-flags={}", ICUConfig::new().ldflags()?);
+        // When static linking is requested, rustc_link_libs() emits the
+        // individual cargo:rustc-link-lib=static=... directives.  Emitting
+        // cargo:rustc-flags with the dynamic -l flags from icu-config at the
+        // same time causes rustc to reject the conflicting link modifiers, so
+        // skip it here and let rustc_link_libs() handle everything.
+        if env::var_os("CARGO_FEATURE_STATIC").is_none() {
+            println!("cargo:rustc-flags={}", ICUConfig::new().ldflags()?);
+        }
 
         Ok(())
     }
