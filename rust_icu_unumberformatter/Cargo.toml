@@ -97,6 +97,10 @@ icu_version_69_max = [
   "rust_icu_ustring/icu_version_69_max",
 ]
 
+[build-dependencies]
+anyhow = "1.0"
+rust_icu_release = { path = "../rust_icu_release", version = "5.6.0" }
+
 [badges]
 maintenance = { status = "actively-developed" }
 is-it-maintained-issue-resolution = { repository = "google/rust_icu" }
