@@ -111,7 +111,7 @@ impl<'detector> CharsetDetector<'detector> {
     }
 
     /// Return the charset that best matches the supplied input data.
-    pub fn detect(&self) -> Result<CharsetMatch, common::Error> {
+    pub fn detect(&self) -> Result<CharsetMatch<'_>, common::Error> {
         let mut status = sys::UErrorCode::U_ZERO_ERROR;
         let charset_match =
             unsafe { versioned_function!(ucsdet_detect)(self.rep.as_ptr(), &mut status) };
@@ -128,7 +128,7 @@ impl<'detector> CharsetDetector<'detector> {
     /// The results are ordered with the best quality match first.
     ///
     /// Returns `&[CharsetMatch]` if no error.
-    pub fn detect_all(&self) -> Result<&[CharsetMatch], common::Error> {
+    pub fn detect_all(&self) -> Result<&[CharsetMatch<'_>], common::Error> {
         let mut status = sys::UErrorCode::U_ZERO_ERROR;
         let mut len = 0;
         let charset_match = unsafe {
