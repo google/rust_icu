@@ -42,9 +42,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     strategy:
       matrix:
-        # TODO: #301: re-enable.
-        # runs-on: [ubuntu-latest, macos-latest]
-        runs-on: [ubuntu-latest]
+        runs-on: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
       - if: matrix.runs-on == 'macos-latest'

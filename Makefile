@@ -89,12 +89,26 @@ docker-test-current:
 			${DOCKER_REPO}/rust_icu_testenv-current:${USED_BUILDENV_VERSION}
 .PHONY: docker-test-current
 
-# Test with the homebrew version of icu4c on macOS with static linking (the default way of linking for distribution on Apple platforms)
+# Test with the homebrew version of icu4c on macOS, running bindgen natively
+# using the ICU headers provided by Homebrew and the clang toolchain from Xcode.
+# Two passes: dynamic linking (default) and static linking.
+#
+# brew --prefix icu4c resolves the keg-only formula prefix.  On some
+# environments (e.g. GitHub Actions) the unversioned alias is not recognised
+# and brew --prefix returns a non-zero exit; in that case we fall back to
+# querying brew list for the actual installed formula name (e.g. icu4c@78).
 macos-test:
 	brew install icu4c
-	RUST_ICU_LINK_SEARCH_DIR="$(shell brew --prefix)/opt/icu4c/lib" \
-	RUST_ICU_MAJOR_VERSION_NUMBER=${RUST_ICU_MAJOR_VERSION_NUMBER} \
-	cargo test --no-default-features --features=icu_version_64_plus,icu_version_67_plus,icu_version_68_plus,icu_version_in_env,renaming,static
+	ICU_PREFIX=$$(brew --prefix icu4c 2>/dev/null \
+	    || brew --prefix $$(brew list --formula | grep -m1 '^icu4c')) \
+	    && PATH="$$ICU_PREFIX/bin:$$PATH" \
+	       PKG_CONFIG_PATH="$$ICU_PREFIX/lib/pkgconfig:$$PKG_CONFIG_PATH" \
+	       RUSTFLAGS="-L $$ICU_PREFIX/lib" \
+	       cargo test --no-default-features --features=use-bindgen,icu_config,renaming,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus \
+	    && PATH="$$ICU_PREFIX/bin:$$PATH" \
+	       PKG_CONFIG_PATH="$$ICU_PREFIX/lib/pkgconfig:$$PKG_CONFIG_PATH" \
+	       RUSTFLAGS="-L $$ICU_PREFIX/lib" \
+	       cargo test --no-default-features --features=use-bindgen,icu_config,renaming,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus,static
 .PHONY: macos-test
 
 # Refreshes the static bindgen output (contents of ./rust_icu_sys/bindgen) based
