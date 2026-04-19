@@ -23,7 +23,6 @@
     non_upper_case_globals,
     unused_imports,
     rustdoc::bare_urls,
-    deref_nullptr
 )]
 
 #[cfg(all(feature = "icu_version_in_env", feature = "icu_config"))]
