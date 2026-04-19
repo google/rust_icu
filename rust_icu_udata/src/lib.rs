@@ -24,6 +24,9 @@ use {
 #[derive(Debug)]
 enum Rep {
     /// The data memory is backed by a user-supplied buffer.
+    /// The Vec<u8> is never read; it exists solely to keep the buffer alive
+    /// while ICU holds a raw pointer to it via udata_setCommonData.
+    #[allow(dead_code)]
     Buffer(Vec<u8>),
     /// The data memory is backed by a resource file.
     Resource(
