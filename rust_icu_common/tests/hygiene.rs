@@ -1,5 +1,6 @@
 #![no_implicit_prelude]
 
+#[allow(dead_code)]
 struct Type {
     rep: ::std::ptr::NonNull<::rust_icu_sys::UMessageFormat>,
 }
