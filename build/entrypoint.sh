@@ -11,11 +11,11 @@ readonly __all_dirs="$(ls -d rust_icu_*)"
 env
 
 function run_cargo_test() {
-  env LD_LIBRARY_PATH="/usr/local/lib" cargo test ${CARGO_TEST_ARGS}
+  env LD_LIBRARY_PATH="/usr/local/lib" RUSTFLAGS="-D warnings" cargo test ${CARGO_TEST_ARGS}
 }
 
 function run_cargo_doc() {
-  env LD_LIBRARY_PATH="/usr/local/lib" cargo doc ${CARGO_TEST_ARGS}
+  env LD_LIBRARY_PATH="/usr/local/lib" RUSTFLAGS="-D warnings" cargo doc ${CARGO_TEST_ARGS}
 }
 
 # Running cargo test or doc in the top level directory actually does nothing.
