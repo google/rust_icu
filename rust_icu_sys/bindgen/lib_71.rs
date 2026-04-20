@@ -4671,7 +4671,6 @@ unsafe extern "C" {
         status: *mut UErrorCode,
     );
 }
-pub type va_list = __builtin_va_list;
 unsafe extern "C" {
     pub fn u_formatMessage_71(
         locale: *const ::std::os::raw::c_char,
@@ -4684,17 +4683,6 @@ unsafe extern "C" {
     ) -> i32;
 }
 unsafe extern "C" {
-    pub fn u_vformatMessage_71(
-        locale: *const ::std::os::raw::c_char,
-        pattern: *const UChar,
-        patternLength: i32,
-        result: *mut UChar,
-        resultLength: i32,
-        ap: *mut __va_list_tag,
-        status: *mut UErrorCode,
-    ) -> i32;
-}
-unsafe extern "C" {
     pub fn u_parseMessage_71(
         locale: *const ::std::os::raw::c_char,
         pattern: *const UChar,
@@ -4703,17 +4691,6 @@ unsafe extern "C" {
         sourceLength: i32,
         status: *mut UErrorCode,
         ...
-    );
-}
-unsafe extern "C" {
-    pub fn u_vparseMessage_71(
-        locale: *const ::std::os::raw::c_char,
-        pattern: *const UChar,
-        patternLength: i32,
-        source: *const UChar,
-        sourceLength: i32,
-        ap: *mut __va_list_tag,
-        status: *mut UErrorCode,
     );
 }
 unsafe extern "C" {
@@ -4729,18 +4706,6 @@ unsafe extern "C" {
     ) -> i32;
 }
 unsafe extern "C" {
-    pub fn u_vformatMessageWithError_71(
-        locale: *const ::std::os::raw::c_char,
-        pattern: *const UChar,
-        patternLength: i32,
-        result: *mut UChar,
-        resultLength: i32,
-        parseError: *mut UParseError,
-        ap: *mut __va_list_tag,
-        status: *mut UErrorCode,
-    ) -> i32;
-}
-unsafe extern "C" {
     pub fn u_parseMessageWithError_71(
         locale: *const ::std::os::raw::c_char,
         pattern: *const UChar,
@@ -4750,18 +4715,6 @@ unsafe extern "C" {
         parseError: *mut UParseError,
         status: *mut UErrorCode,
         ...
-    );
-}
-unsafe extern "C" {
-    pub fn u_vparseMessageWithError_71(
-        locale: *const ::std::os::raw::c_char,
-        pattern: *const UChar,
-        patternLength: i32,
-        source: *const UChar,
-        sourceLength: i32,
-        ap: *mut __va_list_tag,
-        parseError: *mut UParseError,
-        status: *mut UErrorCode,
     );
 }
 pub type UMessageFormat = *mut ::std::os::raw::c_void;
@@ -4813,15 +4766,6 @@ unsafe extern "C" {
     ) -> i32;
 }
 unsafe extern "C" {
-    pub fn umsg_vformat_71(
-        fmt: *const UMessageFormat,
-        result: *mut UChar,
-        resultLength: i32,
-        ap: *mut __va_list_tag,
-        status: *mut UErrorCode,
-    ) -> i32;
-}
-unsafe extern "C" {
     pub fn umsg_parse_71(
         fmt: *const UMessageFormat,
         source: *const UChar,
@@ -4829,16 +4773,6 @@ unsafe extern "C" {
         count: *mut i32,
         status: *mut UErrorCode,
         ...
-    );
-}
-unsafe extern "C" {
-    pub fn umsg_vparse_71(
-        fmt: *const UMessageFormat,
-        source: *const UChar,
-        sourceLength: i32,
-        count: *mut i32,
-        ap: *mut __va_list_tag,
-        status: *mut UErrorCode,
     );
 }
 unsafe extern "C" {
@@ -5020,6 +4954,233 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub fn uplrules_getKeywords_71(
         uplrules: *const UPluralRules,
+        status: *mut UErrorCode,
+    ) -> *mut UEnumeration;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct UResourceBundle {
+    _unused: [u8; 0],
+}
+impl UResType {
+    pub const RES_NONE: UResType = UResType::URES_NONE;
+}
+impl UResType {
+    pub const RES_STRING: UResType = UResType::URES_STRING;
+}
+impl UResType {
+    pub const RES_BINARY: UResType = UResType::URES_BINARY;
+}
+impl UResType {
+    pub const RES_TABLE: UResType = UResType::URES_TABLE;
+}
+impl UResType {
+    pub const RES_ALIAS: UResType = UResType::URES_ALIAS;
+}
+impl UResType {
+    pub const RES_INT: UResType = UResType::URES_INT;
+}
+impl UResType {
+    pub const RES_ARRAY: UResType = UResType::URES_ARRAY;
+}
+impl UResType {
+    pub const RES_INT_VECTOR: UResType = UResType::URES_INT_VECTOR;
+}
+#[repr(i32)]
+#[derive(Debug, Copy, Clone, Hash, PartialOrd, PartialEq, Eq)]
+pub enum UResType {
+    URES_NONE = -1,
+    URES_STRING = 0,
+    URES_BINARY = 1,
+    URES_TABLE = 2,
+    URES_ALIAS = 3,
+    URES_INT = 7,
+    URES_ARRAY = 8,
+    URES_INT_VECTOR = 14,
+    RES_RESERVED = 15,
+    URES_LIMIT = 16,
+}
+unsafe extern "C" {
+    pub fn ures_open_71(
+        packageName: *const ::std::os::raw::c_char,
+        locale: *const ::std::os::raw::c_char,
+        status: *mut UErrorCode,
+    ) -> *mut UResourceBundle;
+}
+unsafe extern "C" {
+    pub fn ures_openDirect_71(
+        packageName: *const ::std::os::raw::c_char,
+        locale: *const ::std::os::raw::c_char,
+        status: *mut UErrorCode,
+    ) -> *mut UResourceBundle;
+}
+unsafe extern "C" {
+    pub fn ures_openU_71(
+        packageName: *const UChar,
+        locale: *const ::std::os::raw::c_char,
+        status: *mut UErrorCode,
+    ) -> *mut UResourceBundle;
+}
+unsafe extern "C" {
+    pub fn ures_countArrayItems_71(
+        resourceBundle: *const UResourceBundle,
+        resourceKey: *const ::std::os::raw::c_char,
+        err: *mut UErrorCode,
+    ) -> i32;
+}
+unsafe extern "C" {
+    pub fn ures_close_71(resourceBundle: *mut UResourceBundle);
+}
+unsafe extern "C" {
+    pub fn ures_getVersionNumber_71(
+        resourceBundle: *const UResourceBundle,
+    ) -> *const ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn ures_getVersion_71(resB: *const UResourceBundle, versionInfo: *mut u8);
+}
+unsafe extern "C" {
+    pub fn ures_getLocale_71(
+        resourceBundle: *const UResourceBundle,
+        status: *mut UErrorCode,
+    ) -> *const ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn ures_getLocaleByType_71(
+        resourceBundle: *const UResourceBundle,
+        type_: ULocDataLocaleType,
+        status: *mut UErrorCode,
+    ) -> *const ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn ures_openFillIn_71(
+        r: *mut UResourceBundle,
+        packageName: *const ::std::os::raw::c_char,
+        localeID: *const ::std::os::raw::c_char,
+        status: *mut UErrorCode,
+    );
+}
+unsafe extern "C" {
+    pub fn ures_getString_71(
+        resourceBundle: *const UResourceBundle,
+        len: *mut i32,
+        status: *mut UErrorCode,
+    ) -> *const UChar;
+}
+unsafe extern "C" {
+    pub fn ures_getUTF8String_71(
+        resB: *const UResourceBundle,
+        dest: *mut ::std::os::raw::c_char,
+        length: *mut i32,
+        forceCopy: UBool,
+        status: *mut UErrorCode,
+    ) -> *const ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn ures_getBinary_71(
+        resourceBundle: *const UResourceBundle,
+        len: *mut i32,
+        status: *mut UErrorCode,
+    ) -> *const u8;
+}
+unsafe extern "C" {
+    pub fn ures_getIntVector_71(
+        resourceBundle: *const UResourceBundle,
+        len: *mut i32,
+        status: *mut UErrorCode,
+    ) -> *const i32;
+}
+unsafe extern "C" {
+    pub fn ures_getUInt_71(resourceBundle: *const UResourceBundle, status: *mut UErrorCode) -> u32;
+}
+unsafe extern "C" {
+    pub fn ures_getInt_71(resourceBundle: *const UResourceBundle, status: *mut UErrorCode) -> i32;
+}
+unsafe extern "C" {
+    pub fn ures_getSize_71(resourceBundle: *const UResourceBundle) -> i32;
+}
+unsafe extern "C" {
+    pub fn ures_getType_71(resourceBundle: *const UResourceBundle) -> UResType;
+}
+unsafe extern "C" {
+    pub fn ures_getKey_71(resourceBundle: *const UResourceBundle) -> *const ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn ures_resetIterator_71(resourceBundle: *mut UResourceBundle);
+}
+unsafe extern "C" {
+    pub fn ures_hasNext_71(resourceBundle: *const UResourceBundle) -> UBool;
+}
+unsafe extern "C" {
+    pub fn ures_getNextResource_71(
+        resourceBundle: *mut UResourceBundle,
+        fillIn: *mut UResourceBundle,
+        status: *mut UErrorCode,
+    ) -> *mut UResourceBundle;
+}
+unsafe extern "C" {
+    pub fn ures_getNextString_71(
+        resourceBundle: *mut UResourceBundle,
+        len: *mut i32,
+        key: *mut *const ::std::os::raw::c_char,
+        status: *mut UErrorCode,
+    ) -> *const UChar;
+}
+unsafe extern "C" {
+    pub fn ures_getByIndex_71(
+        resourceBundle: *const UResourceBundle,
+        indexR: i32,
+        fillIn: *mut UResourceBundle,
+        status: *mut UErrorCode,
+    ) -> *mut UResourceBundle;
+}
+unsafe extern "C" {
+    pub fn ures_getStringByIndex_71(
+        resourceBundle: *const UResourceBundle,
+        indexS: i32,
+        len: *mut i32,
+        status: *mut UErrorCode,
+    ) -> *const UChar;
+}
+unsafe extern "C" {
+    pub fn ures_getUTF8StringByIndex_71(
+        resB: *const UResourceBundle,
+        stringIndex: i32,
+        dest: *mut ::std::os::raw::c_char,
+        pLength: *mut i32,
+        forceCopy: UBool,
+        status: *mut UErrorCode,
+    ) -> *const ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn ures_getByKey_71(
+        resourceBundle: *const UResourceBundle,
+        key: *const ::std::os::raw::c_char,
+        fillIn: *mut UResourceBundle,
+        status: *mut UErrorCode,
+    ) -> *mut UResourceBundle;
+}
+unsafe extern "C" {
+    pub fn ures_getStringByKey_71(
+        resB: *const UResourceBundle,
+        key: *const ::std::os::raw::c_char,
+        len: *mut i32,
+        status: *mut UErrorCode,
+    ) -> *const UChar;
+}
+unsafe extern "C" {
+    pub fn ures_getUTF8StringByKey_71(
+        resB: *const UResourceBundle,
+        key: *const ::std::os::raw::c_char,
+        dest: *mut ::std::os::raw::c_char,
+        pLength: *mut i32,
+        forceCopy: UBool,
+        status: *mut UErrorCode,
+    ) -> *const ::std::os::raw::c_char;
+}
+unsafe extern "C" {
+    pub fn ures_openAvailableLocales_71(
+        packageName: *const ::std::os::raw::c_char,
         status: *mut UErrorCode,
     ) -> *mut UEnumeration;
 }
@@ -5836,7 +5997,6 @@ unsafe extern "C" {
         pErrorCode: *mut UErrorCode,
     ) -> *mut UCPTrie;
 }
-pub type __builtin_va_list = [__va_list_tag; 1usize];
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialOrd, PartialEq)]
 pub struct __va_list_tag {
