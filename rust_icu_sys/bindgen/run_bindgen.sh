@@ -166,6 +166,7 @@ readonly BINDGEN_BLOCKLIST_TYPES=(
         "va_list"
         "__builtin_va_list"
         "__gnuc_va_list"
+        "__va_list_tag"
 )
 
 _bindgen="bindgen"
