@@ -116,6 +116,7 @@ mod inner {
             "va_list",
             "__builtin_va_list",
             "__gnuc_va_list",
+            "__va_list_tag",
         ];
 
         // C types that will be made available to rust code.  Add more to this list if you want to
