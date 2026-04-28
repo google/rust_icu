@@ -1,0 +1,27 @@
+name: Buildenv
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'build/**'
+      - '.github/workflows/buildenv.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'build/**'
+      - '.github/workflows/buildenv.yml'
+  schedule:
+    - cron: "0 0 * * 0"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-buildenv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and test buildenv images
+        run: make -C build VERSION=test test
