@@ -26,7 +26,7 @@ RUN mkdir -p $ICU4C_BUILD_DIR && \
 			  --enable-static \
 			  --prefix="/usr/local" \
 			  --enable-debug && \
-		make -j && \
+		make -j4 && \
 		make install && \
 		icu-config --version
 
