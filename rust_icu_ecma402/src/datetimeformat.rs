@@ -385,7 +385,7 @@ mod testing {
                     let mut result = String::new();
                     formatter
                         .format(*d, &mut result)
-                        .expect(&format!("can format: {}", d));
+                        .unwrap_or_else(|e| panic!("can format: {}: {:?}", d, e));
                     result
                 })
                 .collect();
