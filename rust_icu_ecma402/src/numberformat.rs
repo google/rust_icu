@@ -324,10 +324,11 @@ mod testing {
         ];
         for test in tests {
             let locale = crate::Locale::FromULoc(
-                uloc::ULoc::try_from(test.locale).expect(&format!("locale exists: {:?}", &test)),
+                uloc::ULoc::try_from(test.locale)
+                    .unwrap_or_else(|e| panic!("locale exists: {:?}: {:?}", &test, e)),
             );
             let format = crate::numberformat::NumberFormat::try_new(locale, test.clone().opts)
-                .expect(&format!("try_from should succeed: {:?}", &test));
+                .unwrap_or_else(|e| panic!("try_from should succeed: {:?}: {:?}", &test, e));
             let actual = test
                 .numbers
                 .iter()
@@ -335,7 +336,7 @@ mod testing {
                     let mut result = String::new();
                     format
                         .format(*n, &mut result)
-                        .expect(&format!("formatting succeeded for: {:?}", &test));
+                        .unwrap_or_else(|e| panic!("formatting succeeded for: {:?}: {:?}", &test, e));
                     result
                 })
                 .collect::<Vec<String>>();
