@@ -226,12 +226,12 @@ impl ULoc {
 
     /// Implements 'uloc_getISO3Language' from ICU4C.
     pub fn iso3_language(&self) -> Option<String> {
-        let value = unsafe {
-            ffi::CStr::from_ptr(versioned_function!(uloc_getISO3Language)(
-                self.as_c_str().as_ptr(),
-            ))
-            .to_string_lossy()
+        let lang = unsafe {
+            ffi::CStr::from_ptr(
+                versioned_function!(uloc_getISO3Language)(self.as_c_str().as_ptr())
+            ).to_str()
         };
+        let value = lang.unwrap();
         if value.is_empty() {
             None
         } else {
@@ -241,12 +241,12 @@ impl ULoc {
 
     /// Implements 'uloc_getISO3Country' from ICU4C.
     pub fn iso3_country(&self) -> Option<String> {
-        let value = unsafe {
-            ffi::CStr::from_ptr(versioned_function!(uloc_getISO3Country)(
-                self.as_c_str().as_ptr(),
-            ))
-            .to_string_lossy()
+        let country = unsafe {
+            ffi::CStr::from_ptr(
+                versioned_function!(uloc_getISO3Country)(self.as_c_str().as_ptr())
+            ).to_str()
         };
+        let value = country.unwrap();
         if value.is_empty() {
             None
         } else {
@@ -1336,6 +1336,13 @@ mod tests {
         assert!(locales.contains(&ULoc::try_from("fr-FR").unwrap()));
         assert_eq!(ULoc::count_available() as usize, locales.capacity());
         assert_eq!(locales.len(), locales.capacity());
+    }
+
+    #[test]
+    fn test_get_available() {
+        // We know that index 0 should always be available.
+        let locale = ULoc::get_available(0);
+        assert!(locale.is_ok());
     }
 
     #[cfg(feature = "icu_version_67_plus")]
