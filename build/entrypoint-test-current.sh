@@ -25,6 +25,7 @@ env
 function run_cargo_test() {
   env LD_LIBRARY_PATH="${ICU_LIBRARY_PATH}/lib" \
       PKG_CONFIG_LIBDIR="${ICU_LIBRARY_PATH}/lib/pkgconfig" \
+      RUSTFLAGS="-D warnings" \
       cargo test \
           ${_local_cargo_options} \
             ${CARGO_TEST_ARGS}
@@ -33,6 +34,7 @@ function run_cargo_test() {
 function run_cargo_doc() {
   env LD_LIBRARY_PATH="${ICU_LIBRARY_PATH}/lib" \
       PKG_CONFIG_LIBDIR="${ICU_LIBRARY_PATH}/lib/pkgconfig" \
+      RUSTFLAGS="-D warnings" \
       cargo doc ${_local_cargo_options} ${CARGO_TEST_ARGS}
 }
 
