@@ -226,12 +226,12 @@ impl ULoc {
 
     /// Implements 'uloc_getISO3Language' from ICU4C.
     pub fn iso3_language(&self) -> Option<String> {
-        let lang = unsafe {
-            ffi::CStr::from_ptr(
-                versioned_function!(uloc_getISO3Language)(self.as_c_str().as_ptr())
-            ).to_str()
+        let value = unsafe {
+            ffi::CStr::from_ptr(versioned_function!(uloc_getISO3Language)(
+                self.as_c_str().as_ptr(),
+            ))
+            .to_string_lossy()
         };
-        let value = lang.unwrap();
         if value.is_empty() {
             None
         } else {
@@ -241,12 +241,12 @@ impl ULoc {
 
     /// Implements 'uloc_getISO3Country' from ICU4C.
     pub fn iso3_country(&self) -> Option<String> {
-        let country = unsafe {
-            ffi::CStr::from_ptr(
-                versioned_function!(uloc_getISO3Country)(self.as_c_str().as_ptr())
-            ).to_str()
+        let value = unsafe {
+            ffi::CStr::from_ptr(versioned_function!(uloc_getISO3Country)(
+                self.as_c_str().as_ptr(),
+            ))
+            .to_string_lossy()
         };
-        let value = country.unwrap();
         if value.is_empty() {
             None
         } else {
@@ -377,7 +377,7 @@ impl ULoc {
         if ptr == std::ptr::null() {
             return Err(common::Error::Wrapper(anyhow!("uloc_getAvailable() returned a null pointer")));
         }
-        let label = unsafe { ffi::CStr::from_ptr(ptr).to_str().unwrap() };
+        let label = unsafe { ffi::CStr::from_ptr(ptr).to_str()? };
         ULoc::try_from(label)
     }
 
