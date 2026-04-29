@@ -311,16 +311,15 @@ mod testing {
                 numbers: vec![123456.789],
                 expected: vec!["￥123,457"],
             },
-            // TODO: This ends up being a syntax error, why?
-            //TestCase {
-            //locale: "en-IN",
-            //opts: numberformat::Options {
-            //maximum_significant_digits: Some(3),
-            //..Default::default()
-            //},
-            //numbers: vec![123456.789],
-            //expected: vec!["1,23,000"],
-            //},
+            TestCase {
+                locale: "en-IN",
+                opts: ecma402_traits::numberformat::Options {
+                    maximum_significant_digits: Some(3),
+                    ..Default::default()
+                },
+                numbers: vec![123456.789],
+                expected: vec!["1,23,000"],
+            },
         ];
         for test in tests {
             let locale = crate::Locale::FromULoc(
