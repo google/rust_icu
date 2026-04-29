@@ -331,10 +331,11 @@ pub unsafe fn format_args(
 
     let total_size =
         args.format(fmt.rep.rep, result.as_mut_c_ptr(), CAP as i32, &mut status) as usize;
+    common::Error::ok_or_warning(status)?;
 
-    if status == sys::UErrorCode::U_BUFFER_OVERFLOW_ERROR || (common::Error::is_ok(status) && total_size > CAP) {
-        status = common::Error::OK_CODE;
-        result.resize(total_size);
+    result.resize(total_size);
+
+    if total_size > CAP {
         args.format(
             fmt.rep.rep,
             result.as_mut_c_ptr(),
@@ -342,9 +343,6 @@ pub unsafe fn format_args(
             &mut status,
         );
         common::Error::ok_or_warning(status)?;
-    } else {
-        common::Error::ok_or_warning(status)?;
-        result.resize(total_size);
     }
     String::try_from(&result)
 }
