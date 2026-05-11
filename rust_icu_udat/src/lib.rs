@@ -24,6 +24,7 @@
 use {
     rust_icu_common as common, rust_icu_sys as sys, rust_icu_sys::versioned_function,
     rust_icu_ucal as ucal, rust_icu_uloc as uloc, rust_icu_ustring as ustring,
+    rust_icu_ustring::buffered_uchar_method_with_retry,
 };
 use std::convert::{TryFrom, TryInto};
 
@@ -270,51 +271,28 @@ impl UDateFormat {
     ///
     /// Implements `udat_format`
     pub fn format(&self, date_to_format: sys::UDate) -> Result<String, common::Error> {
-        // This approach follows the recommended practice for unicode conversions: adopt a
-        // resonably-sized buffer, then repeat the conversion if it fails the first time around.
+        let result = self.format_ustring(date_to_format)?;
+        String::try_from(&result)
+    }
+
+    /// Formats a date using this formatter.
+    ///
+    /// Implements `udat_format`
+    pub fn format_ustring(&self, date_to_format: sys::UDate) -> Result<ustring::UChar, common::Error> {
         const CAP: usize = 1024;
-        let mut status = common::Error::OK_CODE;
-        let mut result = ustring::UChar::new_with_capacity(CAP);
-
-        let mut field_position_unused = sys::UFieldPosition {
-            field: 0,
-            beginIndex: 0,
-            endIndex: 0,
-        };
-
-        // Requires that result is a buffer at least as long as CAP and that
-        // self.rep is a valid pointer to a `sys::UDateFormat` structure.
-        let total_size = unsafe {
-            assert!(common::Error::is_ok(status));
-            versioned_function!(udat_format)(
-                self.rep,
-                date_to_format,
-                result.as_mut_c_ptr(),
-                CAP as i32,
-                &mut field_position_unused,
-                &mut status,
-            )
-        } as usize;
-        common::Error::ok_or_warning(status)?;
-        result.resize(total_size as usize);
-        if total_size > CAP {
-            // Requires that result is a buffer that has length and capacity of
-            // exactly total_size, and that self.rep is a valid pointer to
-            // a `UDateFormat`.
-            unsafe {
-                assert!(common::Error::is_ok(status));
+        ustring::buffered_uchar_method_with_retry(
+            |buf, len, status| unsafe {
                 versioned_function!(udat_format)(
                     self.rep,
                     date_to_format,
-                    result.as_mut_c_ptr(),
-                    total_size as i32,
-                    &mut field_position_unused,
-                    &mut status,
-                );
-            };
-            common::Error::ok_or_warning(status)?;
-        }
-        String::try_from(&result)
+                    buf,
+                    len,
+                    std::ptr::null_mut(),
+                    status,
+                )
+            },
+            CAP,
+        )
     }
 }
 
@@ -361,30 +339,14 @@ mod tests {
         }
 
         fn get_default_time_zone() -> Result<String, common::Error> {
-            let mut status = common::Error::OK_CODE;
-
-            // Preflight the time zone first.
-            let time_zone_length = unsafe {
-                assert!(common::Error::is_ok(status));
-                versioned_function!(ucal_getDefaultTimeZone)(std::ptr::null_mut(), 0, &mut status)
-            } as usize;
-            common::Error::ok_preflight(status)?;
-
-            // Should this capacity include the terminating \u{0}?
-            let mut status = common::Error::OK_CODE;
-            let mut uchar = ustring::UChar::new_with_capacity(time_zone_length);
-
-            // Requires that uchar is a valid buffer.  Should be guaranteed by the constructor above.
-            unsafe {
-                assert!(common::Error::is_ok(status));
-                versioned_function!(ucal_getDefaultTimeZone)(
-                    uchar.as_mut_c_ptr(),
-                    time_zone_length as i32,
-                    &mut status,
-                )
-            };
-            common::Error::ok_or_warning(status)?;
-            String::try_from(&uchar)
+            const CAP: usize = 20;
+            let result = ustring::buffered_uchar_method_with_retry(
+                |buf, len, status| unsafe {
+                    versioned_function!(ucal_getDefaultTimeZone)(buf, len, status)
+                },
+                CAP,
+            )?;
+            String::try_from(&result)
         }
     }
 

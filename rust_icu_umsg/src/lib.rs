@@ -326,24 +326,10 @@ pub unsafe fn format_args(
     args: impl FormatArgs,
 ) -> Result<String, common::Error> {
     const CAP: usize = 1024;
-    let mut status = common::Error::OK_CODE;
-    let mut result = ustring::UChar::new_with_capacity(CAP);
-
-    let total_size =
-        args.format(fmt.rep.rep, result.as_mut_c_ptr(), CAP as i32, &mut status) as usize;
-    common::Error::ok_or_warning(status)?;
-
-    result.resize(total_size);
-
-    if total_size > CAP {
-        args.format(
-            fmt.rep.rep,
-            result.as_mut_c_ptr(),
-            total_size as i32,
-            &mut status,
-        );
-        common::Error::ok_or_warning(status)?;
-    }
+    let result = ustring::buffered_uchar_method_with_retry(
+        |buf, len, error| args.format(fmt.rep.rep, buf, len, error),
+        CAP,
+    )?;
     String::try_from(&result)
 }
 

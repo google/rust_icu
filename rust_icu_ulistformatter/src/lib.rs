@@ -32,8 +32,43 @@ use {
     rust_icu_common as common, rust_icu_sys as sys,
     rust_icu_sys::versioned_function,
     rust_icu_ustring as ustring,
+    rust_icu_ustring::buffered_uchar_method_with_retry,
     std::{convert::TryFrom, convert::TryInto, ffi, ptr},
 };
+
+/// Generates a high-level format method that returns a `String` and a lower-level format method that
+/// returns a `ustring::UChar`.
+macro_rules! generate_format_methods {
+    ($method_name:ident, $ustring_method_name:ident, $function_name:ident) => {
+        #[doc = concat!("Implements `", stringify!($function_name), "`")]
+        pub fn $method_name(&self, list: &[&str]) -> Result<String, common::Error> {
+            let result = self.$ustring_method_name(list)?;
+            String::try_from(&result)
+        }
+
+        #[doc = concat!("Implements `", stringify!($function_name), "`")]
+        pub fn $ustring_method_name(&self, list: &[&str]) -> Result<ustring::UChar, common::Error> {
+            let list_ustr = UCharArray::try_from(list)?;
+            let (pointers, strlens, len) = unsafe { list_ustr.as_pascal_strings() };
+
+            const CAPACITY: usize = 200;
+            ustring::buffered_uchar_method_with_retry(
+                |buf, buf_len, status| unsafe {
+                    versioned_function!($function_name)(
+                        self.rep.as_ptr(),
+                        pointers as *const *const sys::UChar,
+                        strlens as *const i32,
+                        len as i32,
+                        buf,
+                        buf_len,
+                        status,
+                    )
+                },
+                CAPACITY,
+            )
+        }
+    };
+}
 
 #[derive(Debug)]
 pub struct UListFormatter {
@@ -91,65 +126,7 @@ impl UListFormatter {
         })
     }
 
-    /// Implements `ulistfmt_format`.
-    pub fn format(&self, list: &[&str]) -> Result<String, common::Error> {
-        let result = self.format_uchar(list)?;
-        String::try_from(&result)
-    }
-
-    /// Implements `ulistfmt_format`.
-    // TODO: this method call is repetitive, and should probably be pulled out into a macro.
-    // TODO: rename this function into format_uchar.
-    pub fn format_uchar(&self, list: &[&str]) -> Result<ustring::UChar, common::Error> {
-        let list_ustr = UCharArray::try_from(list)?;
-        const CAPACITY: usize = 200;
-        let (pointers, strlens, len) = unsafe { list_ustr.as_pascal_strings() };
-
-        // This is similar to buffered_string_method_with_retry, except the buffer
-        // consists of [sys::UChar]s.
-        let mut status = common::Error::OK_CODE;
-        let mut buf: Vec<sys::UChar> = vec![0; CAPACITY];
-
-        let full_len: i32 = unsafe {
-            assert!(common::Error::is_ok(status));
-            versioned_function!(ulistfmt_format)(
-                self.rep.as_ptr(),
-                pointers as *const *const sys::UChar,
-                strlens as *const i32,
-                len as i32,
-                buf.as_mut_ptr(),
-                CAPACITY as i32,
-                &mut status,
-            )
-        };
-        if status == sys::UErrorCode::U_BUFFER_OVERFLOW_ERROR
-            || (common::Error::is_ok(status)
-                && full_len > CAPACITY.try_into().map_err(|e| common::Error::wrapper(e))?)
-        {
-            status = common::Error::OK_CODE;
-            assert!(full_len > 0);
-            let full_len: usize = full_len.try_into().map_err(|e| common::Error::wrapper(e))?;
-            buf.resize(full_len, 0);
-            unsafe {
-                assert!(common::Error::is_ok(status), "status: {:?}", status);
-                versioned_function!(ulistfmt_format)(
-                    self.rep.as_ptr(),
-                    pointers as *const *const sys::UChar,
-                    strlens as *const i32,
-                    len as i32,
-                    buf.as_mut_ptr(),
-                    buf.len() as i32,
-                    &mut status,
-                )
-            };
-        }
-        common::Error::ok_or_warning(status)?;
-        if full_len >= 0 {
-            let full_len: usize = full_len.try_into().map_err(|e| common::Error::wrapper(e))?;
-            buf.resize(full_len, 0);
-        }
-        Ok(ustring::UChar::from(buf))
-    }
+    generate_format_methods!(format, format_uchar, ulistfmt_format);
 }
 
 /// A helper array that deconstructs [ustring::UChar] into constituent raw parts
