@@ -103,7 +103,7 @@ impl UListFormatter {
     pub fn format_uchar(&self, list: &[&str]) -> Result<ustring::UChar, common::Error> {
         let list_ustr = UCharArray::try_from(list)?;
         const CAPACITY: usize = 200;
-        let (pointers, strlens, len) = unsafe { list_ustr.as_pascal_strings() };
+        let (pointers, strlens, len) = list_ustr.as_pascal_strings();
 
         // This is similar to buffered_string_method_with_retry, except the buffer
         // consists of [sys::UChar]s.
@@ -114,8 +114,8 @@ impl UListFormatter {
             assert!(common::Error::is_ok(status));
             versioned_function!(ulistfmt_format)(
                 self.rep.as_ptr(),
-                pointers as *const *const sys::UChar,
-                strlens as *const i32,
+                pointers,
+                strlens,
                 len as i32,
                 buf.as_mut_ptr(),
                 CAPACITY as i32,
@@ -134,8 +134,8 @@ impl UListFormatter {
                 assert!(common::Error::is_ok(status), "status: {:?}", status);
                 versioned_function!(ulistfmt_format)(
                     self.rep.as_ptr(),
-                    pointers as *const *const sys::UChar,
-                    strlens as *const i32,
+                    pointers,
+                    strlens,
                     len as i32,
                     buf.as_mut_ptr(),
                     buf.len() as i32,
@@ -202,55 +202,16 @@ impl UCharArray {
     /// Returns the elements of the array decomposed as "pascal strings", i.e.
     /// separating out the pointers, the sizes of each individual string included,
     /// and the total size of the array.
-    pub unsafe fn as_pascal_strings(self) -> (*mut *mut sys::UChar, *mut *mut i32, usize) {
-        let pointers = self.pointers.as_ptr() as *mut *mut sys::UChar;
-        let strlens = self.strlens.as_ptr() as *mut *mut i32;
+    pub fn as_pascal_strings(&self) -> (*const *const sys::UChar, *const i32, usize) {
+        let pointers = self.pointers.as_ptr();
+        let strlens = self.strlens.as_ptr();
         let len = self.elements.len();
-        // Since 'self' was not moved anywhere in this method, we need to forget it before we
-        // return pointers to its content, else all the pointers will be invalidated.
-        std::mem::forget(self);
         (pointers, strlens, len)
     }
 
     /// Returns the number of elements in the array.
-    #[allow(dead_code)] // Not used in production code yet.
     pub fn len(&self) -> usize {
         self.elements.len()
-    }
-
-    /// Assembles an [UCharArray] from parts (ostensibly, obtained through
-    /// [UCharArray::as_pascal_strings] above.  Unsafe, as there is no guarantee
-    /// that the pointers are well-formed.
-    ///
-    /// Takes ownership away from the pointers and strlens.  Requires that
-    /// `len` is equal to the capacities and lengths of the vectors described by
-    /// `pointers` and `strlens`.
-    #[allow(dead_code)]
-    pub unsafe fn from_raw_parts(
-        pointers: *mut *mut sys::UChar,
-        strlens: *mut *mut i32,
-        len: usize,
-    ) -> UCharArray {
-        let pointers_vec: Vec<*mut sys::UChar> = Vec::from_raw_parts(pointers, len, len);
-        let strlens_vec: Vec<i32> = Vec::from_raw_parts(strlens as *mut i32, len, len);
-
-        let elements = pointers_vec.into_iter().zip(strlens_vec);
-        let elements = elements
-            .map(|(ptr, len): (*mut sys::UChar, i32)| {
-                assert!(len >= 0);
-                let len_i32 = len as usize;
-                let raw: Vec<sys::UChar> = Vec::from_raw_parts(ptr, len_i32, len_i32);
-                ustring::UChar::from(raw)
-            })
-            .collect::<Vec<ustring::UChar>>();
-        let pointers = elements.iter().map(|e| e.as_c_ptr()).collect();
-        let strlens = elements.iter().map(|e| e.len() as i32).collect();
-
-        UCharArray {
-            elements,
-            pointers,
-            strlens,
-        }
     }
 }
 
@@ -263,16 +224,25 @@ mod testing {
         let array = UCharArray::try_from(&["eenie", "meenie", "minie", "moe"][..])
             .expect("created with success");
         let array_len = array.len();
-        let (strings, strlens, len) = unsafe { array.as_pascal_strings() };
+        let (strings, strlens, len) = array.as_pascal_strings();
         assert_eq!(len, array_len);
 
-        let reconstructed = unsafe { UCharArray::from_raw_parts(strings, strlens, len) };
-        let result = reconstructed
+        let result = array
             .as_ref()
             .iter()
             .map(|e| String::try_from(e).expect("conversion is a success"))
             .collect::<Vec<String>>();
         assert_eq!(vec!["eenie", "meenie", "minie", "moe"], result);
+
+        // Verify pointers and lengths
+        for i in 0..len {
+            unsafe {
+                let ptr = *strings.add(i);
+                let ulen = *strlens.add(i);
+                assert_eq!(ulen, result[i].len() as i32);
+                assert_eq!(ptr, array.as_ref()[i].as_c_ptr());
+            }
+        }
     }
 
     #[test]
