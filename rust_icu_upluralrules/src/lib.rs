@@ -106,11 +106,8 @@ impl UPluralRules {
 
     /// Implements `uplrules_select`.
     pub fn select(&self, number: f64) -> Result<String, common::Error> {
-        let result = self.select_ustring(number);
-        match result {
-            Err(e) => Err(e),
-            Ok(u) => String::try_from(&u).map_err(|e| e.into()),
-        }
+        let result = self.select_ustring(number)?;
+        String::try_from(&result)
     }
 
     /// Implements `uplrules_getKeywords`

@@ -339,6 +339,58 @@ impl crate::UChar {
     }
 }
 
+/// Helper for calling ICU4C methods that require a resizable `UChar` output buffer.
+pub fn buffered_uchar_method_with_retry<F>(
+    mut method_to_call: F,
+    buffer_capacity: usize,
+) -> Result<UChar, common::Error>
+where
+    F: FnMut(*mut sys::UChar, i32, *mut sys::UErrorCode) -> i32,
+{
+    let mut status = common::Error::OK_CODE;
+    let mut buf: Vec<sys::UChar> = vec![0; buffer_capacity];
+
+    // Requires that any pointers that are passed in are valid.
+    let full_len: i32 = {
+        assert!(common::Error::is_ok(status));
+        method_to_call(
+            buf.as_mut_ptr() as *mut sys::UChar,
+            buffer_capacity as i32,
+            &mut status,
+        )
+    };
+
+    // ICU methods are inconsistent in whether they silently truncate the output or treat
+    // the overflow as an error, so we need to check both cases.
+    if status == sys::UErrorCode::U_BUFFER_OVERFLOW_ERROR
+        || (common::Error::is_ok(status)
+            && full_len > buffer_capacity
+                .try_into()
+                .map_err(|e| common::Error::wrapper(e))?)
+    {
+        status = common::Error::OK_CODE;
+        assert!(full_len > 0);
+        let full_len: usize = full_len.try_into().map_err(|e| common::Error::wrapper(e))?;
+        buf.resize(full_len, 0);
+
+        // Same unsafe requirements as above, plus full_len must be exactly the output
+        // buffer size.
+        {
+            assert!(common::Error::is_ok(status));
+            method_to_call(buf.as_mut_ptr() as *mut sys::UChar, full_len as i32, &mut status)
+        };
+    }
+
+    common::Error::ok_or_warning(status)?;
+
+    // Adjust the size of the buffer here.
+    if full_len >= 0 {
+        let full_len: usize = full_len.try_into().map_err(|e| common::Error::wrapper(e))?;
+        buf.resize(full_len, 0);
+    }
+    Ok(UChar::from(buf))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
