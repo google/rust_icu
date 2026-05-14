@@ -112,7 +112,7 @@ pub(crate) mod internal {
                     skel.push(format!("scientific/*ee/sign-never"));
                 }
                 options::SignDisplay::ExceptZero => {
-                    skel.push(format!("scientific/*ee/sign-expect-zero"));
+                    skel.push(format!("scientific/*ee/sign-except-zero"));
                 }
             },
             options::Notation::Scientific => {
@@ -139,33 +139,35 @@ pub(crate) mod internal {
                     skel.push("sign-always".into());
                 }
                 options::SignDisplay::ExceptZero => {
-                    skel.push("sign-always".into());
+                    skel.push("sign-except-zero".into());
                 }
             }
         }
 
         let minimum_integer_digits = opts.minimum_integer_digits.unwrap_or(1);
-        // TODO: this should match the list at:
-        // https://www.currency-iso.org/en/home/tables/table-a1.html
-        let minimum_fraction_digits = opts.minimum_fraction_digits.unwrap_or(match opts.style {
-            options::Style::Currency => 2,
-            _ => 0,
-        });
-        let maximum_fraction_digits = opts.maximum_fraction_digits.unwrap_or(match opts.style {
-            options::Style::Currency => std::cmp::max(2, minimum_fraction_digits),
-            _ => 3,
-        });
-        let minimum_significant_digits = opts.minimum_significant_digits.unwrap_or(1);
-        let maximum_significant_digits = opts.maximum_significant_digits.unwrap_or(21);
-
-        // TODO: add skeleton items for min and max integer, fraction and significant digits.
         skel.push(integer_digits(minimum_integer_digits as usize));
-        skel.push(fraction_digits(
-            minimum_fraction_digits as usize,
-            maximum_fraction_digits as usize,
-            minimum_significant_digits as usize,
-            maximum_significant_digits as usize,
-        ));
+
+        if opts.minimum_significant_digits.is_some() || opts.maximum_significant_digits.is_some() {
+            let minimum_significant_digits = opts.minimum_significant_digits.unwrap_or(1);
+            let maximum_significant_digits = opts.maximum_significant_digits.unwrap_or(21);
+            skel.push(significant_digits(
+                minimum_significant_digits as usize,
+                maximum_significant_digits as usize,
+            ));
+        } else {
+            let minimum_fraction_digits = opts.minimum_fraction_digits.unwrap_or(match opts.style {
+                options::Style::Currency => 2,
+                _ => 0,
+            });
+            let maximum_fraction_digits = opts.maximum_fraction_digits.unwrap_or(match opts.style {
+                options::Style::Currency => std::cmp::max(2, minimum_fraction_digits),
+                _ => std::cmp::max(3, minimum_fraction_digits),
+            });
+            skel.push(fraction_precision(
+                minimum_fraction_digits as usize,
+                maximum_fraction_digits as usize,
+            ));
+        }
 
         Ok(skel.iter().map(|s| format!("{} ", s)).collect())
     }
@@ -181,25 +183,16 @@ pub(crate) mod internal {
         return format!("integer-width/+{}", zeroes);
     }
 
-    fn fraction_digits(min: usize, max: usize, min_sig: usize, max_sig: usize) -> String {
-        eprintln!(
-            "fraction_digits: min: {}, max: {} min_sig: {}, max_sig: {}",
-            min, max, min_sig, max_sig
-        );
-        assert!(min <= max, "fraction_digits: min: {}, max: {}", min, max);
-        let zeroes: String = std::iter::repeat("0").take(min).collect();
-        let hashes: String = std::iter::repeat("#").take(max - min).collect();
+    fn significant_digits(min: usize, max: usize) -> String {
+        let ats = std::iter::repeat("@").take(min).collect::<String>();
+        let hashes = std::iter::repeat("#").take(max - min).collect::<String>();
+        format!("{}{}", ats, hashes)
+    }
 
-        assert!(
-            min_sig <= max_sig,
-            "significant_digits: min: {}, max: {}",
-            min_sig,
-            max_sig
-        );
-        let ats: String = std::iter::repeat("@").take(min_sig).collect();
-        let hashes_sig: String = std::iter::repeat("#").take(max_sig - min_sig).collect();
-
-        return format!(".{}{}/{}{}", zeroes, hashes, ats, hashes_sig,);
+    fn fraction_precision(min: usize, max: usize) -> String {
+        let zeroes = std::iter::repeat("0").take(min).collect::<String>();
+        let hashes = std::iter::repeat("#").take(max - min).collect::<String>();
+        format!(".{}{}", zeroes, hashes)
     }
 
     #[cfg(test)]
@@ -207,11 +200,16 @@ pub(crate) mod internal {
         use super::*;
 
         #[test]
-        fn fraction_digits_skeleton_fragment() {
-            assert_eq!(fraction_digits(0, 3, 1, 21), ".###/@####################");
-            assert_eq!(fraction_digits(2, 2, 1, 21), ".00/@####################");
-            assert_eq!(fraction_digits(0, 0, 0, 0), "./");
-            assert_eq!(fraction_digits(0, 3, 3, 3), ".###/@@@");
+        fn fraction_precision_skeleton_fragment() {
+            assert_eq!(fraction_precision(0, 3), ".###");
+            assert_eq!(fraction_precision(2, 2), ".00");
+            assert_eq!(fraction_precision(0, 0), ".");
+        }
+
+        #[test]
+        fn significant_digits_skeleton_fragment() {
+            assert_eq!(significant_digits(1, 21), "@####################");
+            assert_eq!(significant_digits(3, 3), "@@@");
         }
     }
 }
@@ -319,6 +317,15 @@ mod testing {
                 },
                 numbers: vec![123456.789],
                 expected: vec!["1,23,000"],
+            },
+            TestCase {
+                locale: "sr-RS",
+                opts: ecma402_traits::numberformat::Options {
+                    minimum_fraction_digits: Some(5),
+                    ..Default::default()
+                },
+                numbers: vec![1.2],
+                expected: vec!["1,20000"],
             },
         ];
         for test in tests {
