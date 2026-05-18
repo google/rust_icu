@@ -104,11 +104,11 @@ macos-test:
 	    && PATH="$$ICU_PREFIX/bin:$$PATH" \
 	       PKG_CONFIG_PATH="$$ICU_PREFIX/lib/pkgconfig:$$PKG_CONFIG_PATH" \
 	       RUSTFLAGS="-L $$ICU_PREFIX/lib" \
-	       cargo test --no-default-features --features=use-bindgen,icu_config,renaming,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus \
+	       cargo test \
 	    && PATH="$$ICU_PREFIX/bin:$$PATH" \
 	       PKG_CONFIG_PATH="$$ICU_PREFIX/lib/pkgconfig:$$PKG_CONFIG_PATH" \
 	       RUSTFLAGS="-L $$ICU_PREFIX/lib" \
-	       cargo test --no-default-features --features=use-bindgen,icu_config,renaming,icu_version_64_plus,icu_version_67_plus,icu_version_68_plus,static
+	       cargo test --features=static
 .PHONY: macos-test
 
 # Refreshes the static bindgen output (contents of ./rust_icu_sys/bindgen) based

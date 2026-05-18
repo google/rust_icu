@@ -395,7 +395,6 @@ impl ULoc {
     }
 
     /// Implements `uloc_openAvailableByType`.
-    #[cfg(feature = "icu_version_67_plus")]
     pub fn open_available_by_type(locale_type: ULocAvailableType) -> Result<Enumeration, common::Error> {
         let mut status = common::Error::OK_CODE;
         unsafe {
@@ -406,7 +405,6 @@ impl ULoc {
     }
 
     /// Returns a vector of locales of the requested type.
-    #[cfg(feature = "icu_version_67_plus")]
     pub fn get_available_locales_by_type(locale_type: ULocAvailableType) -> Vec<ULoc> {
         if locale_type == ULocAvailableType::ULOC_AVAILABLE_COUNT {
             panic!("ULOC_AVAILABLE_COUNT is for internal use only");
@@ -829,7 +827,6 @@ mod tests {
 
     // This test yields a different result in ICU versions prior to 64:
     // "zh-Latn@collation=pinyin".
-    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_variant() -> Result<(), Error> {
         let loc = ULoc::try_from("zh-Latn-pinyin")?;
@@ -849,7 +846,6 @@ mod tests {
         Ok(())
     }
 
-    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_name() -> Result<(), Error> {
         let loc = ULoc::try_from("en-US")?;
@@ -1034,34 +1030,6 @@ mod tests {
         );
     }
 
-    // This tests verifies buggy behavior which is fixed since ICU version 67.1
-    #[cfg(not(feature = "icu_version_67_plus"))]
-    #[test]
-    fn test_accept_language_exact_match() {
-        let accept_list: Result<Vec<_>, _> = vec!["es_ES", "ar_EG", "fr_FR"]
-            .into_iter()
-            .map(ULoc::try_from)
-            .collect();
-        let accept_list = accept_list.expect("make accept_list");
-
-        let available_locales: Result<Vec<_>, _> = vec!["de_DE", "en_US", "es_MX", "ar_EG"]
-            .into_iter()
-            .map(ULoc::try_from)
-            .collect();
-        let available_locales = available_locales.expect("make available_locales");
-
-        let actual = accept_language(accept_list, available_locales).expect("call accept_language");
-        assert_eq!(
-            actual,
-            (
-                // "es_MX" should be preferred as a fallback over exact match "ar_EG".
-                ULoc::try_from("ar_EG").ok(),
-                UAcceptResult::ULOC_ACCEPT_VALID
-            )
-        );
-    }
-
-    #[cfg(feature = "icu_version_67_plus")]
     #[test]
     fn test_accept_language_exact_match() {
         let accept_list: Result<Vec<_>, _> = vec!["es_ES", "ar_EG", "fr_FR"]
@@ -1216,7 +1184,6 @@ mod tests {
         assert_eq!(ULoc::for_language_tag("sr-u-tz-uslax").unwrap(), loc);
     }
 
-    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_for_language_error() {
         let loc = ULoc::for_language_tag("en_US").unwrap();
@@ -1224,7 +1191,6 @@ mod tests {
         assert_eq!(loc.country(), None);
     }
 
-    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_iso3_language() {
         let loc = ULoc::for_language_tag("en-US").unwrap();
@@ -1235,7 +1201,6 @@ mod tests {
         assert_eq!(iso_lang, None);
     }
 
-    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_iso3_country() {
         let loc = ULoc::for_language_tag("en-US").unwrap();
@@ -1246,7 +1211,6 @@ mod tests {
         assert_eq!(iso_country, None);
     }
 
-    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_display_language() {
         let english_locale = ULoc::for_language_tag("en").unwrap();
@@ -1260,7 +1224,6 @@ mod tests {
         assert_eq!(root_locale.display_language(&french_locale).unwrap().as_string_debug(), "langue indéterminée");
     }
 
-    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_display_script() {
         let english_latin_locale = ULoc::for_language_tag("en-latg").unwrap();
@@ -1301,7 +1264,6 @@ mod tests {
         assert_eq!(calendar_value_in_french.unwrap().as_string_debug(), "calendrier hébraïque");
     }
 
-    #[cfg(feature = "icu_version_64_plus")]
     #[test]
     fn test_display_name() {
         let loc = ULoc::for_language_tag("az-Cyrl-AZ-u-ca-hebrew-t-it-x-whatever").unwrap();
@@ -1345,7 +1307,6 @@ mod tests {
         assert!(locale.is_ok());
     }
 
-    #[cfg(feature = "icu_version_67_plus")]
     #[test]
     fn test_get_available_locales_by_type() {
         let locales1 = ULoc::get_available_locales_by_type(ULocAvailableType::ULOC_AVAILABLE_DEFAULT);
@@ -1371,14 +1332,12 @@ mod tests {
         assert!(alias_locales.contains(&ULoc::try_from("ars").unwrap()));
     }
 
-    #[cfg(feature = "icu_version_67_plus")]
     #[test]
     #[should_panic(expected = "ULOC_AVAILABLE_COUNT is for internal use only")]
     fn test_get_available_locales_by_type_panic() {
         ULoc::get_available_locales_by_type(ULocAvailableType::ULOC_AVAILABLE_COUNT);
     }
 
-    #[cfg(feature = "icu_version_67_plus")]
     #[test]
     fn test_get_available_locales_by_type_error() {
         assert!(!ULoc::open_available_by_type(ULocAvailableType::ULOC_AVAILABLE_COUNT).is_ok());

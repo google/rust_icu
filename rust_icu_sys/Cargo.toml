@@ -39,10 +39,6 @@ use-bindgen = ["bindgen"]
 renaming = []
 icu_config = []
 icu_version_in_env = []
-icu_version_64_plus = []
-icu_version_67_plus = []
-icu_version_68_plus = []
-icu_version_69_max = []
 static = []
 
 

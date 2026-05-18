@@ -66,7 +66,6 @@ impl UListFormatter {
     }
 
     /// Implements `ulistfmt_openForType`.  Since ICU 67.
-    #[cfg(feature = "icu_version_67_plus")]
     pub fn try_new_styled(
         locale: &str,
         format_type: sys::UListFormatterType,
@@ -292,7 +291,6 @@ mod testing {
     }
 
     #[test]
-    #[cfg(feature = "icu_version_67_plus")]
     fn test_formatting_styled() {
         let array = ["Kwik", "Kwek", "Kwak"];
         let formatter = crate::UListFormatter::try_new_styled(

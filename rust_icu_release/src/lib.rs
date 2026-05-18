@@ -134,21 +134,6 @@ pub fn run() -> Result<()> {
 
     let icu_major_version = ICUConfig::version_major_int().context("while getting version")?;
     println!("icu-major-version: {}", icu_major_version);
-    if icu_major_version >= 64 {
-        println!("cargo:rustc-cfg=feature=\"icu_version_64_plus\"");
-    }
-    if icu_major_version >= 67 {
-        println!("cargo:rustc-cfg=feature=\"icu_version_67_plus\"");
-    }
-    if icu_major_version >= 68 {
-        println!("cargo:rustc-cfg=feature=\"icu_version_68_plus\"");
-    }
-    // Starting from version 69, the feature flags depending on the version
-    // number work for up to a certain version, so that they can be retired
-    // over time.
-    if icu_major_version <= 69 {
-        println!("cargo:rustc-cfg=feature=\"icu_version_69_max\"");
-    }
     println!("done");
     Ok(())
 }

@@ -285,12 +285,6 @@ mod testing {
                 dates: vec![10000_f64],
                 expected_regex: vec!["1970."],
             },
-            // In ICU 63 this gets reported as "GMT-08:00", likely the ICU data
-            // from then didn't contain the Serbian long spellout of the "uslax"
-            // time zone.  Turning on from 67 onwards, since at the time this
-            // test was written that was the oldest version that did have the
-            // long spellout.
-            #[cfg(feature="icu_version_67_plus")]
             TestCase {
                 locale: "sr",
                 opts: DateTimeFormatOptions{

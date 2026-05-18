@@ -26,8 +26,6 @@ pub struct Format {
     rep: ulfmt::UListFormatter,
 }
 
-// Full support for styled formatting is available since v67.
-#[cfg(feature = "icu_version_67_plus")]
 pub(crate) mod internal {
     use ecma402_traits::listformat::options;
     use rust_icu_sys as usys;
@@ -60,24 +58,13 @@ impl listformat::Format for Format {
     /// Creates a new [Format], from a [ecma402_traits::Locale] and [listformat::Options].
     fn try_new<L: ecma402_traits::Locale>(
         l: L,
-        _opts: listformat::Options,
+        opts: listformat::Options,
     ) -> Result<Format, Self::Error> {
         let locale = format!("{}", l);
-
-        #[cfg(feature = "icu_version_67_plus")]
-        {
-            let width = internal::to_icu_width(&_opts.style);
-            let in_type = internal::to_icu_type(&_opts.in_type);
-            let rep = ulfmt::UListFormatter::try_new_styled(&locale, in_type, width)?;
-            Ok(Format { rep })
-        }
-
-        // The non-v67 implementation is less featureful.
-        #[cfg(not(feature = "icu_version_67_plus"))]
-        {
-            let rep = ulfmt::UListFormatter::try_new(&locale)?;
-            Ok(Format { rep })
-        }
+        let width = internal::to_icu_width(&opts.style);
+        let in_type = internal::to_icu_type(&opts.in_type);
+        let rep = ulfmt::UListFormatter::try_new_styled(&locale, in_type, width)?;
+        Ok(Format { rep })
     }
 
     /// Formats the given string.
@@ -123,7 +110,6 @@ mod testing {
                 opts: listformat::Options::default(),
                 expected: "eenie, meenie, minie, and moe",
             },
-            #[cfg(feature = "icu_version_67_plus")]
             TestCase {
                 locale: "en-US",
                 array: vec!["eenie", "meenie", "minie", "moe"],
@@ -133,7 +119,6 @@ mod testing {
                 },
                 expected: "eenie, meenie, minie, & moe",
             },
-            #[cfg(feature = "icu_version_67_plus")]
             TestCase {
                 locale: "en-US",
                 array: vec!["eenie", "meenie", "minie", "moe"],
@@ -143,7 +128,6 @@ mod testing {
                 },
                 expected: "eenie, meenie, minie, or moe",
             },
-            #[cfg(feature = "icu_version_67_plus")]
             TestCase {
                 locale: "en-US",
                 array: vec!["eenie", "meenie", "minie", "moe"],
@@ -153,7 +137,6 @@ mod testing {
                 },
                 expected: "eenie, meenie, minie, moe",
             },
-            #[cfg(feature = "icu_version_67_plus")]
             TestCase {
                 locale: "en-US",
                 array: vec!["eenie", "meenie", "minie", "moe"],
@@ -172,7 +155,6 @@ mod testing {
                 },
                 expected: "eenie, meenie, minie, and moe",
             },
-            #[cfg(feature = "icu_version_67_plus")]
             TestCase {
                 locale: "en-US",
                 array: vec!["eenie", "meenie", "minie", "moe"],
@@ -193,7 +175,6 @@ mod testing {
                 },
                 expected: "Раја, Гаја и Влаја",
             },
-            #[cfg(feature = "icu_version_67_plus")]
             TestCase {
                 locale: "sr-RS",
                 array: vec!["Раја", "Гаја", "Влаја"],
@@ -203,7 +184,6 @@ mod testing {
                 },
                 expected: "Раја, Гаја или Влаја",
             },
-            #[cfg(feature = "icu_version_67_plus")]
             TestCase {
                 locale: "sr-RS",
                 array: vec!["Раја", "Гаја", "Влаја"],
