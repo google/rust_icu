@@ -34,16 +34,19 @@ term health of the repository.
 
 ## Adding ICU-version-dependent code
 
-The workspace currently targets ICU versions for which all wrapped APIs are
-uniformly available, so no version-gated code remains. If a future change
-introduces functionality that exists only in newer (or only in older) ICU
-versions, follow the pattern below — it must be wired up in **two** places
-that are kept in sync.
+The workspace currently targets a range of ICU versions across which the
+wrapped APIs behave uniformly enough that no version-gated code is needed.
+Version gating has historically been required when ICU's behavior changes
+between versions in user-visible ways — for example, changes in locale
+data or fixes to behavioral bugs that cause the same input to produce
+different output across ICU versions. If a future change introduces this
+kind of difference, follow the pattern below — it must be wired up in
+**two** places that are kept in sync.
 
 ### 1. The Cargo feature
 
 Declare a feature in each affected crate's `Cargo.toml`, named after the
-boundary version (e.g. `icu_version_80_plus`). Propagate it to dependent
+boundary version (e.g. `icu_version_78_plus`). Propagate it to dependent
 crates the same way `icu_version_in_env` is propagated.
 
 ### 2. Automatic activation via `build.rs`
