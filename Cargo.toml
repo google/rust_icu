@@ -27,4 +27,11 @@ members = [
   "rust_icu_utext",
   "rust_icu_utrans",
 ]
+# Examples are standalone crates that build against the workspace crates via
+# `path` dependencies.  They are excluded from the workspace so the feature
+# matrix used in CI (`cargo test --no-default-features --features ...`) does
+# not have to know about them.
+exclude = [
+  "examples/hello_world",
+]
 resolver = "2"

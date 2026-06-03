@@ -84,52 +84,24 @@ Crate                                                                           
 
 # Hello, World!
 
-This section shows a minimal example of using `rust_icu` for locale-aware
+A complete, runnable "Hello, World!" lives in
+[`examples/hello_world`](examples/hello_world).  It shows locale-aware
 [MessageFormat](http://userguide.icu-project.org/formatparse/messages) string
-formatting.  MessageFormat is *not* XLIFF; it is a pattern-based template
-language built into ICU that lets you embed formatted numbers, dates, and
-plurals directly inside a message string.
+formatting (MessageFormat is *not* XLIFF; it is a pattern-based template
+language built into ICU).  Run it with:
 
-## 1. Add the dependencies
-
-In your `Cargo.toml`:
-
-```toml
-[dependencies]
-rust_icu_common  = "5.6"
-rust_icu_uloc    = "5.6"
-rust_icu_umsg    = "5.6"
-rust_icu_ustring = "5.6"
+```sh
+cd examples/hello_world
+cargo run
+# => Hello, World!
 ```
 
-## 2. Write the code
-
-```rust,ignore
-use rust_icu_common as common;
-use rust_icu_uloc as uloc;
-use rust_icu_umsg::{self as umsg, message_format};
-use rust_icu_ustring as ustring;
-use std::convert::TryFrom;
-
-fn main() -> Result<(), common::Error> {
-    // Choose a locale.
-    let loc = uloc::ULoc::try_from("en-US")?;
-
-    // Write a MessageFormat pattern. {0} is the first positional argument.
-    let pattern = ustring::UChar::try_from("Hello, {0}!")?;
-    let fmt = umsg::UMessageFormat::try_from(&pattern, &loc)?;
-
-    // Format the message by binding a value to each positional parameter.
-    let name = ustring::UChar::try_from("World")?;
-    let result = message_format!(fmt, { name => String })?;
-
-    println!("{}", result); // Hello, World!
-    Ok(())
-}
-```
-
-See the [`rust_icu_umsg` crate docs](https://docs.rs/rust_icu_umsg) for more
-advanced patterns (numbers, dates, plural rules, etc.).
+The example's [`Cargo.toml`](examples/hello_world/Cargo.toml) lists the
+dependencies you need (`rust_icu_common`, `rust_icu_uloc`, `rust_icu_umsg`,
+`rust_icu_ustring`), and [`src/main.rs`](examples/hello_world/src/main.rs)
+contains the code.  See the
+[`rust_icu_umsg` crate docs](https://docs.rs/rust_icu_umsg) for more advanced
+patterns (numbers, dates, plural rules, etc.).
 
 # Limitations
 
