@@ -82,6 +82,55 @@ Crate                                                                           
 [rust_icu_utext](https://crates.io/crates/rust_icu_utext)                       | Text operations. Implements [`utext.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/utext_8h.html) C API header from the ICU library.
 [rust_icu_utrans](https://crates.io/crates/rust_icu_utrans)                     | Transliteration support. Implements [`utrans.h`](https://unicode-org.github.io/icu-docs/apidoc/released/icu4c/utrans_8h.html) C API header from the ICU library.
 
+# Hello, World!
+
+This section shows a minimal example of using `rust_icu` for locale-aware
+[MessageFormat](http://userguide.icu-project.org/formatparse/messages) string
+formatting.  MessageFormat is *not* XLIFF; it is a pattern-based template
+language built into ICU that lets you embed formatted numbers, dates, and
+plurals directly inside a message string.
+
+## 1. Add the dependencies
+
+In your `Cargo.toml`:
+
+```toml
+[dependencies]
+rust_icu_common  = "5.6"
+rust_icu_uloc    = "5.6"
+rust_icu_umsg    = "5.6"
+rust_icu_ustring = "5.6"
+```
+
+## 2. Write the code
+
+```rust,ignore
+use rust_icu_common as common;
+use rust_icu_uloc as uloc;
+use rust_icu_umsg::{self as umsg, message_format};
+use rust_icu_ustring as ustring;
+use std::convert::TryFrom;
+
+fn main() -> Result<(), common::Error> {
+    // Choose a locale.
+    let loc = uloc::ULoc::try_from("en-US")?;
+
+    // Write a MessageFormat pattern. {0} is the first positional argument.
+    let pattern = ustring::UChar::try_from("Hello, {0}!")?;
+    let fmt = umsg::UMessageFormat::try_from(&pattern, &loc)?;
+
+    // Format the message by binding a value to each positional parameter.
+    let name = ustring::UChar::try_from("World")?;
+    let result = message_format!(fmt, { name => String })?;
+
+    println!("{}", result); // Hello, World!
+    Ok(())
+}
+```
+
+See the [`rust_icu_umsg` crate docs](https://docs.rs/rust_icu_umsg) for more
+advanced patterns (numbers, dates, plural rules, etc.).
+
 # Limitations
 
 The generated rust language binding methods of today limit the availability of
