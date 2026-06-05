@@ -22,6 +22,22 @@ Expected output:
 Hello, World!
 ```
 
+## Verified by presubmits
+
+This example is not just documentation. The project's CI builds and runs it on
+every push and pull request, across the same ICU versions as the rest of the
+test matrix. The `make docker-test-example` target builds the crate inside the
+dockerized test environment, runs `cargo test` (which asserts that the formatted
+output equals `Hello, World!`), and then runs the binary with `cargo run`. If
+the example ever stops compiling or stops producing the expected output, CI
+fails.
+
+You can reproduce the presubmit locally with:
+
+```sh
+make DOCKER_TEST_ENV=rust_icu_testenv-77 RUST_ICU_MAJOR_VERSION_NUMBER=77 docker-test-example
+```
+
 ## What it shows
 
 - [`Cargo.toml`](Cargo.toml) — the dependencies required to format a message:
