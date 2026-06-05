@@ -21,6 +21,10 @@
 //! ```text
 //! cargo run
 //! ```
+//!
+//! The formatting logic lives in [`greet`] so it can be exercised by a unit
+//! test (see the bottom of this file).  That test is what lets the project's
+//! presubmits confirm the example actually produces the expected output.
 
 use rust_icu_common as common;
 use rust_icu_uloc as uloc;
@@ -28,7 +32,8 @@ use rust_icu_umsg::{self as umsg, message_format};
 use rust_icu_ustring as ustring;
 use std::convert::TryFrom;
 
-fn main() -> Result<(), common::Error> {
+/// Formats a locale-aware "Hello, World!" using ICU `MessageFormat`.
+fn greet() -> Result<String, common::Error> {
     // Choose a locale.  Formatting of numbers, dates and plurals is driven by
     // the locale's ICU data.
     let loc = uloc::ULoc::try_from("en-US")?;
@@ -39,8 +44,20 @@ fn main() -> Result<(), common::Error> {
 
     // Bind a value to each positional parameter and format the message.
     let name = ustring::UChar::try_from("World")?;
-    let result = message_format!(fmt, { name => String })?;
+    message_format!(fmt, { name => String })
+}
 
-    println!("{}", result); // Hello, World!
+fn main() -> Result<(), common::Error> {
+    println!("{}", greet()?); // Hello, World!
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::greet;
+
+    #[test]
+    fn formats_hello_world() {
+        assert_eq!(greet().expect("formatting should succeed"), "Hello, World!");
+    }
 }
