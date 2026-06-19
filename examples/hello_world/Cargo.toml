@@ -1,0 +1,29 @@
+[package]
+name = "hello_world"
+version = "0.0.0"
+edition = "2018"
+license = "Apache-2.0"
+publish = false
+description = "Minimal rust_icu MessageFormat 'Hello, World!' example."
+
+# This example is intentionally kept out of the top-level workspace (see the
+# `exclude` entry in ../../Cargo.toml) so it can be built on its own:
+#
+#   cd examples/hello_world
+#   cargo run
+#
+# The dependencies below use `path` so the example always builds against the
+# crates in this repository.  A downstream user would instead depend on the
+# published crates, e.g.:
+#
+#   [dependencies]
+#   rust_icu_common  = "5.6"
+#   rust_icu_uloc    = "5.6"
+#   rust_icu_umsg    = "5.6"
+#   rust_icu_ustring = "5.6"
+
+[dependencies]
+rust_icu_common = { path = "../../rust_icu_common" }
+rust_icu_uloc = { path = "../../rust_icu_uloc" }
+rust_icu_umsg = { path = "../../rust_icu_umsg" }
+rust_icu_ustring = { path = "../../rust_icu_ustring" }
