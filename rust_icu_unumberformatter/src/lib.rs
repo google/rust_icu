@@ -72,47 +72,25 @@ impl UNumberFormatter {
     ) -> Result<UNumberFormatter, common::Error> {
         let mut status = sys::UErrorCode::U_ZERO_ERROR;
 
-        // Uses the "with error" flavor of the constructor for ICU versions upwards of
-        // 64.  This allows more elaborate error messages in case of an issue.
-        #[cfg(feature = "icu_version_64_plus")]
-        {
-            let mut parse_status = common::NO_PARSE_ERROR.clone();
-            let rep = unsafe {
-                assert!(common::Error::is_ok(status));
-                versioned_function!(unumf_openForSkeletonAndLocaleWithError)(
-                    skeleton.as_c_ptr(),
-                    skeleton.len() as i32,
-                    locale.label().as_ptr() as *const std::os::raw::c_char,
-                    &mut parse_status,
-                    &mut status,
-                )
-            };
-            assert_ne!(rep, 0 as *mut sys::UNumberFormatter);
-            common::parse_ok(parse_status)?;
-            common::Error::ok_or_warning(status)?;
-            let result = UNumberFormatter {
-                rep: std::ptr::NonNull::new(rep).unwrap(),
-            };
-            return Ok(result);
-        }
-        #[cfg(not(feature = "icu_version_64_plus"))]
-        {
-            let rep = unsafe {
-                assert!(common::Error::is_ok(status));
-                versioned_function!(unumf_openForSkeletonAndLocale)(
-                    skeleton.as_c_ptr(),
-                    skeleton.len() as i32,
-                    locale.label().as_ptr() as *const std::os::raw::c_char,
-                    &mut status,
-                )
-            };
-            assert_ne!(rep, 0 as *mut sys::UNumberFormatter);
-            common::Error::ok_or_warning(status)?;
-            let result = UNumberFormatter {
-                rep: std::ptr::NonNull::new(rep).unwrap(),
-            };
-            return Ok(result);
-        }
+        // Uses the "with error" flavor of the constructor, which allows more
+        // elaborate error messages in case of an issue.
+        let mut parse_status = common::NO_PARSE_ERROR.clone();
+        let rep = unsafe {
+            assert!(common::Error::is_ok(status));
+            versioned_function!(unumf_openForSkeletonAndLocaleWithError)(
+                skeleton.as_c_ptr(),
+                skeleton.len() as i32,
+                locale.label().as_ptr() as *const std::os::raw::c_char,
+                &mut parse_status,
+                &mut status,
+            )
+        };
+        assert_ne!(rep, 0 as *mut sys::UNumberFormatter);
+        common::parse_ok(parse_status)?;
+        common::Error::ok_or_warning(status)?;
+        Ok(UNumberFormatter {
+            rep: std::ptr::NonNull::new(rep).unwrap(),
+        })
     }
 
     /// Similar to [UNumberFormatter::try_new_ustring] but uses Rust types.

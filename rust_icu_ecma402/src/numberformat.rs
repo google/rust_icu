@@ -175,10 +175,7 @@ pub(crate) mod internal {
     // 3 -> "integer-width/*000"
     fn integer_digits(digits: usize) -> String {
         let zeroes: String = std::iter::repeat("0").take(digits).collect();
-        #[cfg(feature = "icu_version_67_plus")]
-        return format!("integer-width/*{}", zeroes);
-        #[cfg(not(feature = "icu_version_67_plus"))]
-        return format!("integer-width/+{}", zeroes);
+        format!("integer-width/*{}", zeroes)
     }
 
     fn fraction_digits(min: usize, max: usize, min_sig: usize, max_sig: usize) -> String {
