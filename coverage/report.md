@@ -17,7 +17,7 @@
 | `upluralrules.h` | 3 / 8 | 
 | `ures.h` | 21 / 34 | 
 | `ustring.h` | 2 / 61 | 
-| `utext.h` | 2 / 28 | 
+| `utext.h` | 4 / 28 | 
 | `utrans.h` | 10 / 20 | 
 | `unorm2.h` | 8 / 23 | 
 # Unimplemented functions per header
@@ -507,6 +507,8 @@
 | ------------- | ----------- |
 | | `utext_clone` |
 | | `utext_close` |
+| | `utext_isWritable` |
+| | `utext_openUTF8` |
 | `utext_char32At` | |
 | `utext_copy` | |
 | `utext_current32` | |
@@ -517,7 +519,6 @@
 | `utext_getPreviousNativeIndex` | |
 | `utext_hasMetaData` | |
 | `utext_isLengthExpensive` | |
-| `utext_isWritable` | |
 | `utext_moveIndex32` | |
 | `utext_nativeLength` | |
 | `utext_next32` | |
@@ -527,7 +528,6 @@
 | `utext_openReplaceable` | |
 | `utext_openUChars` | |
 | `utext_openUnicodeString` | |
-| `utext_openUTF8` | |
 | `utext_previous32` | |
 | `utext_previous32From` | |
 | `utext_replace` | |

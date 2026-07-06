@@ -1,2 +1,4 @@
 utext_clone
 utext_close
+utext_isWritable
+utext_openUTF8
