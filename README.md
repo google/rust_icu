@@ -120,7 +120,7 @@ feature combinations of interest.
 
 `rust_icu` version   | ICU 74.1 | ICU 75.0 | ICU 76.0 | ICU 77.0 |
 -------------------- | -------- | -------- | -------- | -------- |
-5.4.x                |    ✅    |          |    ✅    |    ✅    |
+5.x                  |    ✅    |          |    ✅    |    ✅    |
 
 # Features
 
