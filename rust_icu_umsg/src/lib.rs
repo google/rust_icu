@@ -177,6 +177,70 @@ impl UMessageFormat {
             rep: std::rc::Rc::new(Rep { rep }),
         })
     }
+
+    /// Formats `args` into this formatter's message, returning the formatted string.
+    ///
+    /// This is the explicit-`unsafe` counterpart to the [message_format!] macro: it carries exactly
+    /// the same contract, but as an `unsafe fn` it forces the caller to acknowledge that contract
+    /// with an `unsafe { .. }` block. Prefer it over the macro when you want the obligation to be
+    /// visible at the call site.
+    ///
+    /// `args` is a tuple of the values to format, one per positional parameter, in order. Each
+    /// element's type selects how ICU reads it (see the type table on [message_format!]):
+    ///
+    /// | Tuple element type | MessageFormat role |
+    /// | ------------------ | ------------------ |
+    /// | `f64` | `Double` (and `Date`, since [rust_icu_sys::UDate] is an `f64`) |
+    /// | `i32` | `Integer` |
+    /// | `i64` | `Long` |
+    /// | [rust_icu_ustring::UChar] | `String` |
+    ///
+    /// For example, `(43.4_f64, 31337_i32)` binds a double to parameter `{0}` and an integer to
+    /// parameter `{1}`. A single argument uses a one-element tuple, e.g. `(43.4_f64,)`.
+    ///
+    /// # Safety
+    ///
+    /// ICU's variadic `umsg_format` derives the number and types of the arguments it reads from the
+    /// *pattern* passed to [UMessageFormat::try_from], not from `args`. Nothing reconciles the two,
+    /// so the caller must guarantee both, or invoke undefined behavior (segfault or silent memory
+    /// corruption):
+    ///
+    /// * **Argument count.** `args` must contain at least as many elements as the highest argument
+    ///   index referenced by the pattern, plus one. For example the pattern `"String : {1}"` reads
+    ///   *two* arguments (indices `0` and `1`); supplying fewer causes ICU to read past the end of
+    ///   `args`. Supplying more is harmless. See
+    ///   [google/rust_icu#371](https://github.com/google/rust_icu/issues/371).
+    ///
+    /// * **Argument types.** Each element's type must match what the pattern expects at that index,
+    ///   e.g. `{0,number}` expects an `f64` while `{0}` and `{0,number,integer}` expect a
+    ///   [rust_icu_ustring::UChar] and an `i32` respectively.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rust_icu_common as common;
+    /// use rust_icu_ustring as ustring;
+    /// use rust_icu_uloc as uloc;
+    /// use rust_icu_umsg as umsg;
+    /// use std::convert::TryFrom;
+    ///
+    /// # fn testfn() -> Result<(), common::Error> {
+    /// let loc = uloc::ULoc::try_from("en-US")?;
+    /// let msg = ustring::UChar::try_from(r"Formatted double: {0,number,##.#}")?;
+    /// let fmt = umsg::UMessageFormat::try_from(&msg, &loc)?;
+    ///
+    /// // SAFETY: the pattern references exactly one argument, a double, matching the tuple below.
+    /// let result = unsafe { fmt.try_format((43.4_f64,)) }?;
+    /// assert_eq!("Formatted double: 43.4", result);
+    /// # Ok(())
+    /// # }
+    /// # testfn().unwrap();
+    /// ```
+    ///
+    /// Implements `umsg_format`.
+    pub unsafe fn try_format(&self, args: impl FormatArgs) -> Result<String, common::Error> {
+        format_args(self, args)
+    }
 }
 
 /// Given a formatter, formats the passed arguments into the formatter's message.
@@ -198,8 +262,32 @@ impl UMessageFormat {
 /// functions for parameter passing, it is very important that the programmer matches the actual
 /// parameter types to the types that are expected in the pattern.
 ///
-/// > **Note:** If the types of parameter bindings do not match the expectations in the pattern,
-/// > memory corruption may occur, so tread lightly here.
+/// # Warning: memory-safety hazards
+///
+/// For backward compatibility this macro is callable from safe code, but it is **not** actually
+/// sound: it expands to a call into the ICU C *variadic* function `umsg_format`, which derives the
+/// number and types of the arguments it reads from the *pattern* passed to
+/// [UMessageFormat::try_from], not from the actual arguments supplied here. Nothing in this macro
+/// reconciles the two, so the caller must guarantee both of the following. Violating either is
+/// undefined behavior and typically manifests as a segfault or silent memory corruption:
+///
+/// * **Argument count.** You must supply at least as many arguments as the highest argument index
+///   referenced by the pattern, plus one. For example the pattern `"String : {1}"` references index
+///   `1`, so ICU reads *two* variadic arguments (indices `0` and `1`); supplying only one causes
+///   ICU to read past the end of the arguments actually passed. Note that argument indices need not
+///   be contiguous or start at `0`, but every index the pattern mentions must be backed by an
+///   argument here. Supplying *more* arguments than the pattern references is harmless. See
+///   [google/rust_icu#371](https://github.com/google/rust_icu/issues/371).
+///
+/// * **Argument types.** The `=> <type_assertion>` you write for each argument must match the type
+///   the pattern expects at that index. `{0}` and `{0,number,integer}` expect a string and an
+///   integer respectively, while `{0,number}` expects a double; passing the wrong Rust type (which
+///   the `=> ..` assertion pins only on the Rust side) makes ICU reinterpret the argument's bytes
+///   as the wrong C type -- e.g. an `f64` read back as a `UChar*` and dereferenced.
+///
+/// If you would rather make this obligation explicit at the call site, use the
+/// [UMessageFormat::try_format] method instead, which is an `unsafe fn` carrying the same contract
+/// and therefore requires an `unsafe { .. }` block from the caller.
 ///
 /// In general this is very brittle, and an API in a more modern lanugage, or a contemporary C++
 /// flavor would probably take a different route were the library to be written today.  The rust
@@ -529,5 +617,122 @@ mod tests {
         let result = message_format!(fmt.clone(), { 43.43 => Double })?;
         assert_eq!(r"Formatted double: 43.4", result);
         Ok(())
+    }
+
+    #[test]
+    fn try_format_method() -> Result<(), common::Error> {
+        let _ = TzSave(ucal::get_default_time_zone()?);
+        ucal::set_default_time_zone("Europe/Amsterdam")?;
+
+        let loc = uloc::ULoc::try_from("en-US")?;
+        let msg = ustring::UChar::try_from(
+            r"Formatted double: {0,number,##.#},
+              Formatted integer: {1,number,integer},
+              Formatted string: {2},
+              Date: {3,date,full}",
+        )?;
+
+        let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
+        let hello = ustring::UChar::try_from("Hello! Добар дан!")?;
+        let value: i32 = 31337;
+        // SAFETY: the four tuple elements match the count and types referenced by the pattern.
+        let result = unsafe { fmt.try_format((43.4_f64, value, hello, 0.0_f64)) }?;
+
+        assert_eq!(
+            r"Formatted double: 43.4,
+              Formatted integer: 31,337,
+              Formatted string: Hello! Добар дан!,
+              Date: Thursday, January 1, 1970",
+            result
+        );
+        Ok(())
+    }
+
+    /// Demonstrates the type-mismatch memory-unsafety hazard of `message_format!`.
+    ///
+    /// The pattern `{0}` (an argument with no explicit format) is treated by ICU's variadic
+    /// `umsg_format` as a *string* argument, i.e. ICU performs a `va_arg(ap, UChar*)` for slot 0.
+    /// Here, however, the caller's `=> Double` type assertion pushes an `f64` into that slot. Under
+    /// the C ABI a double and a pointer are passed in different register classes, so ICU reads a
+    /// `UChar*` from a slot the caller never populated with a pointer, then dereferences that
+    /// garbage value -- undefined behavior that manifests as a segfault (or memory corruption).
+    ///
+    /// The `=> Double` assertion checked by [`checkarg!`] only guarantees the *Rust* type of the
+    /// argument; nothing reconciles it against what the *pattern* expects, so this compiles and
+    /// runs from entirely safe-looking code. This is the type-mismatch counterpart to the
+    /// argument-count mismatch reported in google/rust_icu#371, and unlike a count mismatch it
+    /// cannot be caught by simply scanning the pattern for the highest argument index.
+    ///
+    /// This test is `#[ignore]`d because triggering undefined behavior would abort the whole test
+    /// binary. Run it deliberately, in isolation, to observe the crash:
+    ///
+    /// ```text
+    /// cargo test -p rust_icu_umsg -- --ignored --exact tests::type_mismatch_is_undefined_behavior
+    /// ```
+    #[test]
+    #[ignore = "deliberately triggers undefined behavior (segfault); run manually to reproduce"]
+    fn type_mismatch_is_undefined_behavior() -> Result<(), common::Error> {
+        let loc = uloc::ULoc::try_from("en-US")?;
+        // `{0}` with no explicit format => ICU expects a string (UChar*) argument in slot 0.
+        let msg = ustring::UChar::try_from(r"Value: {0}")?;
+
+        let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
+        // ... but we assert `Double`, pushing an f64 where ICU will read a pointer. The result of
+        // the `?` is never reached: `umsg_format` dereferences a garbage pointer first. Note this
+        // is reachable from entirely safe code -- `message_format!` requires no `unsafe` block.
+        let result = message_format!(fmt, { 43.4 => Double })?;
+
+        // Unreachable in practice. If this line is ever reached, the type mismatch stopped being
+        // undefined behavior on this platform/ICU version, and this test should be revisited.
+        panic!(
+            "expected undefined behavior, but formatting returned: {:?}",
+            result
+        );
+    }
+
+    /// Demonstrates the argument-count memory-unsafety hazard of `message_format!`, as reported in
+    /// [google/rust_icu#371](https://github.com/google/rust_icu/issues/371).
+    ///
+    /// The pattern `{1}` references argument index 1, so ICU's variadic `umsg_format` reads *two*
+    /// arguments (indices 0 and 1) from the varargs. The call below supplies only one, so ICU reads
+    /// argument 1 from past the end of the arguments actually passed and -- because a bare `{1}` is
+    /// a string argument -- treats that indeterminate value as a `UChar*`.
+    ///
+    /// This is undefined behavior, and, like all UB here, how it manifests depends on the platform
+    /// and ICU version: it may segfault (as originally reported in #371), or it may silently render
+    /// nonsense. On macOS with ICU 73, for example, it does *not* crash but returns `"String : "`,
+    /// formatting an unsupplied argument -- so the `panic!` guard below fires instead. Either
+    /// outcome demonstrates that safe-looking code produced an unsound result.
+    ///
+    /// Unlike the type mismatch, this one *could* be caught by scanning the pattern for its highest
+    /// argument index and comparing against the number of arguments supplied; it is left here to
+    /// document the current (unchecked) behavior.
+    ///
+    /// This test is `#[ignore]`d because triggering undefined behavior may abort the whole test
+    /// binary. Run it deliberately, in isolation, to observe the crash or the garbage output:
+    ///
+    /// ```text
+    /// cargo test -p rust_icu_umsg -- --ignored --exact tests::arg_count_mismatch_is_undefined_behavior
+    /// ```
+    #[test]
+    #[ignore = "deliberately triggers undefined behavior (may segfault or return garbage); run manually to reproduce"]
+    fn arg_count_mismatch_is_undefined_behavior() -> Result<(), common::Error> {
+        let loc = uloc::ULoc::try_from("en-US")?;
+        // `{1}` references argument index 1 => ICU reads two arguments (indices 0 and 1).
+        let msg = ustring::UChar::try_from(r"String : {1}")?;
+
+        let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
+        let string = ustring::UChar::try_from("Hello!")?;
+        // Only one argument is supplied, so ICU reads argument 1 past the end of the varargs. Note
+        // this is reachable from entirely safe code -- `message_format!` requires no `unsafe` block.
+        let result = message_format!(fmt, { string => String })?;
+
+        // Reached only when the UB does not crash on this platform. The returned value is itself
+        // unsound: it was formatted from an argument the caller never supplied.
+        panic!(
+            "argument-count mismatch did not crash here, but formatting still produced an unsound \
+             result from an unsupplied argument: {:?}",
+            result
+        );
     }
 }
