@@ -12,11 +12,11 @@ _CXXFLAGS = _CFLAGS
 
 configure_make(
     name = "icu",
-    out_source_dir = "icu4c/source",
     env = {
         "CXXFLAGS": _CXXFLAGS,
         "CFLAGS": _CFLAGS,
     },
+    configure_command = "source/configure",
     configure_options = [
         "--enable-static",
         "--with-data-packaging=archive",
