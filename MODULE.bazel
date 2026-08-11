@@ -25,3 +25,6 @@ rust.toolchain(
 use_repo(rust, "rust_toolchains")
 
 register_toolchains("@rust_toolchains//:all")
+
+icu_ext = use_extension("//bazel:icu_deps.bzl", "icu_deps")
+use_repo(icu_ext, "icu_74", "icu_75", "icu_76", "icu_77")
