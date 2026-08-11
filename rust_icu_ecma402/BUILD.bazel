@@ -1,0 +1,33 @@
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+
+rust_library(
+    name = "rust_icu_ecma402",
+    srcs = glob(["src/**/*.rs"]),
+    edition = "2021",
+    crate_features = ["renaming", "static", "icu_version_in_env"],
+    rustc_env = {
+        "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
+    
+    },
+    rustc_flags = ["-Clink-arg=-Wl,--whole-archive"],
+    deps = [
+        "@crates//:anyhow", "//ecma402_traits:ecma402_traits", "@crates//:log", "//rust_icu_common:rust_icu_common", "//rust_icu_udat:rust_icu_udat", "//rust_icu_sys:rust_icu_sys", "//rust_icu_uloc:rust_icu_uloc", "//rust_icu_ustring:rust_icu_ustring", "//rust_icu_ulistformatter:rust_icu_ulistformatter", "//rust_icu_upluralrules:rust_icu_upluralrules", "//rust_icu_unum:rust_icu_unum", "//rust_icu_unumberformatter:rust_icu_unumberformatter"
+    ],
+    proc_macro_deps = [
+        "@crates//:paste"
+    ],
+    visibility = ["//visibility:public"],
+)
+
+rust_test(
+
+    name = "rust_icu_ecma402_test",
+    crate = ":rust_icu_ecma402",
+    crate_features = ["renaming", "static", "icu_version_in_env"],
+    rustc_env = {
+        "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
+    
+    },
+    rustc_flags = ["-Clink-arg=-Wl,--whole-archive"],
+    deps = ["@crates//:anyhow", "@crates//:regex"],
+)

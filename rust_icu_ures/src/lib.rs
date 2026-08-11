@@ -60,8 +60,7 @@
 
 use {
     anyhow::anyhow,
-    rust_icu_common as common,
-    rust_icu_sys as sys,
+    rust_icu_common as common, rust_icu_sys as sys,
     rust_icu_sys::versioned_function,
     rust_icu_uenum::Enumeration,
     std::{ffi, os::raw},
@@ -96,14 +95,14 @@ pub enum ResourceType {
 impl From<sys::UResType> for ResourceType {
     fn from(t: sys::UResType) -> Self {
         match t {
-            sys::UResType::URES_NONE        => ResourceType::None,
-            sys::UResType::URES_STRING      => ResourceType::String,
-            sys::UResType::URES_BINARY      => ResourceType::Binary,
-            sys::UResType::URES_TABLE       => ResourceType::Table,
-            sys::UResType::URES_ALIAS       => ResourceType::Alias,
-            sys::UResType::URES_INT         => ResourceType::Int,
-            sys::UResType::URES_ARRAY       => ResourceType::Array,
-            sys::UResType::URES_INT_VECTOR  => ResourceType::IntVector,
+            sys::UResType::URES_NONE => ResourceType::None,
+            sys::UResType::URES_STRING => ResourceType::String,
+            sys::UResType::URES_BINARY => ResourceType::Binary,
+            sys::UResType::URES_TABLE => ResourceType::Table,
+            sys::UResType::URES_ALIAS => ResourceType::Alias,
+            sys::UResType::URES_INT => ResourceType::Int,
+            sys::UResType::URES_ARRAY => ResourceType::Array,
+            sys::UResType::URES_INT_VECTOR => ResourceType::IntVector,
             // Deprecated sentinel values that are not meaningful resource types.
             sys::UResType::RES_RESERVED | sys::UResType::URES_LIMIT => {
                 ResourceType::Unknown(t as i32)
@@ -194,7 +193,7 @@ impl UResourceBundle {
         let mut status = common::Error::OK_CODE;
         let c_package = match package {
             Some(p) => Some(ffi::CString::new(p)?),
-            None    => None,
+            None => None,
         };
         let c_locale = ffi::CString::new(locale)?;
         // Safety: both pointers are valid for the duration of the call.
@@ -223,7 +222,7 @@ impl UResourceBundle {
         let mut status = common::Error::OK_CODE;
         let c_package = match package {
             Some(p) => Some(ffi::CString::new(p)?),
-            None    => None,
+            None => None,
         };
         let c_locale = ffi::CString::new(locale)?;
         // Safety: same as try_new().
@@ -253,17 +252,16 @@ impl UResourceBundle {
     ) -> Result<String, common::Error> {
         let mut status = common::Error::OK_CODE;
         let raw = unsafe {
-            versioned_function!(ures_getLocaleByType)(
-                self.rep,
-                data_loc_type,
-                &mut status,
-            )
+            versioned_function!(ures_getLocaleByType)(self.rep, data_loc_type, &mut status)
         };
         common::Error::ok_or_warning(status)?;
         assert!(!raw.is_null());
         // Safety: ICU guarantees locale IDs are null-terminated ASCII strings.
         let c_str = unsafe { ffi::CStr::from_ptr(raw) };
-        Ok(c_str.to_str().expect("ICU locale IDs are always valid UTF-8").to_string())
+        Ok(c_str
+            .to_str()
+            .expect("ICU locale IDs are always valid UTF-8")
+            .to_string())
     }
 
     /// Returns the type of this resource.
@@ -292,7 +290,12 @@ impl UResourceBundle {
         }
         // Safety: ICU guarantees resource keys are null-terminated ASCII strings.
         let c_str = unsafe { ffi::CStr::from_ptr(raw) };
-        Some(c_str.to_str().expect("ICU resource keys are always valid UTF-8").to_string())
+        Some(
+            c_str
+                .to_str()
+                .expect("ICU resource keys are always valid UTF-8")
+                .to_string(),
+        )
     }
 
     /// Returns the number of items in this resource.
@@ -321,9 +324,7 @@ impl UResourceBundle {
         // Safety: self.rep is valid; the returned pointer points into the
         // bundle's internal memory and is valid for &self's lifetime.
         // We convert immediately to an owned String, so the lifetime is irrelevant.
-        let raw = unsafe {
-            versioned_function!(ures_getString)(self.rep, &mut len, &mut status)
-        };
+        let raw = unsafe { versioned_function!(ures_getString)(self.rep, &mut len, &mut status) };
         common::Error::ok_or_warning(status)?;
         assert!(!raw.is_null());
         // Safety: raw points to exactly `len` UChar (= u16) values.
@@ -341,9 +342,7 @@ impl UResourceBundle {
         let mut len: i32 = 0;
         // Safety: self.rep is valid; the returned pointer is valid for &self.
         // We copy immediately into an owned Vec, so the bundle lifetime is irrelevant.
-        let raw = unsafe {
-            versioned_function!(ures_getBinary)(self.rep, &mut len, &mut status)
-        };
+        let raw = unsafe { versioned_function!(ures_getBinary)(self.rep, &mut len, &mut status) };
         common::Error::ok_or_warning(status)?;
         assert!(!raw.is_null());
         // Safety: raw points to `len` bytes owned by the bundle, valid for &self.
@@ -361,9 +360,8 @@ impl UResourceBundle {
         let mut len: i32 = 0;
         // Safety: self.rep is valid; the returned pointer is valid for &self.
         // We copy immediately into an owned Vec, so the bundle lifetime is irrelevant.
-        let raw = unsafe {
-            versioned_function!(ures_getIntVector)(self.rep, &mut len, &mut status)
-        };
+        let raw =
+            unsafe { versioned_function!(ures_getIntVector)(self.rep, &mut len, &mut status) };
         common::Error::ok_or_warning(status)?;
         assert!(!raw.is_null());
         // Safety: raw points to `len` i32 values owned by the bundle, valid for &self.
@@ -382,9 +380,7 @@ impl UResourceBundle {
     pub fn get_int(&self) -> Result<i32, common::Error> {
         let mut status = common::Error::OK_CODE;
         // Safety: self.rep is valid.
-        let val = unsafe {
-            versioned_function!(ures_getInt)(self.rep, &mut status)
-        };
+        let val = unsafe { versioned_function!(ures_getInt)(self.rep, &mut status) };
         common::Error::ok_or_warning(status)?;
         Ok(val)
     }
@@ -401,9 +397,7 @@ impl UResourceBundle {
     pub fn get_uint(&self) -> Result<u32, common::Error> {
         let mut status = common::Error::OK_CODE;
         // Safety: self.rep is valid.
-        let val = unsafe {
-            versioned_function!(ures_getUInt)(self.rep, &mut status)
-        };
+        let val = unsafe { versioned_function!(ures_getUInt)(self.rep, &mut status) };
         common::Error::ok_or_warning(status)?;
         Ok(val)
     }
@@ -580,12 +574,7 @@ impl UResourceBundle {
         // Safety: self.rep is a valid *mut UResourceBundle; key_ptr and len
         // are output parameters initialised above.
         let raw = unsafe {
-            versioned_function!(ures_getNextString)(
-                self.rep,
-                &mut len,
-                &mut key_ptr,
-                &mut status,
-            )
+            versioned_function!(ures_getNextString)(self.rep, &mut len, &mut key_ptr, &mut status)
         };
         if raw.is_null() {
             // ICU signals end-of-iteration with NULL + U_INDEX_OUTOFBOUNDS_ERROR.
@@ -611,7 +600,7 @@ impl UResourceBundle {
         // of the iterator.
         let slice = unsafe { std::slice::from_raw_parts(raw, len as usize) };
         let string = match String::from_utf16(slice) {
-            Ok(s)  => s,
+            Ok(s) => s,
             Err(e) => return Some(Err(common::Error::Wrapper(anyhow!(e)))),
         };
         // Safety: if non-null, key_ptr is a null-terminated ASCII string
@@ -665,7 +654,7 @@ pub fn open_available_locales(package: Option<&str>) -> Result<Enumeration, comm
     let mut status = common::Error::OK_CODE;
     let c_package = match package {
         Some(p) => Some(ffi::CString::new(p)?),
-        None    => None,
+        None => None,
     };
     // Safety: pointer is valid for the duration of the call; the returned
     // *mut UEnumeration is transferred to the Enumeration wrapper.
@@ -685,11 +674,27 @@ pub fn open_available_locales(package: Option<&str>) -> Result<Enumeration, comm
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::{sync::{Arc, Mutex}, thread};
+    use std::{
+        sync::{Arc, Mutex},
+        thread,
+    };
 
     /// Path to the directory containing the compiled test `.res` files.
     /// Set at compile time by build.rs via `cargo:rustc-env=TEST_DATA_DIR`.
-    const TEST_PKG: &str = env!("TEST_DATA_DIR");
+
+    fn test_pkg() -> String {
+        let pkg = env!("TEST_DATA_DIR");
+        if std::path::Path::new(pkg).is_absolute() {
+            pkg.to_string()
+        } else {
+            std::env::current_dir()
+                .unwrap()
+                .join(pkg)
+                .to_str()
+                .unwrap()
+                .to_string()
+        }
+    }
 
     #[test]
     fn open_builtin_root_is_table() {
@@ -700,108 +705,117 @@ mod tests {
 
     #[test]
     fn open_test_bundle_root_locale() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         assert_eq!(bundle.resource_type(), ResourceType::Table);
     }
 
     #[test]
     fn open_test_bundle_fr_locale() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "fr").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "fr").unwrap();
         assert_eq!(bundle.resource_type(), ResourceType::Table);
     }
 
     #[test]
     fn open_direct_fr_succeeds() {
         // try_new_direct on an existing locale must succeed.
-        let bundle = UResourceBundle::try_new_direct(Some(TEST_PKG), "fr").unwrap();
+        let bundle = UResourceBundle::try_new_direct(Some(test_pkg().as_str()), "fr").unwrap();
         assert_eq!(bundle.resource_type(), ResourceType::Table);
     }
 
     #[test]
     fn open_direct_missing_locale_returns_error() {
         // "de" does not exist in the test data; try_new_direct must return an error.
-        let err = UResourceBundle::try_new_direct(Some(TEST_PKG), "de").unwrap_err();
+        let err = UResourceBundle::try_new_direct(Some(test_pkg().as_str()), "de").unwrap_err();
         assert!(err.is_code(sys::UErrorCode::U_MISSING_RESOURCE_ERROR));
     }
 
-
     #[test]
     fn get_locale_by_type_valid_locale() {
-        let root = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let root = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         assert_eq!(
-            root.get_locale_by_type(sys::ULocDataLocaleType::ULOC_VALID_LOCALE).unwrap(),
+            root.get_locale_by_type(sys::ULocDataLocaleType::ULOC_VALID_LOCALE)
+                .unwrap(),
             "root"
         );
-        let fr = UResourceBundle::try_new(Some(TEST_PKG), "fr").unwrap();
+        let fr = UResourceBundle::try_new(Some(test_pkg().as_str()), "fr").unwrap();
         assert_eq!(
-            fr.get_locale_by_type(sys::ULocDataLocaleType::ULOC_VALID_LOCALE).unwrap(),
+            fr.get_locale_by_type(sys::ULocDataLocaleType::ULOC_VALID_LOCALE)
+                .unwrap(),
             "fr"
         );
     }
 
     #[test]
     fn locale_root() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         assert_eq!(
-            bundle.get_locale_by_type(sys::ULocDataLocaleType::ULOC_ACTUAL_LOCALE).unwrap(),
+            bundle
+                .get_locale_by_type(sys::ULocDataLocaleType::ULOC_ACTUAL_LOCALE)
+                .unwrap(),
             "root"
         );
     }
 
     #[test]
     fn locale_fr() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "fr").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "fr").unwrap();
         assert_eq!(
-            bundle.get_locale_by_type(sys::ULocDataLocaleType::ULOC_ACTUAL_LOCALE).unwrap(),
+            bundle
+                .get_locale_by_type(sys::ULocDataLocaleType::ULOC_ACTUAL_LOCALE)
+                .unwrap(),
             "fr"
         );
     }
 
-
     #[test]
     fn top_level_bundle_key_is_none() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         assert_eq!(bundle.key(), None);
     }
 
     #[test]
     fn table_item_key_and_type() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let greeting = bundle.get_by_key("greeting").unwrap();
         assert_eq!(greeting.key(), Some("greeting".to_string()));
         assert_eq!(greeting.resource_type(), ResourceType::String);
     }
 
-
     #[test]
     fn get_string_root_greeting() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
-        assert_eq!(bundle.get_by_key("greeting").unwrap().get_string().unwrap(), "Hello");
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
+        assert_eq!(
+            bundle.get_by_key("greeting").unwrap().get_string().unwrap(),
+            "Hello"
+        );
     }
 
     #[test]
     fn get_string_fr_greeting() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "fr").unwrap();
-        assert_eq!(bundle.get_by_key("greeting").unwrap().get_string().unwrap(), "Bonjour");
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "fr").unwrap();
+        assert_eq!(
+            bundle.get_by_key("greeting").unwrap().get_string().unwrap(),
+            "Bonjour"
+        );
     }
 
     #[test]
     fn get_string_by_key_root() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         assert_eq!(bundle.get_string_by_key("greeting").unwrap(), "Hello");
         assert_eq!(bundle.get_string_by_key("farewell").unwrap(), "Goodbye");
     }
 
     #[test]
     fn get_string_by_key_fr() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "fr").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "fr").unwrap();
         assert_eq!(bundle.get_string_by_key("greeting").unwrap(), "Bonjour");
         assert_eq!(bundle.get_string_by_key("farewell").unwrap(), "Au revoir");
     }
 
     #[test]
     fn get_string_by_key_missing_returns_error() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let err = bundle.get_string_by_key("no_such_key").unwrap_err();
         assert!(err.is_code(sys::UErrorCode::U_MISSING_RESOURCE_ERROR));
     }
@@ -809,15 +823,14 @@ mod tests {
     #[test]
     fn fr_bundle_falls_back_to_root_for_missing_keys() {
         // "fr" bundle does not define "count"; it must fall back to "root".
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "fr").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "fr").unwrap();
         let count = bundle.get_by_key("count").unwrap();
         assert_eq!(count.get_int().unwrap(), 42);
     }
 
-
     #[test]
     fn get_int() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let count = bundle.get_by_key("count").unwrap();
         assert_eq!(count.resource_type(), ResourceType::Int);
         assert_eq!(count.get_int().unwrap(), 42);
@@ -825,15 +838,14 @@ mod tests {
 
     #[test]
     fn get_uint() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let count = bundle.get_by_key("count").unwrap();
         assert_eq!(count.get_uint().unwrap(), 42u32);
     }
 
-
     #[test]
     fn get_int_vector() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let weights = bundle.get_by_key("weights").unwrap();
         assert_eq!(weights.resource_type(), ResourceType::IntVector);
         assert_eq!(weights.get_int_vector().unwrap(), &[10_i32, 20, 30]);
@@ -841,32 +853,31 @@ mod tests {
 
     #[test]
     fn get_binary() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let data = bundle.get_by_key("data").unwrap();
         assert_eq!(data.resource_type(), ResourceType::Binary);
         assert_eq!(data.get_binary().unwrap(), &[0x01_u8, 0x02, 0x03]);
     }
 
-
     #[test]
     fn resource_type_alias() {
         // get_by_key follows aliases transparently: the returned resource has
         // the type of the aliased target, not ResourceType::Alias.
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let alias = bundle.get_by_key("greeting_alias").unwrap();
         assert_eq!(alias.resource_type(), ResourceType::String);
     }
 
     #[test]
     fn resource_type_array() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let phrases = bundle.get_by_key("phrases").unwrap();
         assert_eq!(phrases.resource_type(), ResourceType::Array);
     }
 
     #[test]
     fn array_item_key_is_none() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let mut phrases = bundle.get_by_key("phrases").unwrap();
         while let Some(item) = phrases.next_resource() {
             assert_eq!(item.unwrap().key(), None, "array items must not have keys");
@@ -875,7 +886,7 @@ mod tests {
 
     #[test]
     fn get_string_by_index_on_array() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let phrases = bundle.get_by_key("phrases").unwrap();
         assert_eq!(phrases.get_string_by_index(0).unwrap(), "one");
         assert_eq!(phrases.get_string_by_index(1).unwrap(), "two");
@@ -884,7 +895,7 @@ mod tests {
 
     #[test]
     fn get_string_by_index_out_of_range_returns_error() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let phrases = bundle.get_by_key("phrases").unwrap();
         let err = phrases.get_string_by_index(999).unwrap_err();
         assert!(err.is_code(sys::UErrorCode::U_MISSING_RESOURCE_ERROR));
@@ -892,7 +903,7 @@ mod tests {
 
     #[test]
     fn get_by_key_on_non_table_returns_error() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let greeting = bundle.get_by_key("greeting").unwrap();
         let err = greeting.get_by_key("anything").unwrap_err();
         assert!(err.is_code(sys::UErrorCode::U_RESOURCE_TYPE_MISMATCH));
@@ -900,7 +911,7 @@ mod tests {
 
     #[test]
     fn get_string_by_key_on_non_table_returns_error() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let greeting = bundle.get_by_key("greeting").unwrap();
         let err = greeting.get_string_by_key("anything").unwrap_err();
         assert!(err.is_code(sys::UErrorCode::U_RESOURCE_TYPE_MISMATCH));
@@ -911,7 +922,7 @@ mod tests {
         // "mixed" has a string ("label") followed by an int ("number").
         // ICU TABLE entries are stored in sorted key order: "label" < "number",
         // so the second call to next_string() hits the int and must return an error.
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let mut mixed = bundle.get_by_key("mixed").unwrap();
         let first = mixed.next_string().unwrap().unwrap();
         assert_eq!(first.0, "hello");
@@ -922,7 +933,7 @@ mod tests {
 
     #[test]
     fn get_string_type_mismatch_returns_error() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let count = bundle.get_by_key("count").unwrap();
         let err = count.get_string().unwrap_err();
         assert!(err.is_code(sys::UErrorCode::U_RESOURCE_TYPE_MISMATCH));
@@ -930,7 +941,7 @@ mod tests {
 
     #[test]
     fn get_int_type_mismatch_returns_error() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let greeting = bundle.get_by_key("greeting").unwrap();
         let err = greeting.get_int().unwrap_err();
         assert!(err.is_code(sys::UErrorCode::U_RESOURCE_TYPE_MISMATCH));
@@ -938,7 +949,7 @@ mod tests {
 
     #[test]
     fn get_uint_type_mismatch_returns_error() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let greeting = bundle.get_by_key("greeting").unwrap();
         let err = greeting.get_uint().unwrap_err();
         assert!(err.is_code(sys::UErrorCode::U_RESOURCE_TYPE_MISMATCH));
@@ -946,7 +957,7 @@ mod tests {
 
     #[test]
     fn get_int_vector_type_mismatch_returns_error() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let greeting = bundle.get_by_key("greeting").unwrap();
         let err = greeting.get_int_vector().unwrap_err();
         assert!(err.is_code(sys::UErrorCode::U_RESOURCE_TYPE_MISMATCH));
@@ -954,7 +965,7 @@ mod tests {
 
     #[test]
     fn get_binary_type_mismatch_returns_error() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let greeting = bundle.get_by_key("greeting").unwrap();
         let err = greeting.get_binary().unwrap_err();
         assert!(err.is_code(sys::UErrorCode::U_RESOURCE_TYPE_MISMATCH));
@@ -962,14 +973,14 @@ mod tests {
 
     #[test]
     fn get_string_alias_to_string_succeeds() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let alias = bundle.get_by_key("greeting_alias").unwrap();
         assert_eq!(alias.get_string().unwrap(), "Hello");
     }
 
     #[test]
     fn get_string_alias_to_non_string_returns_error() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let alias = bundle.get_by_key("count_alias").unwrap();
         let err = alias.get_string().unwrap_err();
         assert!(err.is_code(sys::UErrorCode::U_RESOURCE_TYPE_MISMATCH));
@@ -977,7 +988,7 @@ mod tests {
 
     #[test]
     fn get_nested_table_root() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let errors = bundle.get_by_key("errors").unwrap();
         assert_eq!(errors.resource_type(), ResourceType::Table);
         assert_eq!(errors.get_string_by_key("not_found").unwrap(), "Not found");
@@ -986,16 +997,18 @@ mod tests {
 
     #[test]
     fn get_nested_table_fr() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "fr").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "fr").unwrap();
         let errors = bundle.get_by_key("errors").unwrap();
-        assert_eq!(errors.get_string_by_key("not_found").unwrap(), "Introuvable");
+        assert_eq!(
+            errors.get_string_by_key("not_found").unwrap(),
+            "Introuvable"
+        );
         assert_eq!(errors.get_string_by_key("forbidden").unwrap(), "Interdit");
     }
 
-
     #[test]
     fn get_by_index_and_string_by_index() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let errors = bundle.get_by_key("errors").unwrap();
         // TABLE items are accessible by index.
         assert!(errors.get_by_index(0).is_ok());
@@ -1005,31 +1018,33 @@ mod tests {
 
     #[test]
     fn get_by_index_out_of_range_returns_error() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let errors = bundle.get_by_key("errors").unwrap();
         let err = errors.get_by_index(999).unwrap_err();
         assert!(err.is_code(sys::UErrorCode::U_MISSING_RESOURCE_ERROR));
     }
 
-
     #[test]
     fn len_on_root_bundle() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         // root has greeting, farewell, count, weights, errors → at least 5.
-        assert!(bundle.len() >= 5, "expected ≥ 5 items, got {}", bundle.len());
+        assert!(
+            bundle.len() >= 5,
+            "expected ≥ 5 items, got {}",
+            bundle.len()
+        );
     }
 
     #[test]
     fn len_on_scalar_is_one() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let greeting = bundle.get_by_key("greeting").unwrap();
         assert_eq!(greeting.len(), 1);
     }
 
-
     #[test]
     fn iterate_table_yields_all_items() {
-        let mut bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let mut bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let expected = bundle.len();
         let mut count = 0;
         while let Some(item) = bundle.next_resource() {
@@ -1041,7 +1056,7 @@ mod tests {
 
     #[test]
     fn reset_iterator_and_iterate_twice() {
-        let mut bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let mut bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let keys_pass1 = collect_keys(&mut bundle);
         bundle.reset_iterator();
         let keys_pass2 = collect_keys(&mut bundle);
@@ -1060,18 +1075,21 @@ mod tests {
 
     #[test]
     fn has_next_reflects_iteration_state() {
-        let mut bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let mut bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         assert!(bundle.has_next(), "fresh bundle should have items");
         // Exhaust the iterator.
         while bundle.next_resource().is_some() {}
-        assert!(!bundle.has_next(), "exhausted iterator should report no next");
+        assert!(
+            !bundle.has_next(),
+            "exhausted iterator should report no next"
+        );
         bundle.reset_iterator();
         assert!(bundle.has_next(), "reset iterator should have items again");
     }
 
     #[test]
     fn next_string_yields_table_strings_with_keys() {
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
         let mut errors = bundle.get_by_key("errors").unwrap();
         let mut pairs: Vec<(String, Option<String>)> = vec![];
         while let Some(result) = errors.next_string() {
@@ -1087,19 +1105,21 @@ mod tests {
         assert!(keys.contains(&"forbidden"));
     }
 
-
     #[test]
     fn open_available_locales_from_builtin_is_nonempty() {
         let locales: Vec<String> = open_available_locales(None)
             .unwrap()
             .map(|r| r.unwrap())
             .collect();
-        assert!(!locales.is_empty(), "expected at least one available ICU locale");
+        assert!(
+            !locales.is_empty(),
+            "expected at least one available ICU locale"
+        );
     }
 
     #[test]
     fn open_available_locales_from_test_package() {
-        let mut locales: Vec<String> = open_available_locales(Some(TEST_PKG))
+        let mut locales: Vec<String> = open_available_locales(Some(test_pkg().as_str()))
             .unwrap()
             .map(|r| r.unwrap())
             .collect();
@@ -1107,14 +1127,11 @@ mod tests {
         assert_eq!(locales, &["fr", "root"]);
     }
 
-
     #[test]
     fn resource_bundle_is_send() {
         // A bundle may be moved to another thread and used there.
-        let bundle = UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap();
-        let handle = thread::spawn(move || {
-            bundle.get_string_by_key("greeting").unwrap()
-        });
+        let bundle = UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap();
+        let handle = thread::spawn(move || bundle.get_string_by_key("greeting").unwrap());
         assert_eq!(handle.join().unwrap(), "Hello");
     }
 
@@ -1123,13 +1140,21 @@ mod tests {
         // Although UResourceBundle is !Sync, wrapping it in Mutex makes it
         // usable from multiple threads safely.
         let shared = Arc::new(Mutex::new(
-            UResourceBundle::try_new(Some(TEST_PKG), "root").unwrap(),
+            UResourceBundle::try_new(Some(test_pkg().as_str()), "root").unwrap(),
         ));
         let shared2 = Arc::clone(&shared);
         let handle = thread::spawn(move || {
-            shared2.lock().unwrap().get_string_by_key("greeting").unwrap()
+            shared2
+                .lock()
+                .unwrap()
+                .get_string_by_key("greeting")
+                .unwrap()
         });
-        let from_main = shared.lock().unwrap().get_string_by_key("farewell").unwrap();
+        let from_main = shared
+            .lock()
+            .unwrap()
+            .get_string_by_key("farewell")
+            .unwrap();
         let from_thread = handle.join().unwrap();
         assert_eq!(from_main, "Goodbye");
         assert_eq!(from_thread, "Hello");
