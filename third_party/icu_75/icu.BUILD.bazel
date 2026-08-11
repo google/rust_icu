@@ -37,7 +37,7 @@ configure_make(
     out_data_dirs = [
         "share",
     ],
-    targets = ["-j", "install"],
+    targets = ["install"],
     visibility = ["//visibility:public"],
 )
 
