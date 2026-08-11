@@ -1,0 +1,51 @@
+load("@rules_foreign_cc//foreign_cc:configure.bzl", "configure_make")
+
+licenses(["notice"])
+
+filegroup(
+    name = "all",
+    srcs = glob(["icu4c/**"]),
+)
+
+_CFLAGS = "-fPIC"
+_CXXFLAGS = _CFLAGS
+
+configure_make(
+    name = "icu",
+    configure_command = "icu4c/source/configure",
+    env = {
+        "CXXFLAGS": _CXXFLAGS,
+        "CFLAGS": _CFLAGS,
+    },
+    configure_options = [
+        "--enable-static",
+        "--with-data-packaging=archive",
+    ],
+    lib_source = "//:all",
+    out_static_libs = [
+        "libicui18n.a",
+        "libicuio.a",
+        "libicuuc.a",
+        "libicudata.a",
+    ],
+    out_shared_libs = [
+        "libicui18n.so",
+        "libicuio.so",
+        "libicuuc.so",
+        "libicudata.so",
+    ],
+    out_data_dirs = [
+        "share",
+    ],
+    targets = ["-j", "install"],
+    visibility = ["//visibility:public"],
+)
+
+exports_files(["icu4c/LICENSE"])
+
+filegroup(
+    name = "icudtl",
+    output_group = "gen_dir",
+    srcs = ["share/icu/76.1/icudt76l.dat"],
+    visibility = ["//visibility:public"],
+)
