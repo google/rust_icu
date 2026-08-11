@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - bazel-core-infrastructure
-      - bazel-icu-compilation
   pull_request:
     branches:
       - main
@@ -30,12 +28,12 @@ jobs:
           repository-cache: true
 
       - name: Build all targets
-        run: bazel build //...
+        run: bazel build --local_cpu_resources=2 --local_ram_resources=3072 --jobs=2 //...
 
       - name: Test all targets (ignoring NO_TESTS_FOUND code 4)
         run: |
           set +e
-          bazel test //...
+          bazel test --local_cpu_resources=2 --local_ram_resources=3072 --jobs=2 //...
           EXIT_CODE=$?
           if [ $EXIT_CODE -eq 4 ]; then
             echo "No tests found. Moving on."
