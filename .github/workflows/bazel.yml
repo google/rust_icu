@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - main
+      - bazel-core-infrastructure
+      - bazel-icu-compilation
   pull_request:
     branches:
       - main
+      - bazel-core-infrastructure
+      - bazel-icu-compilation
       - bazel-migration
       - bazel-rust-icu-sys
       - bazel-other-crates
