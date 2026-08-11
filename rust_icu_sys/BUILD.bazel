@@ -13,6 +13,9 @@ cargo_build_script(
     rustc_env = {
         "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
     },
+    build_script_env = {
+        "BAZEL": "1",
+    },
 )
 
 rust_library(
