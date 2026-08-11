@@ -1,0 +1,41 @@
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+load("@rules_rust//cargo:defs.bzl", "cargo_build_script")
+
+cargo_build_script(
+    name = "build_script",
+    srcs = ["build.rs"],
+    crate_features = ["renaming", "static", "icu_version_in_env"],
+    deps = [
+        "@crates//:anyhow",
+        "@crates//:lazy_static",
+        "//rust_icu_release:rust_icu_release",
+    ],
+    rustc_env = {
+        "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
+    },
+)
+
+rust_library(
+    name = "rust_icu_sys",
+    srcs = glob(["src/**/*.rs", "tests/**/*.rs", "bindgen/**/*.rs"]),
+    proc_macro_deps = ["@crates//:paste"],
+    crate_features = ["renaming", "static", "icu_version_in_env"],
+    rustc_env = {
+        "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
+    },
+    deps = [
+        "@crates//:libc",
+        ":build_script",
+    ],
+    link_deps = ["@icu_74//:icu"],
+    visibility = ["//visibility:public"],
+)
+
+rust_test(
+    name = "rust_icu_sys_test",
+    crate = ":rust_icu_sys",
+    crate_features = ["renaming", "static", "icu_version_in_env"],
+    rustc_env = {
+        "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
+    },
+)
