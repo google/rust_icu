@@ -1,0 +1,26 @@
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+
+rust_library(
+    name = "ecma402_traits",
+    srcs = glob(["src/**/*.rs"]),
+    edition = "2021",
+    crate_features = ["renaming", "static", "icu_version_in_env"],
+    rustc_env = {
+        "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
+    },
+    deps = [
+        
+    ],
+    visibility = ["//visibility:public"],
+)
+
+rust_test(
+
+    name = "ecma402_traits_test",
+    crate = ":ecma402_traits",
+    crate_features = ["renaming", "static", "icu_version_in_env"],
+    rustc_env = {
+        "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
+    },
+    deps = [],
+)
