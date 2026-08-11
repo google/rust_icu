@@ -1,0 +1,41 @@
+name: Bazel Presubmit
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      - bazel-migration
+      - bazel-rust-icu-sys
+      - bazel-other-crates
+      - bazel-docs
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.19.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+
+      - name: Build all targets
+        run: bazel build //...
+
+      - name: Test all targets (ignoring NO_TESTS_FOUND code 4)
+        run: |
+          set +e
+          bazel test //...
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -eq 4 ]; then
+            echo "No tests found. Moving on."
+            exit 0
+          elif [ $EXIT_CODE -ne 0 ]; then
+            exit $EXIT_CODE
+          fi
