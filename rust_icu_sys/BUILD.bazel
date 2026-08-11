@@ -1,3 +1,4 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
 load("@rules_rust//cargo:defs.bzl", "cargo_build_script")
 
@@ -30,7 +31,7 @@ rust_library(
         "@crates//:libc",
         ":build_script",
     ],
-    link_deps = ["@icu_74//:icu"],
+    link_deps = ["@icu_74//:icu", ":icudata_alwayslink"],
     visibility = ["//visibility:public"],
 )
 
@@ -41,4 +42,16 @@ rust_test(
     rustc_env = {
         "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
     },
+)
+
+filegroup(
+    name = "libicudata_file",
+    srcs = ["@icu_74//:icu"],
+    output_group = "libicudata.a",
+)
+
+cc_library(
+    name = "icudata_alwayslink",
+    srcs = [":libicudata_file"],
+    alwayslink = True,
 )

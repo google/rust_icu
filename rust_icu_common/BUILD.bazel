@@ -1,0 +1,26 @@
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+
+rust_library(
+    name = "rust_icu_common",
+    srcs = glob(["src/**/*.rs", "tests/**/*.rs"]),
+    edition = "2021",
+    crate_features = ["renaming", "static", "icu_version_in_env"],
+    rustc_env = {
+        "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
+    },
+    deps = [
+        "@crates//:anyhow", "@crates//:thiserror", "//rust_icu_sys:rust_icu_sys"
+    ],
+    visibility = ["//visibility:public"],
+)
+
+rust_test(
+
+    name = "rust_icu_common_test",
+    crate = ":rust_icu_common",
+    crate_features = ["renaming", "static", "icu_version_in_env"],
+    rustc_env = {
+        "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
+    },
+    deps = [],
+)
