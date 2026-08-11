@@ -12,7 +12,7 @@ _CXXFLAGS = _CFLAGS
 
 configure_make(
     name = "icu",
-    configure_command = "icu4c/source/configure",
+    out_source_dir = "icu4c/source",
     env = {
         "CXXFLAGS": _CXXFLAGS,
         "CFLAGS": _CFLAGS,
