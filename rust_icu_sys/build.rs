@@ -457,4 +457,11 @@ fn main() {
     if let Ok(lib_dir) = std::env::var("RUST_ICU_LINK_SEARCH_DIR") {
         println!("cargo:rustc-link-search=native={}", lib_dir);
     }
+    
+    // When compiling under Bazel (or when ICU is packaged into the Bazel deps), 
+    // Bazel's rust_library handles static linking through its cc_library targets.
+    // If we're using raw Cargo via crates.io, we need to instruct cargo to link the libraries.
+    if std::env::var("BAZEL").is_err() {
+        rustc_link_libs();
+    }
 }
