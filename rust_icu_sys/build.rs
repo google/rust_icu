@@ -372,6 +372,8 @@ macro_rules! versioned_function {
         }
         if env::var_os("CARGO_FEATURE_ICU_VERSION_IN_ENV").is_some() {
             println!("cargo:rustc-cfg=feature=\"icu_version_in_env\"");
+            // Bazel sets this environment variable. We can skip checking pkg-config.
+            return Ok(());
         }
         let icu_major_version = ICUConfig::version_major_int()?;
         println!("icu-version-major: {}", icu_major_version);
@@ -455,5 +457,4 @@ fn main() {
     if let Ok(lib_dir) = std::env::var("RUST_ICU_LINK_SEARCH_DIR") {
         println!("cargo:rustc-link-search=native={}", lib_dir);
     }
-    rustc_link_libs();
 }
