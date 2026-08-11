@@ -30,14 +30,5 @@ jobs:
       - name: Build all targets
         run: bazel build --jobs=1 //...
 
-      - name: Test all targets (ignoring NO_TESTS_FOUND code 4)
-        run: |
-          set +e
-          bazel test --jobs=1 //...
-          EXIT_CODE=$?
-          if [ $EXIT_CODE -eq 4 ]; then
-            echo "No tests found. Moving on."
-            exit 0
-          elif [ $EXIT_CODE -ne 0 ]; then
-            exit $EXIT_CODE
-          fi
+      - name: Test all targets
+        run: bazel test --local_cpu_resources=2 --local_ram_resources=3072 --jobs=2 //...
