@@ -28,3 +28,11 @@ register_toolchains("@rust_toolchains//:all")
 
 icu_ext = use_extension("//bazel:icu_deps.bzl", "icu_deps")
 use_repo(icu_ext, "icu_74", "icu_75", "icu_76", "icu_77")
+
+crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
+crate.from_cargo(
+    name = "crates",
+    cargo_lockfile = "//:Cargo.lock",
+    manifests = ["//:Cargo.toml"],
+)
+use_repo(crate, "crates")
