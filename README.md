@@ -345,6 +345,21 @@ These are the assumptions made in the making of this library:
 
 # Additional instructions
 
+
+## Building with Bazel
+
+`rust_icu` is configured to be built with [Bazel](https://bazel.build/) (since Bazel 6+, using bzlmod). The Bazel build integrates both foreign-C++ compilation of ICU and Rust library layers, natively resolving and statically linking ICU data without requiring pre-installed system ICU packages.
+
+To build and test all crates with Bazel:
+
+```bash
+git clone https://github.com/google/rust_icu
+cd rust_icu
+bazel test //...
+```
+
+The Bazel build seamlessly executes exactly the same CI tests as Cargo, managing `--with-data-packaging=static` internals for strict deterministic artifact generation.
+
 ## Quickstart guide
 
 Before you begin, please ensure the following prerequisites are met:
