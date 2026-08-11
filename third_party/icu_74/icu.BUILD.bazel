@@ -19,7 +19,7 @@ configure_make(
     configure_command = "source/configure",
     configure_options = [
         "--enable-static",
-        "--with-data-packaging=archive",
+        "--with-data-packaging=static",
     ],
     lib_source = "//:all",
     out_static_libs = [
