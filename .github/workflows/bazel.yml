@@ -28,12 +28,12 @@ jobs:
           repository-cache: true
 
       - name: Build all targets
-        run: bazel build --local_cpu_resources=2 --local_ram_resources=3072 --jobs=2 //...
+        run: bazel build --local_resources=cpu=2 --local_resources=memory=3072 //...
 
       - name: Test all targets (ignoring NO_TESTS_FOUND code 4)
         run: |
           set +e
-          bazel test --local_cpu_resources=2 --local_ram_resources=3072 --jobs=2 //...
+          bazel test --local_resources=cpu=2 --local_resources=memory=3072 //...
           EXIT_CODE=$?
           if [ $EXIT_CODE -eq 4 ]; then
             echo "No tests found. Moving on."
