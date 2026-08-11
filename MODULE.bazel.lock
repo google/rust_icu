@@ -226,6 +226,73 @@
   },
   "selectedYankedVersions": {},
   "moduleExtensions": {
+    "//bazel:icu_deps.bzl%icu_deps": {
+      "general": {
+        "bzlTransitiveDigest": "ODTI8N6JKSu+dH+zLns8r3DEnP320mM6BaNUTAahTTk=",
+        "usagesDigest": "vgWhsY7ibmINYcvCRQjFaNPGkFs1nN225ov+HI4KfCo=",
+        "recordedInputs": [
+          "REPO_MAPPING:,bazel_tools bazel_tools"
+        ],
+        "generatedRepoSpecs": {
+          "icu_74": {
+            "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
+            "attributes": {
+              "build_file": "@@//third_party/icu_74:icu.BUILD.bazel",
+              "strip_prefix": "icu-release-74-2",
+              "urls": [
+                "https://github.com/unicode-org/icu/archive/refs/tags/release-74-2.tar.gz"
+              ],
+              "patch_cmds": [
+                "find icu4c -name BUILD.bazel -delete",
+                "find icu4c -name BUILD -delete"
+              ]
+            }
+          },
+          "icu_75": {
+            "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
+            "attributes": {
+              "build_file": "@@//third_party/icu_75:icu.BUILD.bazel",
+              "strip_prefix": "icu-release-75-1",
+              "urls": [
+                "https://github.com/unicode-org/icu/archive/refs/tags/release-75-1.tar.gz"
+              ],
+              "patch_cmds": [
+                "find icu4c -name BUILD.bazel -delete",
+                "find icu4c -name BUILD -delete"
+              ]
+            }
+          },
+          "icu_76": {
+            "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
+            "attributes": {
+              "build_file": "@@//third_party/icu_76:icu.BUILD.bazel",
+              "strip_prefix": "icu-release-76-1",
+              "urls": [
+                "https://github.com/unicode-org/icu/archive/refs/tags/release-76-1.tar.gz"
+              ],
+              "patch_cmds": [
+                "find icu4c -name BUILD.bazel -delete",
+                "find icu4c -name BUILD -delete"
+              ]
+            }
+          },
+          "icu_77": {
+            "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
+            "attributes": {
+              "build_file": "@@//third_party/icu_77:icu.BUILD.bazel",
+              "strip_prefix": "icu-release-77-1",
+              "urls": [
+                "https://github.com/unicode-org/icu/archive/refs/tags/release-77-1.tar.gz"
+              ],
+              "patch_cmds": [
+                "find icu4c -name BUILD.bazel -delete",
+                "find icu4c -name BUILD -delete"
+              ]
+            }
+          }
+        }
+      }
+    },
     "@@rules_kotlin+//src/main/starlark/core/repositories:bzlmod_setup.bzl%rules_kotlin_extensions": {
       "general": {
         "bzlTransitiveDigest": "+Kp6j204mBZ3mxlIDDR0gBoP45BZ4jYRhRAcB8sU0qc=",
