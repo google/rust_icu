@@ -4,3 +4,4 @@ target
 *.stamp
 *.bk
 
+bazel-*
