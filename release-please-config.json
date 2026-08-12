@@ -17,7 +17,9 @@
         "rust_icu_common",
         "rust_icu_ecma402",
         "rust_icu_intl",
+        "rust_icu_release",
         "rust_icu_sys",
+        "rust_icu_ubrk",
         "rust_icu_ucal",
         "rust_icu_uchar",
         "rust_icu_ucnv",
@@ -63,9 +65,17 @@
       "release-type": "rust",
       "component": "rust_icu_intl"
     },
+    "rust_icu_release": {
+      "release-type": "rust",
+      "component": "rust_icu_release"
+    },
     "rust_icu_sys": {
       "release-type": "rust",
       "component": "rust_icu_sys"
+    },
+    "rust_icu_ubrk": {
+      "release-type": "rust",
+      "component": "rust_icu_ubrk"
     },
     "rust_icu_ucal": {
       "release-type": "rust",
