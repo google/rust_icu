@@ -62,7 +62,8 @@
 //!     )?;
 //!
 //!     let fmt = umsg::UMessageFormat::try_from(&msg, &loc)?;
-//!     let hello = ustring::UChar::try_from("Hello! Добар дан!")?;
+//!     let mut hello = ustring::UChar::try_from("Hello! Добар дан!")?;
+//!     hello.make_z();
 //!     let result = umsg::message_format!(
 //!       fmt,
 //!       { 43.4 => Double },
@@ -347,7 +348,8 @@ impl UMessageFormat {
 ///   )?;
 ///
 ///   let fmt = umsg::UMessageFormat::try_from(&msg, &loc)?;
-///   let hello = ustring::UChar::try_from("Hello! Добар дан!")?;
+///   let mut hello = ustring::UChar::try_from("Hello! Добар дан!")?;
+///   hello.make_z();
 ///   let result = umsg::message_format!(
 ///     fmt,
 ///     { 43.4 => Double },
@@ -599,7 +601,8 @@ mod tests {
         )?;
 
         let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
-        let hello = ustring::UChar::try_from("Hello! Добар дан!")?;
+        let mut hello = ustring::UChar::try_from("Hello! Добар дан!")?;
+        hello.make_z();
         let value: i32 = 31337;
         let result = message_format!(
             fmt,
@@ -670,7 +673,8 @@ mod tests {
         )?;
 
         let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
-        let hello = ustring::UChar::try_from("Hello! Добар дан!")?;
+        let mut hello = ustring::UChar::try_from("Hello! Добар дан!")?;
+        hello.make_z();
         let value: i32 = 31337;
         // SAFETY: the four tuple elements match the count and types referenced by the pattern.
         let result = unsafe { fmt.try_format((43.4_f64, value, hello, 0.0_f64)) }?;
@@ -759,7 +763,8 @@ mod tests {
         let msg = ustring::UChar::try_from(r"String : {1}")?;
 
         let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
-        let string = ustring::UChar::try_from("Hello!")?;
+        let mut string = ustring::UChar::try_from("Hello!")?;
+        string.make_z();
         // Only one argument is supplied, so ICU reads argument 1 past the end of the varargs. Note
         // this is reachable from entirely safe code -- `message_format!` requires no `unsafe` block.
         let result = message_format!(fmt, { string => String })?;
