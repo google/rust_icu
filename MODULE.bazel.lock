@@ -229,7 +229,7 @@
   "moduleExtensions": {
     "//bazel:icu_deps.bzl%icu_deps": {
       "general": {
-        "bzlTransitiveDigest": "ODTI8N6JKSu+dH+zLns8r3DEnP320mM6BaNUTAahTTk=",
+        "bzlTransitiveDigest": "cH0O6Zh+XxbbqJJd4/jUMp1kaIrKx5AsaeL6PEt+HCk=",
         "usagesDigest": "vgWhsY7ibmINYcvCRQjFaNPGkFs1nN225ov+HI4KfCo=",
         "recordedInputs": [
           "REPO_MAPPING:,bazel_tools bazel_tools"
@@ -285,6 +285,20 @@
               "urls": [
                 "https://github.com/unicode-org/icu/archive/refs/tags/release-77-1.tar.gz"
               ],
+              "patch_cmds": [
+                "find icu4c -name BUILD.bazel -delete",
+                "find icu4c -name BUILD -delete"
+              ]
+            }
+          },
+          "icu_tot": {
+            "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
+            "attributes": {
+              "urls": [
+                "https://github.com/unicode-org/icu/archive/refs/heads/main.zip"
+              ],
+              "strip_prefix": "icu-main",
+              "build_file": "@@//third_party/icu_tot:icu.BUILD.bazel",
               "patch_cmds": [
                 "find icu4c -name BUILD.bazel -delete",
                 "find icu4c -name BUILD -delete"
@@ -575,7 +589,7 @@
           "REPO_MAPPING:rules_rust+,bazel_tools bazel_tools",
           "REPO_MAPPING:rules_rust+,rules_cc rules_cc+",
           "FILE:@@//Cargo.lock 586de61f6db9d239ee18688d5deb9a4014b1147697f4fb53b7c6a4b17147e979",
-          "FILE:@@//Cargo.toml 58250d74f9bbcd05b2a9389f2dc9a734e9caa2dc0cfe94c0f755ec78bb61fb10",
+          "FILE:@@//Cargo.toml 3f010384fff651bf25fc4e225ddf31a1fe95d07459abfc585517402f069fc338",
           "FILE:@@//ecma402_traits/Cargo.toml 7bfc57edd5dd252355c0a131cd268bbc92206038e7fc00bd71a6c4b222b9925c",
           "FILE:@@//rust_icu/Cargo.toml 5b1ca9c79a8c084548364ed402e7ef4c393b7c0a3ea0035f6cfba4160a7e1826",
           "FILE:@@//rust_icu_common/Cargo.toml 80fec08896864b377b1fafd8d2ec08ff17de3aeb93b2ee558bb1b38298403811",
