@@ -15,6 +15,12 @@ on:
       - bazel-docs
       - bazel-auto-publish
 
+# The presubmit reads the repository, builds it and runs the tests. It writes
+# nothing back. Without this block the jobs inherit the default token scope,
+# which zizmor reports as an overly broad permission.
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
