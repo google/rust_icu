@@ -1,0 +1,27 @@
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_test")
+
+rust_binary(
+    name = "hello_world",
+    srcs = ["src/main.rs"],
+    crate_features = [
+        "renaming",
+        "icu_version_in_env",
+        "static",
+    ],
+    rustc_env = {
+        "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
+    },
+    edition = "2018",
+    deps = [
+        "//rust_icu_common",
+        "//rust_icu_uloc",
+        "//rust_icu_umsg",
+        "//rust_icu_ustring",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+rust_test(
+    name = "hello_world_test",
+    crate = ":hello_world",
+)
