@@ -1,0 +1,161 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "include-v-in-tag": false,
+  "include-component-in-tag": false,
+  "separate-pull-requests": false,
+  "plugins": [
+    {
+      "type": "cargo-workspace",
+      "merge": true
+    },
+    {
+      "type": "linked-versions",
+      "groupName": "rust_icu",
+      "components": [
+        "ecma402_traits",
+        "rust_icu",
+        "rust_icu_common",
+        "rust_icu_ecma402",
+        "rust_icu_intl",
+        "rust_icu_release",
+        "rust_icu_sys",
+        "rust_icu_ubrk",
+        "rust_icu_ucal",
+        "rust_icu_uchar",
+        "rust_icu_ucnv",
+        "rust_icu_ucol",
+        "rust_icu_ucsdet",
+        "rust_icu_udat",
+        "rust_icu_udata",
+        "rust_icu_uenum",
+        "rust_icu_uformattable",
+        "rust_icu_ulistformatter",
+        "rust_icu_uloc",
+        "rust_icu_umsg",
+        "rust_icu_unorm2",
+        "rust_icu_unum",
+        "rust_icu_unumberformatter",
+        "rust_icu_upluralrules",
+        "rust_icu_ures",
+        "rust_icu_ustring",
+        "rust_icu_utext",
+        "rust_icu_utrans"
+      ],
+      "merge": true
+    }
+  ],
+  "packages": {
+    "ecma402_traits": {
+      "release-type": "rust",
+      "component": "ecma402_traits"
+    },
+    "rust_icu": {
+      "release-type": "rust",
+      "component": "rust_icu"
+    },
+    "rust_icu_common": {
+      "release-type": "rust",
+      "component": "rust_icu_common"
+    },
+    "rust_icu_ecma402": {
+      "release-type": "rust",
+      "component": "rust_icu_ecma402"
+    },
+    "rust_icu_intl": {
+      "release-type": "rust",
+      "component": "rust_icu_intl"
+    },
+    "rust_icu_release": {
+      "release-type": "rust",
+      "component": "rust_icu_release"
+    },
+    "rust_icu_sys": {
+      "release-type": "rust",
+      "component": "rust_icu_sys"
+    },
+    "rust_icu_ubrk": {
+      "release-type": "rust",
+      "component": "rust_icu_ubrk"
+    },
+    "rust_icu_ucal": {
+      "release-type": "rust",
+      "component": "rust_icu_ucal"
+    },
+    "rust_icu_uchar": {
+      "release-type": "rust",
+      "component": "rust_icu_uchar"
+    },
+    "rust_icu_ucnv": {
+      "release-type": "rust",
+      "component": "rust_icu_ucnv"
+    },
+    "rust_icu_ucol": {
+      "release-type": "rust",
+      "component": "rust_icu_ucol"
+    },
+    "rust_icu_ucsdet": {
+      "release-type": "rust",
+      "component": "rust_icu_ucsdet"
+    },
+    "rust_icu_udat": {
+      "release-type": "rust",
+      "component": "rust_icu_udat"
+    },
+    "rust_icu_udata": {
+      "release-type": "rust",
+      "component": "rust_icu_udata"
+    },
+    "rust_icu_uenum": {
+      "release-type": "rust",
+      "component": "rust_icu_uenum"
+    },
+    "rust_icu_uformattable": {
+      "release-type": "rust",
+      "component": "rust_icu_uformattable"
+    },
+    "rust_icu_ulistformatter": {
+      "release-type": "rust",
+      "component": "rust_icu_ulistformatter"
+    },
+    "rust_icu_uloc": {
+      "release-type": "rust",
+      "component": "rust_icu_uloc"
+    },
+    "rust_icu_umsg": {
+      "release-type": "rust",
+      "component": "rust_icu_umsg"
+    },
+    "rust_icu_unorm2": {
+      "release-type": "rust",
+      "component": "rust_icu_unorm2"
+    },
+    "rust_icu_unum": {
+      "release-type": "rust",
+      "component": "rust_icu_unum"
+    },
+    "rust_icu_unumberformatter": {
+      "release-type": "rust",
+      "component": "rust_icu_unumberformatter"
+    },
+    "rust_icu_upluralrules": {
+      "release-type": "rust",
+      "component": "rust_icu_upluralrules"
+    },
+    "rust_icu_ures": {
+      "release-type": "rust",
+      "component": "rust_icu_ures"
+    },
+    "rust_icu_ustring": {
+      "release-type": "rust",
+      "component": "rust_icu_ustring"
+    },
+    "rust_icu_utext": {
+      "release-type": "rust",
+      "component": "rust_icu_utext"
+    },
+    "rust_icu_utrans": {
+      "release-type": "rust",
+      "component": "rust_icu_utrans"
+    }
+  }
+}
