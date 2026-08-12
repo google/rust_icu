@@ -147,5 +147,249 @@ Feature              | Default? | Description
 `icu_version_in_env` | No       | If set, ICU bindings are made for the ICU version specified in the environment variable `RUST_ICU_MAJOR_VERSION_NUMBER`, which is made available to cargo at build time. See section below for details on how to use this feature. **This feature is only meaningful when `bindgen` feature is NOT used; otherwise it has no effect.**
 `static`             | No       | If set, link ICU libraries statically (and the standard C++ dynamically). You can use `RUST_ICU_LINK_SEARCH_DIR` to add an extra path to the search path if you have a build of ICU in a non-standard directory.
 
+# Prerequisites
 
-> **Note on legacy compilation:** `rust_icu` is currently migrating to native Bazel environments directly! Some legacy Rust compilation features and non-Bazel vestiges (e.g. `icu-config`, manually passing `bindgen` flags to `cargo`) securely exist purely as backward-compatible shims, but will be scheduled for total deprecation and removal once we prove out robust Bazel-powered automated releases natively to `crates.io`.
+## Required
+
+*   `rust_icu` source code
+
+    Clone with `git`:
+
+    ```
+    git clone https://github.com/google/rust_icu.git
+    ```
+
+*   `rustup`
+
+    Install from https://rustup.rs. Used to set toolchain defaults. This will
+    install `cargo` as well.
+
+* Clang
+
+    You must have [Clang](https://clang.llvm.org/) installed to access the right headers.
+
+*   The ICU library development environmnet
+
+    You will need access to the ICU libraries for the `rust_icu` bindings to
+    link against. Download and installation of ICU is out of scope of this
+    document. Please read through the
+    [ICU introduction](https://unicode-org.github.io/icu/userguide/icu/) to learn how to
+    build and install.
+
+    Sometimes, the ICU library will be preinstalled on your system, or you can
+    pull the library in from your package management program. However, this
+    library won't necessarily be the one that you need to link into the program
+    you are developing. In short, it is your responsibility to have a developer
+    version of ICU handy somewhere on your system.
+
+    We have a
+    [quickstart install](https://github.com/google/rust_icu#icu-installation-instructions)
+    that *may* get you well on the way in case your environment happens to be
+    configured very similarly to ours and you want to build ICU from source.
+
+## Optional
+
+*   GNU Make, if you want to use the make-based build and test.
+
+    Installing GNU Make is beyond the scope of this file. Please refer to your
+    OS instructions for installation.
+
+*   `docker`, if you decide to use docker-based build and test.
+
+    Installing `docker` is beyond the scope of this file, please see the
+    [docker installation instructions](https://docs.docker.com/install/) for
+    details. As installing `docker` is intrusive to the host machine, your
+    company may have internal documentation on how to install `docker` properly.
+
+*   `icu-config` utility, if `icu_config` feature is used.
+
+    You need to install the ICU library on your system, such that the binary
+    `icu-config` is somewhere in your `$PATH`. The build script will use it to
+    discover the library settings and generate correct link scripts. If you use
+    the feature but `icu-config` is not found,
+
+*   `bindgen` utility, if `bindgen` feature is used.
+
+    [bindgen user guide](https://rust-lang.github.io/rust-bindgen/command-line-usage.html)
+    for instructions on how to install it.
+
+*   `rustfmt` utility, if `bindgen` feature is used.
+
+    See https://github.com/rust-lang/rustfmt for instructions on how to install.
+
+# Testing
+
+There are a few options to run the test for `rust_icu`.
+
+## Cargo
+
+Building and testing using `cargo` is the canonical way of building and testing
+rust code.
+
+In the case of the `rust_icu` library you may find that your system's default
+ICU development package is ancient, in which case you will need to build your
+own ICU4C library (see below for that). That will make it necessary to pass in
+`PKG_CONFIG_PATH` and `LD_LIBRARY_PATH` environment variables to help the bulid
+code locate and use the library you built, instead of the system default.
+
+The following tests should all build and pass. Note that because the libraries
+needed are in a custom location, we need to set `LD_LIBRARY_PATH` when running
+the tests, as well as `PKG_CONFIG_PATH`.
+
+If you find that you are able to use your system's default ICU installation, you
+can safely omit the two libraries.
+
+```bash
+env PKG_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
+    LD_LIBRARY_PATH="$HOME/local/lib" \
+        bash -c 'cargo test'
+```
+
+If you think that the above approach is too much of a hassle, consider trying
+out the [Docker-based approach](#docker-based).
+
+## GNU Make
+
+If you happen to like the GNU way of doing things, you may appreciate the GNU
+Make approach.
+
+The easiest way is to use GNU Make and run:
+
+```
+make test
+```
+
+You may want to use this method if you are working on `rust_icu`, have your
+development environment all set up and would like a shorthand to run the tests.
+
+## Docker-based
+
+> See [optional dependencies section](#optional) above.
+
+To run a hermetic build and test of the `rust_icu` source code, issue the
+following command:
+
+```bash
+make docker-test
+```
+
+This will run docker-based build and test of the source code on your local
+machine. This is a good way to test that your code works with a specific
+reference version of ICU.
+
+# Prior art
+
+There is plenty of prior art that has been considered:
+
+*   https://github.com/servo/rust-icu
+*   https://github.com/open-i18n/rust-unic
+*   https://github.com/fullcontact/icu-sys
+*   https://github.com/rust-locale
+*   https://github.com/unicode-rs
+
+The current state of things is that I'd like to do a few experiments on my own
+first, then see if the work can be folded into any of the above efforts.
+
+See also:
+
+*   https://github.com/rust-lang/rfcs/issues/797
+*   https://unicode-rs.github.io
+*   https://github.com/i18n-concept/rust-discuss
+
+# Assumptions
+
+There are a few competing approaches for ICU bindings. However, it seems, at
+least based on
+[information available in rust's RFC repos](https://github.com/rust-lang/rfcs/issues/797),
+that the work on ICU support in rust is still ongoing.
+
+These are the assumptions made in the making of this library:
+
+*   We need a complete, reusable and painless ICU low-level library for rust.
+
+    This, for example, means that we must rely on an external ICU library, and
+    not lug the library itself with the binding code. Such modularity allows the
+    end user of the library to use an ICU library of their choice, and
+    incorporate it in their respective systems.
+
+*   No ICU algorithms will be reimplemented as part of the work on this library.
+
+    An ICU reimplementation will likely take thousands of engineer years to
+    complete. For an API that is as subtle and complex as ICU, I think that it
+    is probably a better return on investment to maintain a single central
+    implementation.
+
+    Also, the existence of this library doesn't prevent reimplementation. If
+    someone else wants to try their hand at reimplementing ICU, that's fine too.
+
+*   This library should serve as a low-level basis for a rust implementation.
+
+    A low level ICU API may not be an appropriate seam for the end users. A
+    rust-ful API should be layered on top of these bindings. It will probably be
+    a good idea to subdivide that functionality into crates, to match the
+    expectations of rust developers.
+
+    I'll gladly reuse the logical subdivision already made in some of the above
+    mentioned projects.
+
+*   I'd like to explore ways to combine with existing implementations to build a
+    complete ICU support for rust.
+
+    Hopefully it will be possible to combine the good parts of all the rust
+    bindings available today into a unified rust library. I am always available
+    to discuss options.
+
+    The only reason I started a separate effort instead of contributing to any
+    of the projects listed in the "Prior Art" section is that I wanted to try
+    what a generated library would look like in rust.
+
+
+# Building and Formatting with Bazel
+
+`rust_icu` natively utilizes **Bazel** as its primary compilation engine, ensuring determinism, automated dependencies, and scalable C++ & Rust cross-compilation boundaries.
+
+## Prerequisites
+
+Before compiling the crate tree, you must have the Bazel wrapper, **Bazelisk**, natively installed on your system. Bazelisk automatically provisions and updates the Bazel version matching the workspace requirements.
+
+* **Git**: Needed to clone the workspace.
+* **Bazelisk**: Ensure `bazelisk` is downloaded and available on your system path.
+    * *To install `bazelisk`:* You can find pre-compiled binaries [here via GitHub releases](https://github.com/bazelbuild/bazelisk#installation) or use standard package managers like Homebrew (`brew install bazelisk`) or NPM (`npm install -g @bazel/bazelisk`). 
+
+## Quickstart Guide
+
+The following sequence checks out the repository natively and verifies the compilation environments securely across all core ICU targets:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/google/rust_icu.git
+cd rust_icu
+
+# 2. Compile every active Rust target
+bazel build //...
+
+# 3. Validatively test the cross-compiled C++ C-API links sequentially
+# (Note: RUST_TEST_THREADS=1 natively avoids concurrent multithreaded ICU timezone mutation panics)
+bazel test --test_env=RUST_TEST_THREADS=1 //...
+```
+
+## Matrix Testing (Advanced ICU Targets)
+
+This Bazel workspace is automatically equipped with predefined labels allowing you to efficiently bind tests aggressively against specific ICU release matrices internally!
+
+To execute natively against exact versions of the ICU backend rather than the default bindings, append the `--config` parameter targeting an active module extension:
+
+```bash
+# Cross-compiles test matrix exclusively utilizing ICU 75 backend bindings natively
+bazel test --test_env=RUST_TEST_THREADS=1 //... --config=icu_75
+
+# Validates Top of Tree (ToT) iCloud source bindings mapped directly to ICU upstream main!
+bazel test --test_env=RUST_TEST_THREADS=1 //... --config=icu_tot
+```
+
+Currently active backend mappings are:
+* `icu_74` (Default)
+* `icu_75`
+* `icu_76`
+* `icu_77`
+* `icu_tot` (Bleeding edge directly pulling `main.zip` from iCloud upstream `master` tags)
