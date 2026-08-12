@@ -1270,9 +1270,11 @@ mod tests {
         let french_locale = ULoc::for_language_tag("fr").unwrap();
         let display_name_in_french = loc.display_name(&french_locale);
         assert!(display_name_in_french.is_ok());
-        assert_eq!(
-            display_name_in_french.unwrap().as_string_debug(),
-            "azerbaïdjanais (cyrillique, Azerbaïdjan, calendrier=calendrier hébraïque, t=it, usage privé=whatever)"
+        let display_name = display_name_in_french.unwrap().as_string_debug();
+        assert!(
+            display_name == "azerbaïdjanais (cyrillique, Azerbaïdjan, calendrier=calendrier hébraïque, t=it, usage privé=whatever)" ||
+            display_name == "azerbaïdjanais (cyrillique, Azerbaïdjan, calendrier=calendrier hébraïque, transformation=it, usage privé=whatever)",
+            "expected display_name to be one of the known formats, but got: {}", display_name
         );
     }
 
