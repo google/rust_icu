@@ -51,7 +51,7 @@
 //! # }
 //!
 //! fn testfn() -> Result<(), common::Error> {
-//! #   let _ = TzSave(ucal::get_default_time_zone()?);
+//! #   let _tz = TzSave(ucal::get_default_time_zone()?);
 //! #   ucal::set_default_time_zone("Europe/Amsterdam")?;
 //!     let loc = uloc::ULoc::try_from("en-US-u-tz-uslax")?;
 //!     let msg = ustring::UChar::try_from(
@@ -336,7 +336,7 @@ impl UMessageFormat {
 /// # }
 ///
 /// fn testfn() -> Result<(), common::Error> {
-/// # let _ = TzSave(ucal::get_default_time_zone()?);
+/// # let _tz = TzSave(ucal::get_default_time_zone()?);
 /// # ucal::set_default_time_zone("Europe/Amsterdam")?;
 ///   let loc = uloc::ULoc::try_from("en-US")?;
 ///   let msg = ustring::UChar::try_from(
@@ -419,11 +419,20 @@ pub unsafe fn format_args(
 
     let total_size =
         args.format(fmt.rep.rep, result.as_mut_c_ptr(), CAP as i32, &mut status) as usize;
-    common::Error::ok_or_warning(status)?;
 
-    result.resize(total_size);
-
-    if total_size > CAP {
+    // ICU is inconsistent about an output that does not fit: some paths raise
+    // U_BUFFER_OVERFLOW_ERROR, others truncate silently and return the length
+    // they wanted. Check both, as rust_icu_ulistformatter and
+    // common::buffered_string_method_with_retry do.
+    if status == sys::UErrorCode::U_BUFFER_OVERFLOW_ERROR
+        || (common::Error::is_ok(status) && total_size > CAP)
+    {
+        // The first call only measured the output. Clear the status before
+        // calling again: an ICU entry point does no work when the status it
+        // receives already holds an error, so a retry that reuses a failed
+        // status is a silent no-op.
+        status = common::Error::OK_CODE;
+        result.resize(total_size);
         args.format(
             fmt.rep.rep,
             result.as_mut_c_ptr(),
@@ -431,6 +440,9 @@ pub unsafe fn format_args(
             &mut status,
         );
         common::Error::ok_or_warning(status)?;
+    } else {
+        common::Error::ok_or_warning(status)?;
+        result.resize(total_size);
     }
     String::try_from(&result)
 }
@@ -568,14 +580,14 @@ mod tests {
 
     #[test]
     fn tzsave() -> Result<(), common::Error> {
-        let _ = TzSave(ucal::get_default_time_zone()?);
+        let _tz = TzSave(ucal::get_default_time_zone()?);
         ucal::set_default_time_zone("Europe/Amsterdam")?;
         Ok(())
     }
 
     #[test]
     fn basic() -> Result<(), common::Error> {
-        let _ = TzSave(ucal::get_default_time_zone()?);
+        let _tz = TzSave(ucal::get_default_time_zone()?);
         ucal::set_default_time_zone("Europe/Amsterdam")?;
 
         let loc = uloc::ULoc::try_from("en-US")?;
@@ -607,6 +619,31 @@ mod tests {
         Ok(())
     }
 
+    /// A formatted result longer than the initial buffer must still format.
+    ///
+    /// ICU raises U_BUFFER_OVERFLOW_ERROR when the output does not fit, and the
+    /// formatter has to grow the buffer and call again. Regression test for
+    /// https://github.com/google/rust_icu/issues/390.
+    #[test]
+    fn format_longer_than_initial_buffer() -> Result<(), common::Error> {
+        let loc = uloc::ULoc::try_from("en-US")?;
+        let msg = ustring::UChar::try_from("{0}")?;
+        let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
+
+        // The initial buffer inside `format_args` holds 1024 UTF-16 units.
+        let long = "x".repeat(4096);
+        // `umsg_format` is variadic, so a String argument carries no length and
+        // ICU reads it until a NUL. `UChar::try_from` does not add one, so the
+        // argument must be terminated explicitly or ICU reads past its end.
+        let mut arg = ustring::UChar::try_from(long.as_str())?;
+        arg.make_z();
+
+        let result = message_format!(fmt, { arg => String })?;
+        assert_eq!(long.len(), result.len());
+        assert_eq!(long, result);
+        Ok(())
+    }
+
     #[test]
     fn clone() -> Result<(), common::Error> {
         let loc = uloc::ULoc::try_from("en-US-u-tz-uslax")?;
@@ -621,7 +658,7 @@ mod tests {
 
     #[test]
     fn try_format_method() -> Result<(), common::Error> {
-        let _ = TzSave(ucal::get_default_time_zone()?);
+        let _tz = TzSave(ucal::get_default_time_zone()?);
         ucal::set_default_time_zone("Europe/Amsterdam")?;
 
         let loc = uloc::ULoc::try_from("en-US")?;
