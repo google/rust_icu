@@ -1,7 +1,0 @@
-
-# ICU configurations for CI testing
-build:icu_74 --@//bazel:icu_backend=@icu_74//:icu
-build:icu_75 --@//bazel:icu_backend=@icu_75//:icu
-build:icu_76 --@//bazel:icu_backend=@icu_76//:icu
-build:icu_77 --@//bazel:icu_backend=@icu_77//:icu
-build:icu_tot --@//bazel:icu_backend=@icu_tot//:icu
