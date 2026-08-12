@@ -343,198 +343,53 @@ These are the assumptions made in the making of this library:
     of the projects listed in the "Prior Art" section is that I wanted to try
     what a generated library would look like in rust.
 
-# Additional instructions
 
-## Quickstart guide
+# Building and Formatting with Bazel
 
-Before you begin, please ensure the following prerequisites are met:
+`rust_icu` natively utilizes **Bazel** as its primary compilation engine, ensuring determinism, automated dependencies, and scalable C++ & Rust cross-compilation boundaries.
 
-* You have [docker][docker] installed and it runs on your system.
-* You have GNU Make.
-* You have [git][git].
-* You have plenty of disk space. The docker images for the build environment
-  are a bit large, so a few GiB are needed to fit all of them.
-* You have an Internet connection.
+## Prerequisites
 
-[docker]: https://docs.docker.com/engine/install/
-[git]: https://git-scm.com
+Before compiling the crate tree, you must have the Bazel wrapper, **Bazelisk**, natively installed on your system. Bazelisk automatically provisions and updates the Bazel version matching the workspace requirements.
 
-From there, the following sequence of commands will check out, build and test
-the `rust_icu` source code.
+* **Git**: Needed to clone the workspace.
+* **Bazelisk**: Ensure `bazelisk` is downloaded and available on your system path.
+    * *To install `bazelisk`:* You can find pre-compiled binaries [here via GitHub releases](https://github.com/bazelbuild/bazelisk#installation) or use standard package managers like Homebrew (`brew install bazelisk`) or NPM (`npm install -g @bazel/bazelisk`). 
+
+## Quickstart Guide
+
+The following sequence checks out the repository natively and verifies the compilation environments securely across all core ICU targets:
 
 ```bash
-mkdir -p ~/tmp
-cd tmp
-git clone https://github.com/google/rust_icu
+# 1. Clone the repository
+git clone https://github.com/google/rust_icu.git
 cd rust_icu
-make docker-test
+
+# 2. Compile every active Rust target
+bazel build //...
+
+# 3. Validatively test the cross-compiled C++ C-API links sequentially
+# (Note: RUST_TEST_THREADS=1 natively avoids concurrent multithreaded ICU timezone mutation panics)
+bazel test --test_env=RUST_TEST_THREADS=1 //...
 ```
 
-You can now make changes to the code and tests.  You can re-run the compile and
-test cycle by running `make docker-test`.
+## Matrix Testing (Advanced ICU Targets)
 
-## ICU installation instructions
+This Bazel workspace is automatically equipped with predefined labels allowing you to efficiently bind tests aggressively against specific ICU release matrices internally!
 
-These instructions follow the "out-of-tree" build instructions from
-[the ICU repository](https://github.com/unicode-org/icu/blob/main/icu4c/readme.html).
-
-### Assumptions
-
-The instructions below are not self-contained. They assume that:
-
-*   you have your system set up such that you can follow the ICU build
-    instructions effectively. This requires some upfront time investment.
-*   you can build ICU from source, and your project has access to ICU source.
-*   your setup is Linux, with some very specific settings that worked for me.
-    You may be able to adapt them to work on yours.
-
-### Compilation
-
-```
-mkdir -p $HOME/local
-mkdir -p $HOME/tmp
-cd $HOME/tmp
-git clone https://github.com/unicode-org/icu.git
-mkdir icu4c-build
-cd icu4c-build
-../icu/icu4c/source/runConfigureICU Linux \
-  --prefix=$HOME/local \
-  --enable-static
-make
-make install
-make doc
-```
-
-If the compilation finishes with success, the directory `$HOME/local/bin` will
-have the file `icu-config` which is necessary to discover the library
-configuration.
-
-You can also do a
+To execute natively against exact versions of the ICU backend rather than the default bindings, append the `--config` parameter targeting an active module extension:
 
 ```bash
-make check
+# Cross-compiles test matrix exclusively utilizing ICU 75 backend bindings natively
+bazel test --test_env=RUST_TEST_THREADS=1 //... --config=icu_75
+
+# Validates Top of Tree (ToT) iCloud source bindings mapped directly to ICU upstream main!
+bazel test --test_env=RUST_TEST_THREADS=1 //... --config=icu_tot
 ```
 
-to run the unit tests.
-
-If you add `$HOME/local/bin` to `$PATH`, or move `icu-config` to a directory
-that is listed in your `$PATH` you should be all set to compile `rust_icu`.
-
-## ICU rebuilding instructions
-
-If you change the configuration of the ICU library with an intention to rebuild
-the library from source you should probably add an intervening `make clean`
-command.
-
-Since the ICU build is not hermetic, this ensures there are no remnants of the
-old compilation process sitting around in the build directory. You need to do
-this for example if you upgrade the major version of the ICU library. If you
-forget to do so, you may see unexpected errors while compiling ICU, or while
-linking or running your programs.
-
-## Compiling for a set version of ICU
-
-### Assumptions
-
-*   You have selected the feature set `[renaming,icu_version_in_env]`o
-
-**OR**:
-
-*   You have manually verified that the
-    [compatibility matrix](https://github.com/google/rust_icu#compatibility) has
-    a "Yes" for the ICU version and feature set you want to use.
-
-The following is a tested example.
-
-```bash
-env PKG_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
-    LD_LIBRARY_PATH="$HOME/local/lib" \
-    RUST_ICU_MAJOR_VERSION_NUMBER=65 \
-        bash -c 'cargo test'
-```
-
-The following would be an as of yet *untested* example of compiling `rust_icu`
-against a preexisting ICU version 66.
-
-```bash
-env PKG_CONFIG_PATH="$HOME/local/lib/pkgconfig" \
-    LD_LIBRARY_PATH="$HOME/local/lib" \
-    RUST_ICU_MAJOR_VERSION_NUMBER=66 \
-        bash -c 'cargo test'
-```
-
-## Adding support for a new version of ICU.
-
-In general, as long as `icu-config` approach is supported, it should be possible
-to generate the library wrappers for newer versions of the ICU library, assuming
-that the underlying C APIs do not diverge too much.
-
-An approach that yielded easy support for ICU 65.1 consisted of the following
-steps. Below, `$RUST_ICU_SOURCE_DIR` is the directory where you extracted the
-ICU source code.
-
-*   Download the new ICU version from source to `$RUST_ICU_SOURCE_DIR`.
-*   Build the ICU library following for example the [compilation](#compilation)
-    steps above with the new version.
-*   Get the file `lib.rs` from the output directory
-    `$RUST_ICU_SOURCE_DIR/target/debug/build/rust_icu_sys-...`, rename it to
-    `lib_66.rs` (if working with ICU version 66, otherwise append the version
-    you are using).
-*   Save the file to the directory `$RUST_ICU_SOURCE_DIR/rust_icu_sys/bindgen`,
-    this is the directory that contains the pre-generated sources.
-
-These files `lib_XX.rs` may need to be generated again if `build.rs` is changed
-to include more features.
-
-## Adding more bindings
-
-When adding more ICU wrappers, make sure to do the following:
-
-*   Check `rust_icu_sys/build.rs` and `rust_icu_sys/bindgen/run_bindgen.sh` to
-    add appropriate lines into `BINDGEN_SOURCE_MODULES`, then
-    `BINDGEN_ALLOWLIST_FUNCTIONS` and `BINDGEN_ALLOWLIST_TYPES`.
-
-## Testing with a specific feature set turned on
-
-Here's an example of running a docker test on ICU 67, with features
-`icu_version_in_env` and `renaming` turned on instead of the default. Note that
-the parameters are mostly passed into the container that runs `docker-test` via
-environment variables.
-
-```bash
-make DOCKER_TEST_ENV=rust_icu_testenv-67 \
-  RUST_ICU_MAJOR_VERSION_NUMBER=67 \
-  DOCKER_TEST_CARGO_TEST_ARGS='--no-default-features --features icu_version_in_env,renaming' \
-  docker-test
-```
-
-Some clarification:
-
-*   The environment variable `RUST_ICU_MAJOR_VERSION_NUMBER` is used for the
-    feature `icu_version_in_env` to instruct `cargo` to use the file
-    `rust_icu_sys/bindgen/lib_67.rs` as a prebuilt bindgen source file instead
-    of trying to generate one on the fly.
-*   The environment variable `DOCKER_TEST_CARGO_TEST_ARGS` is used to pass the
-    command line arguments to the `cargo test` which is used in the docker
-    container. The environment is passed in verbatim to `cargo test` without
-    quoting, so separate words in the environment end up being separate args to
-    `cargo test`.
-*   The environment variable `DOCKER_TEST_ENV` is the base name of the Docker
-    container used to run the test in. The container `rust_icu_testenv-67` is a
-    container image that contains preinstalled environment with a compiled
-    version of ICU 67.
-
-## Refreshing static bindgen files
-
-Requires docker.
-
-Run `make static-bindgen` periodically, to refresh the statically generated
-bindgen files (named `lib_XX.rs`, where `XX` is an ICU version, e.g. 67) in the
-directory [`rust_icu_sys/bindgen`](./rust_icu_sys/bindgen) which are used when
-`bindgen` features are turned off.
-
-Invoking this make target will modify the local checkout with the newer versions
-of the files `lib_XX.rs`. Make a pull request and check them in.
-
-For more information on why this is needed, see the
-[bindgen README.md](rust_icu_sys/bindgen/README.md).
+Currently active backend mappings are:
+* `icu_74` (Default)
+* `icu_75`
+* `icu_76`
+* `icu_77`
+* `icu_tot` (Bleeding edge directly pulling `main.zip` from iCloud upstream `master` tags)
