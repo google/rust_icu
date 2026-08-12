@@ -30,7 +30,7 @@
   },
   "plugins": [
     {
-      "type": "workspace",
+      "type": "cargo-workspace",
       "merge": true,
       "consider-packages-without-commits": true
     }
