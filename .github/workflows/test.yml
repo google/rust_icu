@@ -10,6 +10,11 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
+# The workflow reads the repository and runs the tests in Docker. It writes
+# nothing back, so the token needs no more than read access.
+permissions:
+  contents: read
+
 jobs:
   test-default-features:
     runs-on: ubuntu-latest
@@ -17,7 +22,9 @@ jobs:
       matrix:
         icu_version: [74, 76, 77]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
       - name: 'Test ICU version ${{ matrix.icu_version }}'
         run: 'make DOCKER_TEST_ENV=rust_icu_testenv-${{ matrix.icu_version}} docker-test'
   test-with-features:
@@ -29,13 +36,17 @@ jobs:
           - "renaming,icu_version_in_env"
           - "renaming,icu_config,use-bindgen"
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
       - name: 'Test ICU version ${{ matrix.icu_version }}'
         run: 'make DOCKER_TEST_ENV=rust_icu_testenv-${{ matrix.icu_version }} RUST_ICU_MAJOR_VERSION_NUMBER=${{ matrix.icu_version }} DOCKER_TEST_CARGO_TEST_ARGS="--no-default-features --features ${{ matrix.feature_set }}" docker-test'
   test-bindgen:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
       - name: 'Test static-bindgen'
         run: 'make static-bindgen'
   test-static-linking:
@@ -44,7 +55,9 @@ jobs:
       matrix:
         runs-on: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
       - if: matrix.runs-on == 'macos-latest'
         run: make macos-test
       - if: matrix.runs-on == 'ubuntu-latest'
@@ -55,7 +68,9 @@ jobs:
       matrix:
         icu_version: [77]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
       - name: 'Test ICU `main`'
         run: |
           make DOCKER_TEST_ENV=rust_icu_testenv-current RUST_ICU_MAJOR_VERSION_NUMBER=${{matrix.icu_version}} docker-test-current
