@@ -27,3 +27,13 @@ rust_test(
     },
     deps = ["@crates//:anyhow"],
 )
+
+
+load("//bazel:publish.bzl", "cargo_publish")
+
+cargo_publish(
+    name = "publish",
+    crate_dir = "rust_icu_upluralrules",
+    deps = ["//rust_icu_sys:publish", "//rust_icu_ustring:publish", "//rust_icu_common:publish", "//rust_icu_uenum:publish"],
+    visibility = ["//visibility:public"],
+)

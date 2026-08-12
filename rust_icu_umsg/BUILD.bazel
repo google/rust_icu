@@ -27,3 +27,13 @@ rust_test(
     },
     deps = ["//rust_icu_ucal:rust_icu_ucal"],
 )
+
+
+load("//bazel:publish.bzl", "cargo_publish")
+
+cargo_publish(
+    name = "publish",
+    crate_dir = "rust_icu_umsg",
+    deps = ["//rust_icu_common:publish", "//rust_icu_uloc:publish", "//rust_icu_sys:publish", "//rust_icu_ustring:publish", "//rust_icu_ucal:publish"],
+    visibility = ["//visibility:public"],
+)

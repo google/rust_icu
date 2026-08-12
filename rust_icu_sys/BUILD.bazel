@@ -31,7 +31,7 @@ rust_library(
         "@crates//:libc",
         ":build_script",
     ],
-    link_deps = ["@icu_74//:icu", ":icudata_alwayslink"],
+    link_deps = ["//bazel:icu_backend", ":icudata_alwayslink"],
     visibility = ["//visibility:public"],
 )
 
@@ -46,7 +46,7 @@ rust_test(
 
 filegroup(
     name = "libicudata_file",
-    srcs = ["@icu_74//:icu"],
+    srcs = ["//bazel:icu_backend"],
     output_group = "libicudata.a",
 )
 
@@ -54,4 +54,14 @@ cc_library(
     name = "icudata_alwayslink",
     srcs = [":libicudata_file"],
     alwayslink = True,
+)
+
+
+load("//bazel:publish.bzl", "cargo_publish")
+
+cargo_publish(
+    name = "publish",
+    crate_dir = "rust_icu_sys",
+    deps = ["//rust_icu_release:publish"],
+    visibility = ["//visibility:public"],
 )
