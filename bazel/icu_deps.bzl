@@ -45,4 +45,15 @@ def _icu_deps_impl(mctx):
         ],
     )
 
+    http_archive(
+        name = "icu_tot",
+        urls = ["https://github.com/unicode-org/icu/archive/refs/heads/main.zip"],
+        strip_prefix = "icu-main",
+        build_file = Label("//third_party/icu_tot:icu.BUILD.bazel"),
+        patch_cmds = [
+            "find icu4c -name BUILD.bazel -delete",
+            "find icu4c -name BUILD -delete",
+        ],
+    )
+
 icu_deps = module_extension(implementation = _icu_deps_impl)
