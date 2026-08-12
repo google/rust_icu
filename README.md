@@ -110,7 +110,7 @@ The limitations we know of today are as follows:
 
 # Compatibility
 
-Automated tests are executed for last three major ICU library versions in all
+Automated tests are executed for last four major ICU library versions in all
 feature combinations of interest.
 
 `rust_icu` version | ICU 74.1 | ICU 75.0 | ICU 76.0 | ICU 77.0

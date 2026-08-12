@@ -28,7 +28,7 @@ use_repo(rust, "rust_toolchains")
 register_toolchains("@rust_toolchains//:all")
 
 icu_ext = use_extension("//bazel:icu_deps.bzl", "icu_deps")
-use_repo(icu_ext, "icu_74", "icu_75", "icu_76", "icu_77")
+use_repo(icu_ext, "icu_74", "icu_75", "icu_76", "icu_77", "icu_tot")
 
 crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
 crate.from_cargo(
