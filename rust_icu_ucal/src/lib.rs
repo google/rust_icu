@@ -218,32 +218,35 @@ pub fn set_default_time_zone(zone_id: &str) -> Result<(), common::Error> {
 
 /// Implements `ucal_getDefaultTimeZone`
 pub fn get_default_time_zone() -> Result<String, common::Error> {
-    let mut status = common::Error::OK_CODE;
+    // Start with a large enough capacity to avoid preflighting in almost all cases.
+    let mut capacity = 64; 
+    
+    // Use a loop to recover if the time zone length changes between preflight and fetch.
+    loop {
+        let mut status = common::Error::OK_CODE;
+        let mut uchar = ustring::UChar::new_with_capacity(capacity);
+        
+        let len = unsafe {
+            assert!(common::Error::is_ok(status));
+            versioned_function!(ucal_getDefaultTimeZone)(
+                uchar.as_mut_c_ptr(), 
+                capacity as i32, 
+                &mut status
+            )
+        } as usize;
 
-    // Preflight the time zone first.
-    let time_zone_length = unsafe {
-        assert!(common::Error::is_ok(status));
-        versioned_function!(ucal_getDefaultTimeZone)(std::ptr::null_mut(), 0, &mut status)
-    } as usize;
-    common::Error::ok_preflight(status)?;
-
-    // Should this capacity include the terminating \u{0}?
-    let mut status = common::Error::OK_CODE;
-    let mut uchar = ustring::UChar::new_with_capacity(time_zone_length);
-    trace!("length: {}", time_zone_length);
-
-    // Requires that uchar is a valid buffer.  Should be guaranteed by the constructor above.
-    unsafe {
-        assert!(common::Error::is_ok(status));
-        versioned_function!(ucal_getDefaultTimeZone)(
-            uchar.as_mut_c_ptr(),
-            time_zone_length as i32,
-            &mut status,
-        )
-    };
-    common::Error::ok_or_warning(status)?;
-    trace!("result: {:?}", uchar);
-    String::try_from(&uchar)
+        if status == sys::UErrorCode::U_BUFFER_OVERFLOW_ERROR
+            || (common::Error::is_ok(status) && len > capacity)
+        {
+            capacity = len;
+            continue; // Buffer was too small. Resize to required `len` and retry.
+        }
+        
+        common::Error::ok_or_warning(status)?;
+        uchar.resize(len);
+        trace!("result: {:?}", uchar);
+        return String::try_from(&uchar);
+    }
 }
 
 /// Implements `ucal_getTZDataVersion`
