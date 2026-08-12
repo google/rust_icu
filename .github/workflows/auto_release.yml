@@ -17,36 +17,8 @@ jobs:
       - uses: google-github-actions/release-please-action@v4
         id: release
         with:
-          release-type: rust
-          # Instructs release-please to manage Cargo.toml files in a workspace setup automatically
-          extra-files: |
-            ecma402_traits/Cargo.toml
-            rust_icu_common/Cargo.toml
-            rust_icu_ecma402/Cargo.toml
-            rust_icu_intl/Cargo.toml
-            rust_icu_release/Cargo.toml
-            rust_icu_sys/Cargo.toml
-            rust_icu_ubrk/Cargo.toml
-            rust_icu_ucal/Cargo.toml
-            rust_icu_uchar/Cargo.toml
-            rust_icu_ucnv/Cargo.toml
-            rust_icu_ucol/Cargo.toml
-            rust_icu_ucsdet/Cargo.toml
-            rust_icu_udat/Cargo.toml
-            rust_icu_udata/Cargo.toml
-            rust_icu_uenum/Cargo.toml
-            rust_icu_uformattable/Cargo.toml
-            rust_icu_ulistformatter/Cargo.toml
-            rust_icu_uloc/Cargo.toml
-            rust_icu_umsg/Cargo.toml
-            rust_icu_unorm2/Cargo.toml
-            rust_icu_unum/Cargo.toml
-            rust_icu_unumberformatter/Cargo.toml
-            rust_icu_upluralrules/Cargo.toml
-            rust_icu_ures/Cargo.toml
-            rust_icu_ustring/Cargo.toml
-            rust_icu_utext/Cargo.toml
-            rust_icu_utrans/Cargo.toml
+          # Release please intrinsically reads release-please-config.json and .release-please-manifest.json
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       # If a release was created (PR was merged), we proceed to publish
       - name: Checkout Code
