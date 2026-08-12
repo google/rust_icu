@@ -74,7 +74,7 @@ dependencies = [
 
 [[package]]
 name = "ecma402_traits"
-version = "5.7.0"
+version = "5.8.0"
 
 [[package]]
 name = "either"
@@ -249,7 +249,7 @@ checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 
 [[package]]
 name = "rust_icu"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -276,7 +276,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_common"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "rust_icu_sys",
@@ -285,7 +285,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_ecma402"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "ecma402_traits",
@@ -305,7 +305,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_intl"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -320,14 +320,14 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_release"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
 ]
 
 [[package]]
 name = "rust_icu_sys"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "bindgen",
@@ -339,7 +339,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_ubrk"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -352,7 +352,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_ucal"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -366,7 +366,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_uchar"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "log",
  "paste",
@@ -376,7 +376,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_ucnv"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "log",
  "paste",
@@ -386,7 +386,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_ucol"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -399,7 +399,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_ucsdet"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "rust_icu_common",
  "rust_icu_sys",
@@ -408,7 +408,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_udat"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -425,7 +425,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_udata"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "log",
  "paste",
@@ -435,7 +435,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_uenum"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "paste",
  "rust_icu_common",
@@ -444,7 +444,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_uformattable"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -456,7 +456,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_ulistformatter"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -468,7 +468,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_uloc"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -482,7 +482,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_umsg"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -497,7 +497,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_unorm2"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -513,7 +513,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_unum"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -527,7 +527,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_unumberformatter"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -542,7 +542,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_upluralrules"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
@@ -555,7 +555,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_ures"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "paste",
@@ -566,7 +566,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_ustring"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "log",
  "paste",
@@ -576,7 +576,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_utext"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "paste",
  "rust_icu_common",
@@ -585,7 +585,7 @@ dependencies = [
 
 [[package]]
 name = "rust_icu_utrans"
-version = "5.7.0"
+version = "5.8.0"
 dependencies = [
  "anyhow",
  "log",
