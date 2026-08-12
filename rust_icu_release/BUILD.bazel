@@ -3,16 +3,15 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 rust_library(
     name = "rust_icu_release",
     srcs = glob(["src/**/*.rs"]),
-    deps = ["@crates//:anyhow"],
     visibility = ["//visibility:public"],
+    deps = ["@crates//:anyhow"],
 )
-
 
 load("//bazel:publish.bzl", "cargo_publish")
 
 cargo_publish(
     name = "publish",
     crate_dir = "rust_icu_release",
-    deps = [],
     visibility = ["//visibility:public"],
+    deps = [],
 )
