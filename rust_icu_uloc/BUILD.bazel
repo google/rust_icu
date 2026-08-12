@@ -3,27 +3,54 @@ load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
 rust_library(
     name = "rust_icu_uloc",
     srcs = glob(["src/**/*.rs"]),
+    crate_features = [
+        "renaming",
+        "static",
+        "icu_version_in_env",
+    ],
     edition = "2021",
-    crate_features = ["renaming", "static", "icu_version_in_env"],
+    proc_macro_deps = [
+        "@crates//:paste",
+    ],
     rustc_env = {
         "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
     },
-    deps = [
-        "@crates//:log", "//rust_icu_common:rust_icu_common", "//rust_icu_sys:rust_icu_sys", "//rust_icu_uenum:rust_icu_uenum", "//rust_icu_ustring:rust_icu_ustring", "@crates//:anyhow"
-    ],
-    proc_macro_deps = [
-        "@crates//:paste"
-    ],
     visibility = ["//visibility:public"],
+    deps = [
+        "//rust_icu_common",
+        "//rust_icu_sys",
+        "//rust_icu_uenum",
+        "//rust_icu_ustring",
+        "@crates//:anyhow",
+        "@crates//:log",
+    ],
 )
 
 rust_test(
-
     name = "rust_icu_uloc_test",
     crate = ":rust_icu_uloc",
-    crate_features = ["renaming", "static", "icu_version_in_env"],
+    crate_features = [
+        "renaming",
+        "static",
+        "icu_version_in_env",
+    ],
     rustc_env = {
         "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
     },
     deps = [],
+)
+
+load("//bazel:publish.bzl", "cargo_publish")
+
+cargo_publish(
+    name = "publish",
+    crate_dir = "rust_icu_uloc",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//rust_icu_common:publish",
+        "//rust_icu_release:publish",
+        "//rust_icu_sys:publish",
+        "//rust_icu_uenum:publish",
+        "//rust_icu_ustring:publish",
+    ],
 )
