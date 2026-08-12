@@ -1,4 +1,16 @@
-PublishInfo = provider(fields = ["crates"])
+"""
+Bazel rule toolkit orchestrating topological automatic cargo publishing.
+
+Exposes `PublishInfo` and `cargo_publish` which work together alongside `bazel run`
+to traverse a workspace's internal dependencies and spawn sequences of execution blocks pushing to `crates.io`.
+"""
+
+PublishInfo = provider(
+    doc = "Propagates nested structures tracing recursive Crate compilation boundaries topologically.",
+    fields = {
+        "crates": "A Depset containing crate directory names structured strictly in postorder formatting.",
+    },
+)
 
 def _cargo_publish_impl(ctx):
     transitive_crates = []
@@ -36,10 +48,21 @@ def _cargo_publish_impl(ctx):
     ]
 
 cargo_publish = rule(
+    doc = """Executes consecutive `cargo publish` cascades targeting internally connected Rust crates seamlessly.
+
+When executed natively via `bazel run`, the rule inherently computes proper semantic dependencies reading
+`PublishInfo` configurations recursively, spawning shell commands traversing `crates.io` synchronously.
+""",
     implementation = _cargo_publish_impl,
     executable = True,
     attrs = {
-        "crate_dir": attr.string(default = ""),
-        "deps": attr.label_list(providers = [PublishInfo]),
+        "crate_dir": attr.string(
+            default = "",
+            doc = "The localized directory name of this active crate.",
+        ),
+        "deps": attr.label_list(
+            providers = [PublishInfo],
+            doc = "The target dependencies mapping child crates required upstream natively.",
+        ),
     },
 )
