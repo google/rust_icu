@@ -5,40 +5,59 @@ load("@rules_rust//cargo:defs.bzl", "cargo_build_script")
 cargo_build_script(
     name = "build_script",
     srcs = ["build.rs"],
-    crate_features = ["renaming", "static", "icu_version_in_env"],
-    deps = [
-        "@crates//:anyhow",
-        "@crates//:lazy_static",
-        "//rust_icu_release:rust_icu_release",
+    build_script_env = {
+        "BAZEL": "1",
+    },
+    crate_features = [
+        "renaming",
+        "static",
+        "icu_version_in_env",
     ],
     rustc_env = {
         "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
     },
-    build_script_env = {
-        "BAZEL": "1",
-    },
+    deps = [
+        "//rust_icu_release",
+        "@crates//:anyhow",
+        "@crates//:lazy_static",
+    ],
 )
 
 rust_library(
     name = "rust_icu_sys",
-    srcs = glob(["src/**/*.rs", "tests/**/*.rs", "bindgen/**/*.rs"]),
+    srcs = glob([
+        "src/**/*.rs",
+        "tests/**/*.rs",
+        "bindgen/**/*.rs",
+    ]),
+    crate_features = [
+        "renaming",
+        "static",
+        "icu_version_in_env",
+    ],
+    link_deps = [
+        "//bazel:icu_backend",
+        ":icudata_alwayslink",
+    ],
     proc_macro_deps = ["@crates//:paste"],
-    crate_features = ["renaming", "static", "icu_version_in_env"],
     rustc_env = {
         "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
     },
-    deps = [
-        "@crates//:libc",
-        ":build_script",
-    ],
-    link_deps = ["//bazel:icu_backend", ":icudata_alwayslink"],
     visibility = ["//visibility:public"],
+    deps = [
+        ":build_script",
+        "@crates//:libc",
+    ],
 )
 
 rust_test(
     name = "rust_icu_sys_test",
     crate = ":rust_icu_sys",
-    crate_features = ["renaming", "static", "icu_version_in_env"],
+    crate_features = [
+        "renaming",
+        "static",
+        "icu_version_in_env",
+    ],
     rustc_env = {
         "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
     },
@@ -56,12 +75,11 @@ cc_library(
     alwayslink = True,
 )
 
-
 load("//bazel:publish.bzl", "cargo_publish")
 
 cargo_publish(
     name = "publish",
     crate_dir = "rust_icu_sys",
-    deps = ["//rust_icu_release:publish"],
     visibility = ["//visibility:public"],
+    deps = ["//rust_icu_release:publish"],
 )
