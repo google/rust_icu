@@ -14,45 +14,18 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@e4dc86ba9405554aeba3c6bb2d169500e7d3b4ee # v4
+      - uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
         id: release
         with:
-          release-type: rust
-          # Instructs release-please to manage Cargo.toml files in a workspace setup automatically
-          extra-files: |
-            Cargo.toml
-            ecma402_traits/Cargo.toml
-            rust_icu_common/Cargo.toml
-            rust_icu_ecma402/Cargo.toml
-            rust_icu_intl/Cargo.toml
-            rust_icu_release/Cargo.toml
-            rust_icu_sys/Cargo.toml
-            rust_icu_ubrk/Cargo.toml
-            rust_icu_ucal/Cargo.toml
-            rust_icu_uchar/Cargo.toml
-            rust_icu_ucnv/Cargo.toml
-            rust_icu_ucol/Cargo.toml
-            rust_icu_ucsdet/Cargo.toml
-            rust_icu_udat/Cargo.toml
-            rust_icu_udata/Cargo.toml
-            rust_icu_uenum/Cargo.toml
-            rust_icu_uformattable/Cargo.toml
-            rust_icu_ulistformatter/Cargo.toml
-            rust_icu_uloc/Cargo.toml
-            rust_icu_umsg/Cargo.toml
-            rust_icu_unorm2/Cargo.toml
-            rust_icu_unum/Cargo.toml
-            rust_icu_unumberformatter/Cargo.toml
-            rust_icu_upluralrules/Cargo.toml
-            rust_icu_ures/Cargo.toml
-            rust_icu_ustring/Cargo.toml
-            rust_icu_utext/Cargo.toml
-            rust_icu_utrans/Cargo.toml
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
 
       # If a release was created (PR was merged), we proceed to publish
       - name: Checkout Code
         if: ${{ steps.release.outputs.release_created }}
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Install System Dependencies
         if: ${{ steps.release.outputs.release_created }}
