@@ -1,0 +1,73 @@
+name: Auto Semantic Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v4
+        id: release
+        with:
+          release-type: rust
+          # Instructs release-please to manage Cargo.toml files in a workspace setup automatically
+          extra-files: |
+            Cargo.toml
+            ecma402_traits/Cargo.toml
+            rust_icu_common/Cargo.toml
+            rust_icu_ecma402/Cargo.toml
+            rust_icu_intl/Cargo.toml
+            rust_icu_release/Cargo.toml
+            rust_icu_sys/Cargo.toml
+            rust_icu_ubrk/Cargo.toml
+            rust_icu_ucal/Cargo.toml
+            rust_icu_uchar/Cargo.toml
+            rust_icu_ucnv/Cargo.toml
+            rust_icu_ucol/Cargo.toml
+            rust_icu_ucsdet/Cargo.toml
+            rust_icu_udat/Cargo.toml
+            rust_icu_udata/Cargo.toml
+            rust_icu_uenum/Cargo.toml
+            rust_icu_uformattable/Cargo.toml
+            rust_icu_ulistformatter/Cargo.toml
+            rust_icu_uloc/Cargo.toml
+            rust_icu_umsg/Cargo.toml
+            rust_icu_unorm2/Cargo.toml
+            rust_icu_unum/Cargo.toml
+            rust_icu_unumberformatter/Cargo.toml
+            rust_icu_upluralrules/Cargo.toml
+            rust_icu_ures/Cargo.toml
+            rust_icu_ustring/Cargo.toml
+            rust_icu_utext/Cargo.toml
+            rust_icu_utrans/Cargo.toml
+
+      # If a release was created (PR was merged), we proceed to publish
+      - name: Checkout Code
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@v4
+
+      - name: Install System Dependencies
+        if: ${{ steps.release.outputs.release_created }}
+        run: sudo apt-get update && sudo apt-get install -y libicu-dev pkg-config llvm llvm-dev clang
+
+      - name: Setup Bazel
+        if: ${{ steps.release.outputs.release_created }}
+        uses: bazel-contrib/setup-bazel@0.19.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+
+      - name: Bazel Publish
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: bazel run //bazel:publish_all
