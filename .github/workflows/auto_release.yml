@@ -20,7 +20,6 @@ jobs:
           release-type: rust
           # Instructs release-please to manage Cargo.toml files in a workspace setup automatically
           extra-files: |
-            Cargo.toml
             ecma402_traits/Cargo.toml
             rust_icu_common/Cargo.toml
             rust_icu_ecma402/Cargo.toml
