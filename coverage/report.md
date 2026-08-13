@@ -4,7 +4,7 @@
 | ------ | ----------- |
 | `ubrk.h` | 19 / 23 | 
 | `ucal.h` | 15 / 48 | 
-| `ucol.h` | 8 / 54 | 
+| `ucol.h` | 8 / 51 | 
 | `udat.h` | 5 / 38 | 
 | `udata.h` | 2 / 8 | 
 | `uenum.h` | 3 / 8 | 
@@ -116,9 +116,6 @@
 | | `ucol_setStrength` |
 | | `ucol_strcoll` |
 | | `ucol_strcollUTF8` |
-| `match` | |
-| `operator` | |
-| `Predicate` | |
 | `ucol_clone` | |
 | `ucol_cloneBinary` | |
 | `ucol_close` | |
