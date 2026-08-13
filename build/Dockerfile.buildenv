@@ -16,7 +16,6 @@ apt-utils \
 clang \
 coreutils \
 curl \
-exuberant-ctags \
 gawk \
 git \
 libclang-dev \

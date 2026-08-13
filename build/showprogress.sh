@@ -28,7 +28,21 @@ C_API_HEADER_NAMES=(
   "unorm2"
 )
 
-ICU_INCLUDE_PATH="$(icu-config --cppflags-searchpath | sed -e 's/-I//' | sed -e 's/ //g')"
+# Locate the ICU headers.  icu-config is tried first, since a hand-built ICU
+# installs it and it reports that installation.  It was removed from ICU in
+# favor of pkg-config, though, and distribution packages no longer ship it,
+# so fall back to pkg-config.
+if command -v icu-config >/dev/null 2>&1; then
+  ICU_INCLUDE_PATH="$(icu-config --cppflags-searchpath | sed -e 's/-I//' | sed -e 's/ //g')"
+elif ICU_INCLUDE_PATH="$(pkg-config --variable=includedir icu-uc 2>/dev/null)" \
+    && [[ -n "${ICU_INCLUDE_PATH}" ]]; then
+  :
+else
+  echo "error: cannot find the ICU headers: icu-config is not installed and" \
+       "pkg-config does not know about icu-uc.  Install libicu-dev or the" \
+       "equivalent for your system." >&2
+  exit 1
+fi
 
 # Write a report out as we read the data.
 
@@ -42,7 +56,9 @@ cat <<EOF > "${REPORT_FILE_HEADER}"
 | ------ | ----------- |
 EOF
 
-  cat <<EOF >>"${REPORT_FILE_DETAIL}"
+# Truncate, so that a run following one that died partway through does not
+# append to the leftovers.
+cat <<EOF >"${REPORT_FILE_DETAIL}"
 # Unimplemented functions per header
 
 EOF
@@ -51,8 +67,23 @@ for header_basename in ${C_API_HEADER_NAMES[@]}; do
   : > "${TOP_DIR}/coverage/${header_basename}_all.txt"
   : > "${TOP_DIR}/coverage/${header_basename}_implemented.txt"
   header_fullname="${ICU_INCLUDE_PATH}/unicode/${header_basename}.h"
-  all=$(ctags -x --c-kinds=fp $header_fullname | sed -e 's/ .*$//' \
-    | grep -v U_DEFINE | LC_ALL=C sort -fs | uniq)
+  if [[ ! -r "${header_fullname}" ]]; then
+    echo "error: cannot read ${header_fullname}" >&2
+    exit 1
+  fi
+  # ctags also reported the U_DEFINE_LOCAL_OPEN_POINTER macro invocations as
+  # functions and they had to be filtered out here.  The awk extraction does
+  # not pick them up, so there is nothing left to filter.
+  all=$(awk -f "${DIR}/icu_c_functions.awk" "${header_fullname}" \
+    | LC_ALL=C sort -fs | uniq)
+  # The extraction keys on how ICU spells its declarations, so an empty result
+  # means the header changed shape rather than that it declares nothing.  Say
+  # so instead of reporting 0 / 0 coverage.
+  if [[ -z "${all}" ]]; then
+    echo "error: no functions found in ${header_fullname};" \
+         "${DIR}/icu_c_functions.awk needs updating" >&2
+    exit 1
+  fi
   for fn in ${all}; do
     printf "%s\n" ${fn} >> "${TOP_DIR}/coverage/${header_basename}_all.txt"
   done
