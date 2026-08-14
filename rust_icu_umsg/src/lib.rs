@@ -93,6 +93,8 @@ use {
 
 use sealed::Sealed;
 
+mod pattern;
+
 #[doc(hidden)]
 pub use {rust_icu_sys as __sys, rust_icu_ustring as __ustring, std as __std};
 
@@ -116,6 +118,11 @@ pub use {rust_icu_sys as __sys, rust_icu_ustring as __ustring, std as __std};
 #[derive(Debug)]
 pub struct UMessageFormat {
     rep: std::rc::Rc<Rep>,
+
+    /// How many arguments `umsg_format` will read for this formatter's
+    /// pattern, or [None] if that could not be determined.  See
+    /// [pattern::required_arg_count].
+    required_args: Option<usize>,
 }
 
 // An internal representation of the message formatter, used to allow cloning.
@@ -141,6 +148,7 @@ impl Clone for UMessageFormat {
         // Note this is not OK if UMessageFormat ever grows mutable methods.
         UMessageFormat {
             rep: self.rep.clone(),
+            required_args: self.required_args,
         }
     }
 }
@@ -174,8 +182,16 @@ impl UMessageFormat {
         };
         common::Error::ok_or_warning(status)?;
         common::parse_ok(parse_status)?;
+        // `umsg_format` reads its arguments from the pattern, so the pattern
+        // decides how many arguments a later format call has to supply.  Work
+        // that out once, here, where the pattern is known good: `umsg_open`
+        // has just accepted it.
+        let required_args = String::try_from(pattern)
+            .ok()
+            .and_then(|pattern| pattern::required_arg_count(&pattern));
         Ok(UMessageFormat {
             rep: std::rc::Rc::new(Rep { rep }),
+            required_args,
         })
     }
 
@@ -202,19 +218,23 @@ impl UMessageFormat {
     /// # Safety
     ///
     /// ICU's variadic `umsg_format` derives the number and types of the arguments it reads from the
-    /// *pattern* passed to [UMessageFormat::try_from], not from `args`. Nothing reconciles the two,
-    /// so the caller must guarantee both, or invoke undefined behavior (segfault or silent memory
-    /// corruption):
-    ///
-    /// * **Argument count.** `args` must contain at least as many elements as the highest argument
-    ///   index referenced by the pattern, plus one. For example the pattern `"String : {1}"` reads
-    ///   *two* arguments (indices `0` and `1`); supplying fewer causes ICU to read past the end of
-    ///   `args`. Supplying more is harmless. See
-    ///   [google/rust_icu#371](https://github.com/google/rust_icu/issues/371).
+    /// *pattern* passed to [UMessageFormat::try_from], not from `args`. The two have to agree, or
+    /// the call is undefined behavior (segfault or silent memory corruption).
     ///
     /// * **Argument types.** Each element's type must match what the pattern expects at that index,
     ///   e.g. `{0,number}` expects an `f64` while `{0}` and `{0,number,integer}` expect a
-    ///   [rust_icu_ustring::UChar] and an `i32` respectively.
+    ///   [rust_icu_ustring::UChar] and an `i32` respectively. Nothing checks this, so it is the
+    ///   caller's obligation.
+    ///
+    /// * **Argument count.** `args` must contain at least as many elements as the highest argument
+    ///   index referenced by the pattern, plus one. For example the pattern `"String : {1}"` reads
+    ///   *two* arguments (indices `0` and `1`). This one *is* checked: too few arguments returns an
+    ///   error instead of reading past the end of `args`. Supplying more is harmless. See
+    ///   [google/rust_icu#371](https://github.com/google/rust_icu/issues/371).
+    ///
+    ///   The count check is skipped, leaving the count a caller obligation too, for the patterns
+    ///   whose argument count cannot be established: those using named arguments (`{name}`), which
+    ///   `umsg_format` rejects anyway, and any pattern the scanner does not recognize.
     ///
     /// # Example
     ///
@@ -268,23 +288,29 @@ impl UMessageFormat {
 /// For backward compatibility this macro is callable from safe code, but it is **not** actually
 /// sound: it expands to a call into the ICU C *variadic* function `umsg_format`, which derives the
 /// number and types of the arguments it reads from the *pattern* passed to
-/// [UMessageFormat::try_from], not from the actual arguments supplied here. Nothing in this macro
-/// reconciles the two, so the caller must guarantee both of the following. Violating either is
-/// undefined behavior and typically manifests as a segfault or silent memory corruption:
-///
-/// * **Argument count.** You must supply at least as many arguments as the highest argument index
-///   referenced by the pattern, plus one. For example the pattern `"String : {1}"` references index
-///   `1`, so ICU reads *two* variadic arguments (indices `0` and `1`); supplying only one causes
-///   ICU to read past the end of the arguments actually passed. Note that argument indices need not
-///   be contiguous or start at `0`, but every index the pattern mentions must be backed by an
-///   argument here. Supplying *more* arguments than the pattern references is harmless. See
-///   [google/rust_icu#371](https://github.com/google/rust_icu/issues/371).
+/// [UMessageFormat::try_from], not from the actual arguments supplied here. The two have to agree.
+/// Violating either of the following is undefined behavior and typically manifests as a segfault or
+/// silent memory corruption:
 ///
 /// * **Argument types.** The `=> <type_assertion>` you write for each argument must match the type
 ///   the pattern expects at that index. `{0}` and `{0,number,integer}` expect a string and an
 ///   integer respectively, while `{0,number}` expects a double; passing the wrong Rust type (which
 ///   the `=> ..` assertion pins only on the Rust side) makes ICU reinterpret the argument's bytes
-///   as the wrong C type -- e.g. an `f64` read back as a `UChar*` and dereferenced.
+///   as the wrong C type -- e.g. an `f64` read back as a `UChar*` and dereferenced. Nothing checks
+///   this, so it is the caller's obligation.
+///
+/// * **Argument count.** You must supply at least as many arguments as the highest argument index
+///   referenced by the pattern, plus one. For example the pattern `"String : {1}"` references index
+///   `1`, so ICU reads *two* variadic arguments (indices `0` and `1`). Note that argument indices
+///   need not be contiguous or start at `0`, but every index the pattern mentions must be backed by
+///   an argument here. Supplying *more* arguments than the pattern references is harmless. See
+///   [google/rust_icu#371](https://github.com/google/rust_icu/issues/371).
+///
+///   The count *is* checked before the variadic call happens: supplying too few arguments returns
+///   an error rather than letting ICU read past the end of the arguments. The check is skipped, and
+///   the count becomes a caller obligation like the types, for patterns whose argument count cannot
+///   be established: those using named arguments (`{name}`), which `umsg_format` rejects anyway,
+///   and any pattern the scanner does not recognize.
 ///
 /// If you would rather make this obligation explicit at the call site, use the
 /// [UMessageFormat::try_format] method instead, which is an `unsafe fn` carrying the same contract
@@ -411,10 +437,29 @@ macro_rules! checkarg {
 }
 
 #[doc(hidden)]
-pub unsafe fn format_args(
+pub unsafe fn format_args<A: FormatArgs>(
     fmt: &UMessageFormat,
-    args: impl FormatArgs,
+    args: A,
 ) -> Result<String, common::Error> {
+    // `umsg_format` is variadic and reads as many arguments as the pattern
+    // refers to, whatever the caller passed. Supplying too few makes it read
+    // past the end of the argument list, which is undefined behavior: with a
+    // string argument it dereferences whatever it finds there and usually
+    // segfaults. Refuse the call instead, when the pattern says how many
+    // arguments it needs. See
+    // https://github.com/google/rust_icu/issues/371.
+    if let Some(required) = fmt.required_args {
+        if A::ARITY < required {
+            return Err(common::Error::Wrapper(anyhow::anyhow!(
+                "message pattern needs {} argument(s) because it refers to argument index {}, \
+                 but {} argument(s) were supplied",
+                required,
+                required - 1,
+                A::ARITY,
+            )));
+        }
+    }
+
     const CAP: usize = 1024;
     let mut status = common::Error::OK_CODE;
     let mut result = ustring::UChar::new_with_capacity(CAP);
@@ -495,6 +540,10 @@ impl FormatArg for i64 {
 /// Trait for tuples of elements implementing `FormatArg`.
 #[doc(hidden)]
 pub trait FormatArgs: Sealed {
+    /// The number of arguments in this tuple.
+    #[doc(hidden)]
+    const ARITY: usize;
+
     #[doc(hidden)]
     unsafe fn format(
         &self,
@@ -510,6 +559,8 @@ macro_rules! impl_format_args_for_tuples {
         $(
             impl<$($param: FormatArg,)*> Sealed for ($($param,)*) {}
             impl<$($param: FormatArg,)*> FormatArgs for ($($param,)*) {
+                const ARITY: usize = [$($crate::__std::stringify!($param)),*].len();
+
                 unsafe fn format(
                     &self,
                     fmt: *const sys::UMessageFormat,
@@ -731,50 +782,101 @@ mod tests {
         );
     }
 
-    /// Demonstrates the argument-count memory-unsafety hazard of `message_format!`, as reported in
-    /// [google/rust_icu#371](https://github.com/google/rust_icu/issues/371).
+    /// Too few arguments are rejected instead of read past the end of the varargs.
     ///
-    /// The pattern `{1}` references argument index 1, so ICU's variadic `umsg_format` reads *two*
-    /// arguments (indices 0 and 1) from the varargs. The call below supplies only one, so ICU reads
-    /// argument 1 from past the end of the arguments actually passed and -- because a bare `{1}` is
-    /// a string argument -- treats that indeterminate value as a `UChar*`.
-    ///
-    /// This is undefined behavior, and, like all UB here, how it manifests depends on the platform
-    /// and ICU version: it may segfault (as originally reported in #371), or it may silently render
-    /// nonsense. On macOS with ICU 73, for example, it does *not* crash but returns `"String : "`,
-    /// formatting an unsupplied argument -- so the `panic!` guard below fires instead. Either
-    /// outcome demonstrates that safe-looking code produced an unsound result.
-    ///
-    /// Unlike the type mismatch, this one *could* be caught by scanning the pattern for its highest
-    /// argument index and comparing against the number of arguments supplied; it is left here to
-    /// document the current (unchecked) behavior.
-    ///
-    /// This test is `#[ignore]`d because triggering undefined behavior may abort the whole test
-    /// binary. Run it deliberately, in isolation, to observe the crash or the garbage output:
-    ///
-    /// ```text
-    /// cargo test -p rust_icu_umsg -- --ignored --exact tests::arg_count_mismatch_is_undefined_behavior
-    /// ```
+    /// This is the pattern reported in
+    /// [google/rust_icu#371](https://github.com/google/rust_icu/issues/371). `{1}` references
+    /// argument index 1, so ICU's variadic `umsg_format` reads *two* arguments (indices 0 and 1).
+    /// Only one is supplied here. Before the check this read argument 1 from past the end of the
+    /// arguments actually passed and -- because a bare `{1}` is a string argument -- dereferenced
+    /// that indeterminate value as a `UChar*`, which segfaults.
     #[test]
-    #[ignore = "deliberately triggers undefined behavior (may segfault or return garbage); run manually to reproduce"]
-    fn arg_count_mismatch_is_undefined_behavior() -> Result<(), common::Error> {
-        let loc = uloc::ULoc::try_from("en-US")?;
-        // `{1}` references argument index 1 => ICU reads two arguments (indices 0 and 1).
+    fn too_few_arguments_is_an_error() -> Result<(), common::Error> {
+        let loc = uloc::ULoc::try_from("en-US-u-tz-uslax")?;
         let msg = ustring::UChar::try_from(r"String : {1}")?;
 
         let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
         let mut string = ustring::UChar::try_from("Hello!")?;
         string.make_z();
-        // Only one argument is supplied, so ICU reads argument 1 past the end of the varargs. Note
-        // this is reachable from entirely safe code -- `message_format!` requires no `unsafe` block.
-        let result = message_format!(fmt, { string => String })?;
+        let result = message_format!(fmt, { string => String });
 
-        // Reached only when the UB does not crash on this platform. The returned value is itself
-        // unsound: it was formatted from an argument the caller never supplied.
-        panic!(
-            "argument-count mismatch did not crash here, but formatting still produced an unsound \
-             result from an unsupplied argument: {:?}",
-            result
+        let err = result.expect_err("one argument must not satisfy a pattern needing two");
+        assert!(
+            matches!(err, common::Error::Wrapper(_)),
+            "expected a wrapper error, got: {:?}",
+            err
         );
+        Ok(())
+    }
+
+    /// The same check, for a pattern where the indices are contiguous.
+    #[test]
+    fn too_few_arguments_is_an_error_for_contiguous_indices() -> Result<(), common::Error> {
+        let loc = uloc::ULoc::try_from("en-US")?;
+        let msg = ustring::UChar::try_from(r"{0}{1}{2}{3}{4}{5}{6}{7}")?;
+
+        let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
+        let mut string = ustring::UChar::try_from("x")?;
+        string.make_z();
+        let result = message_format!(
+            fmt,
+            { string.clone() => String },
+            { string.clone() => String },
+            { string => String }
+        );
+
+        assert!(result.is_err(), "expected an error, got: {:?}", result);
+        Ok(())
+    }
+
+    /// Supplying more arguments than the pattern references stays harmless.
+    #[test]
+    fn extra_arguments_are_allowed() -> Result<(), common::Error> {
+        let loc = uloc::ULoc::try_from("en-US")?;
+        let msg = ustring::UChar::try_from(r"Only: {0}")?;
+
+        let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
+        let mut first = ustring::UChar::try_from("first")?;
+        first.make_z();
+        let mut second = ustring::UChar::try_from("second")?;
+        second.make_z();
+
+        let result = message_format!(fmt, { first => String }, { second => String })?;
+        assert_eq!("Only: first", result);
+        Ok(())
+    }
+
+    /// An argument nested in a submessage counts towards the required number.
+    #[test]
+    fn nested_arguments_count() -> Result<(), common::Error> {
+        let loc = uloc::ULoc::try_from("en-US")?;
+        let msg = ustring::UChar::try_from(r"{0,plural,one{one file}other{# files in {1}}}")?;
+
+        let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
+        let mut dir = ustring::UChar::try_from("/tmp")?;
+        dir.make_z();
+
+        // `{1}` sits inside a submessage, but ICU still reads two arguments.
+        let too_few = message_format!(fmt, { 3.0 => Double });
+        assert!(too_few.is_err(), "expected an error, got: {:?}", too_few);
+
+        let result = message_format!(fmt, { 3.0 => Double }, { dir => String })?;
+        assert_eq!("3 files in /tmp", result);
+        Ok(())
+    }
+
+    /// A quoted argument is literal text, and does not require an argument.
+    #[test]
+    fn quoted_arguments_are_not_required() -> Result<(), common::Error> {
+        let loc = uloc::ULoc::try_from("en-US")?;
+        let msg = ustring::UChar::try_from(r"'{1}' is literal, {0} is not")?;
+
+        let fmt = crate::UMessageFormat::try_from(&msg, &loc)?;
+        let mut arg = ustring::UChar::try_from("this")?;
+        arg.make_z();
+
+        let result = message_format!(fmt, { arg => String })?;
+        assert_eq!("{1} is literal, this is not", result);
+        Ok(())
     }
 }
