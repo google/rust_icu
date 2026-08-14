@@ -1,5 +1,12 @@
 load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
 
+# `--whole-archive` is a GNU ld spelling that Mach-O's linker does not accept
+# ("unknown argument '--whole-archive'"). `-all_load` is the Apple equivalent.
+_WHOLE_ARCHIVE = select({
+    "@bazel_tools//src/conditions:darwin": ["-Clink-arg=-Wl,-all_load"],
+    "//conditions:default": ["-Clink-arg=-Wl,--whole-archive"],
+})
+
 rust_library(
     name = "rust_icu_ecma402",
     srcs = glob(["src/**/*.rs"]),
@@ -15,7 +22,7 @@ rust_library(
     rustc_env = {
         "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
     },
-    rustc_flags = ["-Clink-arg=-Wl,--whole-archive"],
+    rustc_flags = _WHOLE_ARCHIVE,
     visibility = ["//visibility:public"],
     deps = [
         "//ecma402_traits",
@@ -44,7 +51,7 @@ rust_test(
     rustc_env = {
         "RUST_ICU_MAJOR_VERSION_NUMBER": "74",
     },
-    rustc_flags = ["-Clink-arg=-Wl,--whole-archive"],
+    rustc_flags = _WHOLE_ARCHIVE,
     deps = [
         "@crates//:anyhow",
         "@crates//:regex",
