@@ -8,34 +8,44 @@ filegroup(
 )
 
 _CFLAGS = "-fPIC"
+
 _CXXFLAGS = _CFLAGS
+
+_SHARED_LIBS = [
+    "libicui18n",
+    "libicuio",
+    "libicuuc",
+    "libicudata",
+]
+
+# `@bazel_tools` is visible from every repository, including the ones the
+# icu_deps extension generates with http_archive; `@platforms` is not.
+_MACOS = "@bazel_tools//src/conditions:darwin"
 
 configure_make(
     name = "icu",
-    env = {
-        "CXXFLAGS": _CXXFLAGS,
-        "CFLAGS": _CFLAGS,
-    },
     configure_command = "source/configure",
     configure_options = [
         "--enable-static",
         "--with-data-packaging=archive",
     ],
+    env = {
+        "CXXFLAGS": _CXXFLAGS,
+        "CFLAGS": _CFLAGS,
+    },
     lib_source = "//:all",
+    out_data_dirs = [
+        "share",
+    ],
+    out_shared_libs = select({
+        _MACOS: [lib + ".dylib" for lib in _SHARED_LIBS],
+        "//conditions:default": [lib + ".so" for lib in _SHARED_LIBS],
+    }),
     out_static_libs = [
         "libicui18n.a",
         "libicuio.a",
         "libicuuc.a",
         "libicudata.a",
-    ],
-    out_shared_libs = [
-        "libicui18n.so",
-        "libicuio.so",
-        "libicuuc.so",
-        "libicudata.so",
-    ],
-    out_data_dirs = [
-        "share",
     ],
     targets = ["install"],
     visibility = ["//visibility:public"],
@@ -45,7 +55,7 @@ exports_files(["icu4c/LICENSE"])
 
 filegroup(
     name = "icudtl",
-    output_group = "gen_dir",
     srcs = ["share/icu/75.1/icudt75l.dat"],
+    output_group = "gen_dir",
     visibility = ["//visibility:public"],
 )

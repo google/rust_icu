@@ -229,7 +229,7 @@
   "moduleExtensions": {
     "//bazel:icu_deps.bzl%icu_deps": {
       "general": {
-        "bzlTransitiveDigest": "cH0O6Zh+XxbbqJJd4/jUMp1kaIrKx5AsaeL6PEt+HCk=",
+        "bzlTransitiveDigest": "kR2CANqdbVecRoxon5rqYESqNgdaSpKqlcDizIn9kOY=",
         "usagesDigest": "vgWhsY7ibmINYcvCRQjFaNPGkFs1nN225ov+HI4KfCo=",
         "recordedInputs": [
           "REPO_MAPPING:,bazel_tools bazel_tools"
@@ -245,7 +245,8 @@
               ],
               "patch_cmds": [
                 "find icu4c -name BUILD.bazel -delete",
-                "find icu4c -name BUILD -delete"
+                "find icu4c -name BUILD -delete",
+                "sed -i.bak 's/^ARFLAGS += -c$/ARFLAGS := -static -o/' icu4c/source/config/mh-darwin && rm -f icu4c/source/config/mh-darwin.bak"
               ]
             }
           },
@@ -259,7 +260,8 @@
               ],
               "patch_cmds": [
                 "find icu4c -name BUILD.bazel -delete",
-                "find icu4c -name BUILD -delete"
+                "find icu4c -name BUILD -delete",
+                "sed -i.bak 's/^ARFLAGS += -c$/ARFLAGS := -static -o/' icu4c/source/config/mh-darwin && rm -f icu4c/source/config/mh-darwin.bak"
               ]
             }
           },
@@ -273,7 +275,8 @@
               ],
               "patch_cmds": [
                 "find icu4c -name BUILD.bazel -delete",
-                "find icu4c -name BUILD -delete"
+                "find icu4c -name BUILD -delete",
+                "sed -i.bak 's/^ARFLAGS += -c$/ARFLAGS := -static -o/' icu4c/source/config/mh-darwin && rm -f icu4c/source/config/mh-darwin.bak"
               ]
             }
           },
@@ -287,7 +290,8 @@
               ],
               "patch_cmds": [
                 "find icu4c -name BUILD.bazel -delete",
-                "find icu4c -name BUILD -delete"
+                "find icu4c -name BUILD -delete",
+                "sed -i.bak 's/^ARFLAGS += -c$/ARFLAGS := -static -o/' icu4c/source/config/mh-darwin && rm -f icu4c/source/config/mh-darwin.bak"
               ]
             }
           },
@@ -301,7 +305,8 @@
               "build_file": "@@//third_party/icu_tot:icu.BUILD.bazel",
               "patch_cmds": [
                 "find icu4c -name BUILD.bazel -delete",
-                "find icu4c -name BUILD -delete"
+                "find icu4c -name BUILD -delete",
+                "sed -i.bak 's/^ARFLAGS += -c$/ARFLAGS := -static -o/' icu4c/source/config/mh-darwin && rm -f icu4c/source/config/mh-darwin.bak"
               ]
             }
           }
