@@ -23,11 +23,21 @@ permissions:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest]
         bazel_version: ["8.7.0", "9.2.0"]
+        include:
+          # macOS runs at the pinned .bazelversion only, rather than across the
+          # whole Bazel matrix. Compiling ICU from source dominates the job, and
+          # the Linux entries above already cover the 8.7.0/9.2.0 spread. One
+          # macOS entry is enough to keep the Darwin-specific paths -- the LLVM
+          # toolchain version, ICU's archiving rule, `.dylib` outputs and
+          # `-all_load` -- from regressing unnoticed.
+          - os: macos-latest
+            bazel_version: "9.2.0"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
