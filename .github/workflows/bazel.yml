@@ -40,6 +40,8 @@ jobs:
             bazel_version: "9.2.0"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Write Bazel version
         run: echo "${{ matrix.bazel_version }}" > .bazelversion
