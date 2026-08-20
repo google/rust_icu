@@ -80,6 +80,27 @@ Crate                           | Description
 [rust_icu_utext][44]            | Text operations. Implements [`utext.h`][45] C API header from the ICU library.
 [rust_icu_utrans][46]           | Transliteration support. Implements [`utrans.h`][47] C API header from the ICU library.
 
+# Hello, World!
+
+A complete, runnable "Hello, World!" lives in
+[`examples/hello_world`](examples/hello_world).  It shows locale-aware
+[MessageFormat](http://userguide.icu-project.org/formatparse/messages) string
+formatting (MessageFormat is *not* XLIFF; it is a pattern-based template
+language built into ICU).  Run it with:
+
+```sh
+cd examples/hello_world
+cargo run
+# => Hello, World!
+```
+
+The example's [`Cargo.toml`](examples/hello_world/Cargo.toml) lists the
+dependencies you need (`rust_icu_common`, `rust_icu_uloc`, `rust_icu_umsg`,
+`rust_icu_ustring`), and [`src/main.rs`](examples/hello_world/src/main.rs)
+contains the code.  See the
+[`rust_icu_umsg` crate docs](https://docs.rs/rust_icu_umsg) for more advanced
+patterns (numbers, dates, plural rules, etc.).
+
 # Limitations
 
 The generated rust language binding methods of today limit the availability of

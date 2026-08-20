@@ -89,6 +89,36 @@ docker-test-current:
 			${DOCKER_REPO}/rust_icu_testenv-current:${USED_BUILDENV_VERSION}
 .PHONY: docker-test-current
 
+# Builds and runs the standalone examples (examples/*) inside the dockerized
+# test environment.  The example crates are excluded from the workspace, so the
+# regular docker-test target does not touch them; this target gives the
+# presubmits a way to confirm the documented example actually compiles, runs and
+# prints the expected output.  It overrides the image entrypoint and drives
+# cargo directly because the examples are built with default features, unlike
+# the feature-matrix runs.
+docker-test-example:
+	mkdir -p ${CARGO_TARGET_DIR}
+	echo top_dir: ${TOP_DIR}
+	echo pwd: $(shell pwd)
+	docker run ${TTY} \
+			--user=${UID}:${GID} \
+			--volume=${TOP_DIR}:/src/rust_icu \
+			--volume=${CARGO_TARGET_DIR}:/build/cargo \
+			--volume=${LOGNAME_HOME}/.cargo:/usr/local/cargo \
+			--env="RUST_ICU_MAJOR_VERSION_NUMBER=${RUST_ICU_MAJOR_VERSION_NUMBER}" \
+			--env="RUST_BACKTRACE=full" \
+			--entrypoint="/bin/bash" \
+			${DOCKER_REPO}/${DOCKER_TEST_ENV}:${USED_BUILDENV_VERSION} \
+			  "-l" "-c" "set -eo pipefail; \
+			    for example in /src/rust_icu/examples/*/; do \
+			      ( cd \"$$example\" \
+			        && env LD_LIBRARY_PATH=/usr/local/lib \
+			               cargo test --target-dir=/build/cargo \
+			        && env LD_LIBRARY_PATH=/usr/local/lib \
+			               cargo run --target-dir=/build/cargo ); \
+			    done"
+.PHONY: docker-test-example
+
 # Test with the homebrew version of icu4c on macOS, running bindgen natively
 # using the ICU headers provided by Homebrew and the clang toolchain from Xcode.
 # Two passes: dynamic linking (default) and static linking.
