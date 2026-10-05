@@ -116,9 +116,17 @@ impl ICUConfig {
 
     /// Obtains the needed flags for the C++ compiler.
     pub fn cppflags(&mut self) -> Result<String> {
-        self.rep
+        let cflags = self
+            .rep
             .run(&["--cflags", "icu-i18n"])
-            .context("while getting the cpp flags")
+            .context("while getting the cpp flags")?;
+
+        let defs = self
+            .rep
+            .run(&["--variable=DEFS", "icu-i18n"])
+            .context("while getting the DEFS variable")?;
+
+        Ok([cflags, defs].join(" "))
     }
 
     /// Obtains the major-minor version number for the library. Returns a string like `64.2`.
