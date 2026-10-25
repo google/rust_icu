@@ -22,7 +22,7 @@ paste = "1.0"
 
 [build-dependencies]
 anyhow = "1.0.72"
-bindgen = { version = "0.69.5", optional = true }
+bindgen = { version = "0.72", optional = true }
 lazy_static = "1.4"
 rust_icu_release = { path = "../rust_icu_release", version = "5.8.0" }
 
